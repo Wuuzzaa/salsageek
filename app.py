@@ -30,6 +30,29 @@ from rich.style import Style
 
 console = Console()
 
+PROFILE_FILE = BASE_DIR / "profil.yaml"
+
+# ---------------------------------------------------------------------------
+# Profil speichern / laden
+# ---------------------------------------------------------------------------
+
+def save_profile(known_ids: Set[str]):
+    import yaml
+    data = {"bekannte_elemente": sorted(known_ids)}
+    with open(PROFILE_FILE, "w", encoding="utf-8") as f:
+        yaml.dump(data, f, allow_unicode=True, default_flow_style=False)
+    console.print(f"[dim]✓ Profil gespeichert: {PROFILE_FILE.name}[/dim]")
+
+
+def load_profile() -> Set[str]:
+    import yaml
+    if not PROFILE_FILE.exists():
+        return set()
+    with open(PROFILE_FILE, encoding="utf-8") as f:
+        data = yaml.safe_load(f)
+    return set(data.get("bekannte_elemente", []))
+
+
 # ---------------------------------------------------------------------------
 # Level-Farben
 # ---------------------------------------------------------------------------
@@ -73,19 +96,27 @@ def print_intro():
 # ---------------------------------------------------------------------------
 # Element-Auswahl
 # ---------------------------------------------------------------------------
-def select_known_elements(elements: Dict) -> Set[str]:
-    """Interaktive Abfrage: Welche Elemente beherrscht der User?"""
-    console.print(Rule("[bold]Schritt 1: Dein aktuelles Repertoire[/bold]"))
+def select_known_elements(elements: Dict, preloaded: Set[str] = None) -> Set[str]:
+    """Interaktive Abfrage: Welche Elemente beherrscht der User?
+    Bereits bekannte Elemente werden vorausgefüllt (aus Profil).
+    """
+    console.print(Rule("[bold]Repertoire bearbeiten[/bold]"))
     console.print(
-        "\nIch zeige dir alle verfügbaren Elemente nach Level sortiert.\n"
-        "Bestätige mit [bold green]j[/bold green] (ja) oder "
-        "[bold red]n[/bold red] (nein).\n"
+        "\nBestätige mit [bold green]j[/bold green] (ja) oder "
+        "[bold red]n[/bold red] (nein).  "
+        "[dim]? = Details anzeigen[/dim]\n"
     )
+    if preloaded:
+        console.print(
+            f"[dim]Vorbelegt aus Profil: {len(preloaded)} Element(e). "
+            f"Standard-Antwort entsprechend vorgewählt.[/dim]\n"
+        )
 
     known: Set[str] = set()
     current_level = 0
+    if preloaded is None:
+        preloaded = set()
 
-    # Gruppiert nach Level ausgeben
     by_level: Dict[int, List[Element]] = {}
     for elem in elements.values():
         by_level.setdefault(elem.level, []).append(elem)
@@ -95,28 +126,30 @@ def select_known_elements(elements: Dict) -> Set[str]:
         console.print(f"\n[bold {color}]── Level {level}: {LEVEL_LABEL[level]} ──[/bold {color}]")
 
         for elem in sorted(by_level[level], key=lambda e: e.id):
-            # Kurze Beschreibung (erste 80 Zeichen)
             short_desc = elem.description[:80].replace("\n", " ").strip()
             if len(elem.description) > 80:
                 short_desc += "…"
 
-            console.print(f"\n  [bold]{elem.name}[/bold]")
+            already_known = elem.id in preloaded
+            default_answer = "j" if already_known else "n"
+            marker = " [green]✓[/green]" if already_known else ""
+
+            console.print(f"\n  [bold]{elem.name}[/bold]{marker}")
             console.print(f"  [dim]{short_desc}[/dim]")
             console.print(f"  [dim]Tags: {', '.join(elem.tags)}[/dim]")
 
             answer = Prompt.ask(
                 f"  Beherrschst du [bold cyan]{elem.name}[/bold cyan]?",
                 choices=["j", "n", "?"],
-                default="n",
+                default=default_answer,
             )
 
             if answer == "?":
-                # Mehr Details anzeigen
                 _show_element_detail(elem)
                 answer = Prompt.ask(
                     f"  Beherrschst du [bold cyan]{elem.name}[/bold cyan]?",
                     choices=["j", "n"],
-                    default="n",
+                    default=default_answer,
                 )
 
             if answer == "j":
@@ -377,11 +410,9 @@ def explore_elements(elements: Dict):
 # Hauptmenü
 # ---------------------------------------------------------------------------
 def main():
-    # Daten laden
     elements = load_elements(DATA_DIR / "elements.yaml")
     figures = load_figures(DATA_DIR / "figures.yaml", elements)
 
-    # Validierungsfehler melden
     invalid = [(fid, f) for fid, f in figures.items() if not f.valid]
     if invalid:
         console.print(f"\n[yellow]Warnung: {len(invalid)} Figur(en) haben Validierungsfehler:[/yellow]")
@@ -394,41 +425,66 @@ def main():
         f"({len(figures) - len(invalid)} gültig)[/dim]\n"
     )
 
+    # Profil laden
+    known_ids = load_profile()
+    # Unbekannte IDs (z.B. nach YAML-Erweiterung) bereinigen
+    known_ids = {eid for eid in known_ids if eid in elements}
+
+    if known_ids:
+        console.print(
+            f"[green]✓ Profil geladen:[/green] {len(known_ids)} Elemente bekannt "
+            f"[dim]({PROFILE_FILE.name})[/dim]\n"
+        )
+    else:
+        console.print(
+            f"[dim]Kein Profil gefunden – beim ersten Durchlauf Repertoire eingeben.[/dim]\n"
+        )
+
     while True:
         console.print(Rule("[bold]Hauptmenü[/bold]"))
+        profile_hint = (
+            f"[dim]  Profil: {len(known_ids)} Elemente geladen[/dim]\n"
+            if known_ids else
+            "[dim]  Kein Profil – Option 1 wählen[/dim]\n"
+        )
         console.print(
-            "\n  [bold cyan]1[/bold cyan] → Repertoire eingeben & Figuren anzeigen\n"
-            "  [bold cyan]2[/bold cyan] → Nächste Lernempfehlungen\n"
-            "  [bold cyan]3[/bold cyan] → Figuren-Baukasten (eigene Sequenz testen)\n"
-            "  [bold cyan]4[/bold cyan] → Element-Explorer (Details)\n"
+            f"\n{profile_hint}"
+            "  [bold cyan]1[/bold cyan] → Repertoire bearbeiten & speichern\n"
+            "  [bold cyan]2[/bold cyan] → Meine Figuren anzeigen\n"
+            "  [bold cyan]3[/bold cyan] → Lernempfehlungen\n"
+            "  [bold cyan]4[/bold cyan] → Figuren-Baukasten (eigene Sequenz testen)\n"
+            "  [bold cyan]5[/bold cyan] → Element-Explorer (Details)\n"
             "  [bold cyan]q[/bold cyan] → Beenden\n"
         )
 
-        choice = Prompt.ask("Auswahl", choices=["1", "2", "3", "4", "q"], default="1")
+        choice = Prompt.ask("Auswahl", choices=["1", "2", "3", "4", "5", "q"], default="1")
 
         if choice == "q":
             console.print("\n[yellow]Hasta la vista – y a bailar! 💃[/yellow]\n")
             break
 
         elif choice == "1":
-            known_ids = select_known_elements(elements)
-            console.print(
-                f"\n[green]✓ Du beherrschst {len(known_ids)} Elemente.[/green]"
-            )
-            show_executable_figures(known_ids, figures, elements)
+            known_ids = select_known_elements(elements, preloaded=known_ids)
+            console.print(f"\n[green]✓ Du beherrschst {len(known_ids)} Elemente.[/green]")
+            save_profile(known_ids)
 
         elif choice == "2":
-            console.print(
-                "\n[dim]Bitte zuerst dein Repertoire eingeben:[/dim]"
-            )
-            known_ids = select_known_elements(elements)
-            show_executable_figures(known_ids, figures, elements)
-            show_recommendations(known_ids, figures, elements)
+            if not known_ids:
+                console.print("[yellow]Noch kein Repertoire – bitte Option 1 wählen.[/yellow]")
+            else:
+                show_executable_figures(known_ids, figures, elements)
 
         elif choice == "3":
-            interactive_figure_builder(elements)
+            if not known_ids:
+                console.print("[yellow]Noch kein Repertoire – bitte Option 1 wählen.[/yellow]")
+            else:
+                show_executable_figures(known_ids, figures, elements)
+                show_recommendations(known_ids, figures, elements)
 
         elif choice == "4":
+            interactive_figure_builder(elements)
+
+        elif choice == "5":
             explore_elements(elements)
 
         console.print()
@@ -436,4 +492,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
