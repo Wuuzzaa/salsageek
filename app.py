@@ -126,16 +126,12 @@ def select_known_elements(elements: Dict, preloaded: Set[str] = None) -> Set[str
         console.print(f"\n[bold {color}]── Level {level}: {LEVEL_LABEL[level]} ──[/bold {color}]")
 
         for elem in sorted(by_level[level], key=lambda e: e.id):
-            short_desc = elem.description[:80].replace("\n", " ").strip()
-            if len(elem.description) > 80:
-                short_desc += "…"
-
             already_known = elem.id in preloaded
             default_answer = "j" if already_known else "n"
             marker = " [green]✓[/green]" if already_known else ""
 
             console.print(f"\n  [bold]{elem.name}[/bold]{marker}")
-            console.print(f"  [dim]{short_desc}[/dim]")
+            console.print(f"  [dim]{elem.description}[/dim]")
             console.print(f"  [dim]Tags: {', '.join(elem.tags)}[/dim]")
 
             answer = Prompt.ask(

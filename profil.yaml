@@ -1,0 +1,6 @@
+bekannte_elemente:
+- basic_closed
+- basic_open
+- closed_to_open
+- follower_right_turn
+- open_to_closed
