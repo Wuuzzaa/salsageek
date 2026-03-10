@@ -1,0 +1,866 @@
+# =============================================================================
+# SALSA ON1 (LA STYLE) - ELEMENT NOTATION
+# =============================================================================
+# NOTATION SCHEMA:
+#
+# State-Variables (vollständig beschreiben den "Übergabezustand"):
+#   hand_hold:      Welche Hände sich berühren (Leader-Perspektive)
+#     free          Kein Kontakt
+#     R_L           Leader Right in Follower Left (Standard Open)
+#     L_R           Leader Left in Follower Right
+#     RR            Leader Right in Follower Right (R-to-R)
+#     LL            Leader Left in Follower Left (L-to-L)
+#     two_hand      Beide Hände (L_R + R_L)
+#     R_LL          Leader Right in beiden Follower-Händen
+#
+#   position:       Räumliche Anordnung
+#     open          Gegenüber, Arm-Länge
+#     closed        Tanz-Umarmung (closed hold)
+#     parallel      Nebeneinander, beide in gleiche Richtung
+#     hammerlock    Follower-Arm hinter ihrem Rücken
+#     copa          Follower vor Leader, beide gleiche Richtung
+#     back_to_back  Rücken an Rücken
+#
+#   slot:           Wer steht in welcher Lane
+#     leader_slot   Leader in der Slot-Lane, Follower kreuzt
+#     neutral       Beide parallel / frei
+#     follower_slot Follower in der Slot-Lane
+#
+#   leader_weight:  Standbein des Leaders am Ende des Elements
+#     L             Linkes Bein
+#     R             Rechtes Bein
+#
+# ELEMENT FELDER:
+#   id            Eindeutiger Bezeichner (snake_case)
+#   name          Anzeigename
+#   description   Textbeschreibung
+#   counts        Taktanzahl (meist 8, kann 16 oder 4 sein)
+#   level         Schwierigkeitsgrad 1-5
+#   tags          Kategorien
+#   pre:          Zustand BEVOR das Element beginnt
+#   post:         Zustand NACH dem Element (= pre des nächsten)
+#   leader_actions: Was der Leader physisch tut (Beat-genau)
+#   signals:      Wie der Leader das Element ansagt (Lead-Technik)
+#   notes:        Hinweise, Tipps, Variationen
+# =============================================================================
+
+elements:
+
+  # ---------------------------------------------------------------------------
+  # LEVEL 1 – FUNDAMENT
+  # ---------------------------------------------------------------------------
+
+  - id: basic_open
+    name: "Basic Step (Open)"
+    description: >
+      Der Grundschritt in offener Haltung. Timing-Muster: Quick-Quick-Slow (QQ-S).
+      Leader tritt auf Beat 1 vorwärts (Quick), Break auf Beat 2 (Quick),
+      zurück auf Beat 3 (Slow) – Beat 4 ist Pause, kein Schritt.
+      Beat 5-8 gespiegelt: zurück (5), Break vorwärts (6), Slow (7), Pause (8).
+      Bildet die Basis für alle On1-Figuren.
+    counts: 8
+    level: 1
+    tags: [basic, footwork, open]
+    pre:
+      hand_hold: [R_L, two_hand, free]
+      position: [open]
+      slot: [leader_slot, neutral]
+      leader_weight: [L, R]   # beliebig, Einstieg
+    post:
+      hand_hold: same          # bleibt wie pre
+      position: open
+      slot: leader_slot
+      leader_weight: L
+    leader_actions:
+      - beat: 1
+        foot: L
+        direction: forward
+        description: "Schritt vorwärts links (Quick)"
+      - beat: 2
+        foot: R
+        direction: break_back
+        description: "Break – Gewicht auf rechts (Quick)"
+      - beat: 3
+        foot: L
+        direction: back
+        description: "Zurück links (Slow – hält durch Beat 4)"
+      - beat: 4
+        description: "PAUSE – kein Schritt, Gewicht bleibt auf links"
+      - beat: 5
+        foot: R
+        direction: back
+        description: "Schritt zurück rechts (Quick)"
+      - beat: 6
+        foot: L
+        direction: break_forward
+        description: "Break vorwärts links (Quick)"
+      - beat: 7
+        foot: R
+        direction: back
+        description: "Zurück rechts (Slow – hält durch Beat 8)"
+      - beat: 8
+        description: "PAUSE – kein Schritt, Gewicht bleibt auf rechts"
+    signals:
+      - type: none
+        description: "Kein spezifisches Signal – Grundschritt läuft einfach"
+    notes: >
+      Das wichtigste Element. Alle Übergänge kehren hierher zurück.
+      'same' bei post.hand_hold bedeutet: der Wert wird vom pre-Zustand geerbt.
+
+  - id: basic_closed
+    name: "Basic Step (Closed)"
+    description: >
+      Grundschritt in geschlossener Tanzhaltung, gleiches QQ-S Timing wie Open Basic.
+      Leader geht vorwärts (1), Break (2), Slow+Pause (3-4) – Follower spiegelverkehrt.
+      Beat 5-8: Leader zurück, Follower vorwärts.
+    counts: 8
+    level: 1
+    tags: [basic, footwork, closed]
+    pre:
+      hand_hold: [two_hand, R_L]
+      position: [closed]
+      slot: [leader_slot]
+      leader_weight: [L]
+    post:
+      hand_hold: same
+      position: closed
+      slot: leader_slot
+      leader_weight: L
+    leader_actions:
+      - beat: 1
+        foot: L
+        direction: forward
+        description: "Vorwärts links, Follower geht zurück (Quick)"
+      - beat: 2
+        foot: R
+        direction: break_back
+        description: "Break (Quick)"
+      - beat: 3
+        foot: L
+        direction: back
+        description: "Zurück (Slow)"
+      - beat: 4
+        description: "PAUSE"
+      - beat: 5
+        foot: R
+        direction: back
+        description: "Zurück rechts, Follower geht vorwärts (Quick)"
+      - beat: 6
+        foot: L
+        direction: break_forward
+        description: "Break vorwärts (Quick)"
+      - beat: 7
+        foot: R
+        direction: back
+        description: "Zurück (Slow)"
+      - beat: 8
+        description: "PAUSE"
+    signals:
+      - type: frame_tension
+        description: "Führung über Körperrahmen (Frame), kein Arm-Ziehen"
+    notes: >
+      Closed Hold: Leader rechte Hand flach am Follower-Schulterblatt,
+      linke Hand erhebt sich, Ellenbogen nach unten.
+
+  - id: open_to_closed
+    name: "Open → Closed Transition"
+    description: >
+      Übergang von offener in geschlossene Haltung während des Basic Steps.
+      Leader zieht Follower sanft auf Beat 5 heran.
+    counts: 8
+    level: 1
+    tags: [transition, position_change]
+    pre:
+      hand_hold: [R_L, two_hand]
+      position: [open]
+      slot: [leader_slot]
+      leader_weight: [L]
+    post:
+      hand_hold: two_hand
+      position: closed
+      slot: leader_slot
+      leader_weight: L
+    signals:
+      - type: pull_in
+        beat: 5
+        hand: R
+        description: "Rechte Hand zieht leicht an, um Follower heranzuführen"
+
+  - id: closed_to_open
+    name: "Closed → Open Transition"
+    description: >
+      Öffnung aus geschlossener Haltung. Leader gibt Follower auf Beat 1
+      sanft Raum nach hinten.
+    counts: 8
+    level: 1
+    tags: [transition, position_change]
+    pre:
+      hand_hold: [two_hand]
+      position: [closed]
+      slot: [leader_slot]
+      leader_weight: [L]
+    post:
+      hand_hold: R_L
+      position: open
+      slot: leader_slot
+      leader_weight: L
+    signals:
+      - type: push_out
+        beat: 1
+        hand: L
+        description: "Linke Hand gibt leichten Impuls nach außen"
+
+  # ---------------------------------------------------------------------------
+  # LEVEL 1 – TURNS (FOLLOWER)
+  # ---------------------------------------------------------------------------
+
+  - id: follower_right_turn
+    name: "Follower Right Turn (Inside Turn)"
+    description: >
+      Die häufigste Drehung. Follower dreht sich auf Beat 1-3 im Uhrzeigersinn
+      (von Leader aus gesehen). Leader hebt auf Beat 1 den linken Arm,
+      Follower dreht unter dem Arm hindurch.
+    counts: 8
+    level: 1
+    tags: [turn, follower_turn, inside_turn]
+    pre:
+      hand_hold: [R_L, L_R, two_hand]
+      position: [open]
+      slot: [leader_slot]
+      leader_weight: [L]
+    post:
+      hand_hold: R_L
+      position: open
+      slot: leader_slot
+      leader_weight: L
+    leader_actions:
+      - beat: 1
+        description: "Linken Arm heben (wenn two_hand: rechte Hand lösen)"
+        hand: L
+        action: raise
+      - beat: 2
+        description: "Arm bleibt oben, gibt Führungskreis"
+        hand: L
+        action: circle_cw
+      - beat: 3
+        description: "Arm senken, Follower hat gedreht"
+        hand: L
+        action: lower
+    signals:
+      - type: arm_raise
+        beat: 1
+        hand: L
+        description: "Linker Arm geht hoch – gibt Raum für Drehung"
+      - type: circular_wrist
+        beat: "1-3"
+        description: "Handgelenk dreht Follower sanft im Uhrzeigersinn"
+    notes: >
+      Bei two_hand: rechte Hand auf Beat 1 loslassen, dann auf Beat 5-6 wieder
+      in R_L-Haltung aufnehmen. Die Drehung passiert auf Beats 1-3 (Quick-Quick-Slow).
+
+  - id: follower_left_turn
+    name: "Follower Left Turn (Outside Turn)"
+    description: >
+      Follower dreht sich gegen den Uhrzeigersinn. Leader nutzt die rechte Hand
+      als Führung. Technisch anspruchsvoller als die Right Turn.
+    counts: 8
+    level: 2
+    tags: [turn, follower_turn, outside_turn]
+    pre:
+      hand_hold: [R_L, two_hand]
+      position: [open]
+      slot: [leader_slot]
+      leader_weight: [L]
+    post:
+      hand_hold: R_L
+      position: open
+      slot: leader_slot
+      leader_weight: L
+    leader_actions:
+      - beat: 1
+        hand: R
+        action: raise_and_cross
+        description: "Rechte Hand über Follower-Kopf führen, linksdrehend"
+    signals:
+      - type: arm_raise
+        beat: 1
+        hand: R
+        description: "Rechter Arm hebt sich, Führung gegen Uhrzeigersinn"
+      - type: circular_wrist
+        beat: "1-3"
+        direction: counter_clockwise
+    notes: >
+      Leader muss aktiv Raum schaffen – Körper leicht nach rechts.
+      Follower dreht links (gegen UZS) auf Beats 1-3.
+
+  - id: double_right_turn
+    name: "Double Right Turn"
+    description: >
+      Follower macht zwei Drehungen rechts hintereinander. Leader gibt
+      mehr Impuls und mehr Raum auf Beat 1.
+    counts: 8
+    level: 3
+    tags: [turn, follower_turn, inside_turn, double]
+    pre:
+      hand_hold: [R_L, two_hand]
+      position: [open]
+      slot: [leader_slot]
+      leader_weight: [L]
+    post:
+      hand_hold: R_L
+      position: open
+      slot: leader_slot
+      leader_weight: L
+    signals:
+      - type: arm_raise_high
+        beat: 1
+        hand: L
+        description: "Arm deutlich höher als Single Turn – gibt Signal für Doppeldrehung"
+      - type: stronger_wrist_impulse
+        description: "Mehr Rotationsimpuls über das Handgelenk"
+    notes: >
+      Timing ist kritisch: Follower braucht mehr Rotationsenergie auf Beat 1.
+      Leader darf NICHT mehr ziehen – nur mehr Impuls geben.
+
+  # ---------------------------------------------------------------------------
+  # LEVEL 2 – CROSS BODY LEAD
+  # ---------------------------------------------------------------------------
+
+  - id: cbl
+    name: "Cross Body Lead (CBL)"
+    description: >
+      Das Kernstück des LA-Stils. Leader wechselt auf Beat 1 in die
+      Follower-Lane und gibt der Follower Raum, auf Beats 5-7 durch
+      den Slot zu gehen. Leader dreht sich am Ende um 90° oder 180°.
+    counts: 8
+    level: 2
+    tags: [cbl, traveling, slot_change, core]
+    pre:
+      hand_hold: [R_L, two_hand, L_R]
+      position: [open]
+      slot: [leader_slot]
+      leader_weight: [L]
+    post:
+      hand_hold: R_L
+      position: open
+      slot: leader_slot
+      leader_weight: L
+    leader_actions:
+      - beat: 1
+        foot: L
+        direction: forward_and_left
+        description: "Schritt vorwärts-links, aus dem Slot heraus"
+      - beat: 2
+        foot: R
+        description: "Break, nun steht Leader links vom Slot"
+      - beat: 3
+        foot: L
+        direction: open_side
+        description: "Gewicht-Transfer, Körper öffnet den Slot"
+      - beat: 5
+        foot: R
+        direction: rotate_180
+        description: "Follower geht durch – Leader dreht sich"
+      - beat: 6
+        foot: L
+        description: "Break, neuer Basic beginnt"
+      - beat: 7
+        foot: R
+    signals:
+      - type: body_open
+        beat: "1-3"
+        description: "Linke Schulter geht zurück, öffnet den Weg für Follower"
+      - type: gentle_forward_lead
+        beat: 5
+        hand: R
+        description: "Rechte Hand gibt sanften Vorwärts-Impuls an Follower"
+    notes: >
+      Fehler vermeiden: Leader NICHT an der Follower ziehen!
+      Der Slot wird durch Körperrotation geöffnet, nicht durch Arm-Kraft.
+      Am Ende steht Leader wieder in original Position (Lanes getauscht und zurück).
+
+  - id: cbl_with_right_turn
+    name: "CBL with Follower Right Turn"
+    description: >
+      CBL kombiniert mit einer Rechtsdrehung der Follower. Die Follower
+      dreht sich auf Beat 5-7 während sie durch den Slot geht.
+    counts: 8
+    level: 2
+    tags: [cbl, turn, follower_turn, combo]
+    pre:
+      hand_hold: [R_L, two_hand]
+      position: [open]
+      slot: [leader_slot]
+      leader_weight: [L]
+    post:
+      hand_hold: R_L
+      position: open
+      slot: leader_slot
+      leader_weight: L
+    leader_actions:
+      - beat: "1-3"
+        description: "Wie normaler CBL – aus dem Slot heraus"
+      - beat: 5
+        hand: R
+        action: raise_and_guide_cw
+        description: "Rechten Arm heben, Follower in Rechtsdrehung führen"
+    signals:
+      - type: arm_raise
+        beat: 5
+        hand: R
+        description: "Rechter Arm hebt sich auf Beat 5 für Follower-Drehung"
+    notes: >
+      Dies ist eigentlich ein CBL (Beats 1-4) + Follower Right Turn (Beats 5-8).
+      Der Arm-Wechsel passiert fließend.
+
+  - id: cbl_with_left_turn
+    name: "CBL with Follower Left Turn"
+    description: >
+      CBL mit Linksdrehung der Follower durch den Slot. Technisch
+      anspruchsvoller – Leader muss Arm früh positionieren.
+    counts: 8
+    level: 3
+    tags: [cbl, turn, follower_turn, combo]
+    pre:
+      hand_hold: [R_L, L_R, two_hand]
+      position: [open]
+      slot: [leader_slot]
+      leader_weight: [L]
+
+  # ---------------------------------------------------------------------------
+  # LEVEL 2 – HAND CHANGES & TRANSITIONS
+  # ---------------------------------------------------------------------------
+
+  - id: hand_change_front
+    name: "Hand Change (Front)"
+    description: >
+      Leader wechselt von R_L zu L_R (oder umgekehrt) direkt vor der
+      Follower. Fließende Bewegung zwischen Basic Steps.
+    counts: 8
+    level: 2
+    tags: [transition, hand_change]
+    pre:
+      hand_hold: [R_L]
+      position: [open]
+      slot: [leader_slot]
+      leader_weight: [L]
+    post:
+      hand_hold: L_R
+      position: open
+      slot: leader_slot
+      leader_weight: L
+    signals:
+      - type: hand_lower_and_pass
+        beat: 5
+        description: "Rechte Hand senkt sich, linke Hand nimmt auf"
+    notes: >
+      Ermöglicht Links-Turn für Follower im nächsten Element.
+
+  - id: hand_change_behind_back
+    name: "Hand Change Behind Leader's Back"
+    description: >
+      Leader führt die Hand der Follower hinter seinem eigenen Rücken durch.
+      Spektakuläres Element, das zu vielen Figuren führen kann.
+    counts: 8
+    level: 3
+    tags: [transition, hand_change, styling]
+    pre:
+      hand_hold: [R_L]
+      position: [open]
+      slot: [leader_slot]
+      leader_weight: [L]
+    post:
+      hand_hold: L_R
+      position: open
+      slot: leader_slot
+      leader_weight: L
+    signals:
+      - type: guide_behind_back
+        beat: 1
+        description: "Leader führt Follower-Hand unter seinem linken Arm durch hinter Rücken"
+
+  - id: two_hand_hold_entry
+    name: "Two Hand Hold Entry"
+    description: >
+      Übergang von R_L oder freier Haltung zu Two-Hand-Hold. Leader bietet
+      linke Hand an (bei R_L) oder beide Hände (aus Shine), Follower nimmt sie.
+    counts: 8
+    level: 1
+    tags: [transition, hand_change]
+    pre:
+      hand_hold: [R_L, free]
+      position: [open]
+      slot: [leader_slot, neutral]
+      leader_weight: [L]
+    post:
+      hand_hold: two_hand
+      position: open
+      slot: leader_slot
+      leader_weight: L
+    signals:
+      - type: offer_hand
+        beat: 5
+        hand: L
+        description: "Linke Hand wird in Follower-Sichtfeld angeboten"
+
+  # ---------------------------------------------------------------------------
+  # LEVEL 2 – COPA
+  # ---------------------------------------------------------------------------
+
+  - id: copa
+    name: "Copa"
+    description: >
+      Leader und Follower stehen Seite an Seite, beide in gleiche Richtung.
+      Leader blockiert Follower auf Beat 1 sanft mit rechtem Arm,
+      beide machen einen Side-Basic zusammen.
+    counts: 8
+    level: 2
+    tags: [copa, parallel, styling]
+    pre:
+      hand_hold: [R_L, two_hand]
+      position: [open]
+      slot: [leader_slot]
+      leader_weight: [L]
+    post:
+      hand_hold: two_hand
+      position: copa
+      slot: neutral
+      leader_weight: L
+    leader_actions:
+      - beat: 1
+        description: "Rechter Arm blockiert sanft Follower-Bewegung vorwärts"
+        action: block_forward
+      - beat: "1-3"
+        description: "Beide side-step nach links"
+      - beat: "5-7"
+        description: "Beide side-step nach rechts oder Auflösung"
+    signals:
+      - type: body_block
+        beat: 1
+        description: "Körper dreht leicht, rechter Arm blockiert sanft"
+    notes: >
+      Oft genutzt als Überleitung in Parallel-Figuren oder Sombrero.
+
+  - id: copa_exit
+    name: "Copa Exit (Back to Open)"
+    description: >
+      Auflösung der Copa-Position zurück in offene Haltung.
+    counts: 8
+    level: 2
+    tags: [copa, transition, exit]
+    pre:
+      hand_hold: [R_L, two_hand]
+      position: [copa]
+      slot: [neutral]
+      leader_weight: [L]
+    post:
+      hand_hold: R_L
+      position: open
+      slot: leader_slot
+      leader_weight: L
+    signals:
+      - type: forward_lead
+        beat: 1
+        description: "Follower wird nach vorne-links geführt, öffnet Position"
+
+  # ---------------------------------------------------------------------------
+  # LEVEL 3 – HAMMERLOCK
+  # ---------------------------------------------------------------------------
+
+  - id: hammerlock_entry
+    name: "Hammerlock Entry"
+    description: >
+      Follower-Arm wird hinter ihren eigenen Rücken geführt.
+      Einstieg meist über CBL mit Drehung und Arm-Wicklung.
+    counts: 8
+    level: 3
+    tags: [hammerlock, arm_styling, entry]
+    pre:
+      hand_hold: [R_L]
+      position: [open]
+      slot: [leader_slot]
+      leader_weight: [L]
+    post:
+      hand_hold: RR
+      position: hammerlock
+      slot: neutral
+      leader_weight: L
+    leader_actions:
+      - beat: "1-3"
+        description: "CBL-Bewegung initiieren"
+      - beat: 5
+        description: "Follower-rechte Hand hinter Follower-Rücken führen (RR)"
+        action: guide_to_hammerlock
+    signals:
+      - type: gentle_arm_wrap
+        beat: 5
+        description: "Rechten Arm der Follower sanft hinter ihren Rücken führen"
+    notes: >
+      Vorsicht: Follower-Schulter nicht überdehnen! Führung bleibt leicht.
+      Hammerlock ist ein Zwischenzustand – immer mit Exit kombinieren.
+
+  - id: hammerlock_basic
+    name: "Hammerlock Basic"
+    description: >
+      Basic Step in Hammerlock-Position. Leader steht hinter/neben Follower,
+      beide führen Side-Steps oder Forward-Basic aus.
+    counts: 8
+    level: 3
+    tags: [hammerlock, basic]
+    pre:
+      hand_hold: [RR]
+      position: [hammerlock]
+      slot: [neutral]
+      leader_weight: [L]
+    post:
+      hand_hold: RR
+      position: hammerlock
+      slot: neutral
+      leader_weight: L
+    signals:
+      - type: body_lead
+        description: "Führung über Körperkontakt und sanften Arm-Druck"
+
+  - id: hammerlock_exit_turn
+    name: "Hammerlock Exit (with Right Turn)"
+    description: >
+      Auflösung des Hammerlocks durch eine Rechtsdrehung der Follower.
+      Der Arm wickelt sich ab während die Follower dreht.
+    counts: 8
+    level: 3
+    tags: [hammerlock, exit, turn]
+    pre:
+      hand_hold: [RR]
+      position: [hammerlock]
+      slot: [neutral]
+      leader_weight: [L]
+    post:
+      hand_hold: R_L
+      position: open
+      slot: leader_slot
+      leader_weight: L
+    signals:
+      - type: unwrap_turn
+        beat: 1
+        description: "Arm-Wicklung lösen, Follower bekommt Impuls für Rechtsdrehung"
+
+  # ---------------------------------------------------------------------------
+  # LEVEL 3 – SOMBRERO
+  # ---------------------------------------------------------------------------
+
+  - id: sombrero_entry
+    name: "Sombrero Entry"
+    description: >
+      Leader führt beide Hände der Follower über ihren Kopf und bildet
+      einen 'Hut'. Einstieg aus Two-Hand-Hold, auch aus Copa möglich.
+    counts: 8
+    level: 3
+    tags: [sombrero, styling, entry]
+    pre:
+      hand_hold: [two_hand]
+      position: [open, copa]
+      slot: [leader_slot, neutral]
+      leader_weight: [L]
+    post:
+      hand_hold: two_hand
+      position: copa
+      slot: neutral
+      leader_weight: L
+    leader_actions:
+      - beat: 1
+        description: "Beide Arme heben, Follower duckt sich leicht"
+      - beat: "1-3"
+        description: "Arme über Kopf der Follower führen"
+      - beat: "5-8"
+        description: "Sombrero-Position halten, Side-Step"
+    signals:
+      - type: both_arms_raise
+        beat: 1
+        description: "Beide Arme gleichzeitig heben"
+
+  - id: sombrero_exit
+    name: "Sombrero Exit"
+    description: >
+      Auflösung des Sombreros. Arme kommen wieder herunter,
+      Rückkehr zur offenen Position.
+    counts: 8
+    level: 3
+    tags: [sombrero, exit]
+    pre:
+      hand_hold: [two_hand]
+      position: [copa]
+      slot: [neutral]
+      leader_weight: [L]
+    post:
+      hand_hold: two_hand
+      position: open
+      slot: leader_slot
+      leader_weight: L
+
+  # ---------------------------------------------------------------------------
+  # LEVEL 3 – LEADER TURNS
+  # ---------------------------------------------------------------------------
+
+  - id: leader_right_turn
+    name: "Leader Right Turn"
+    description: >
+      Leader dreht sich selbst nach rechts (im Uhrzeigersinn) während der
+      Follower still steht oder einen Basic macht.
+    counts: 8
+    level: 3
+    tags: [turn, leader_turn, styling]
+    pre:
+      hand_hold: [R_L, free]
+      position: [open]
+      slot: [leader_slot]
+      leader_weight: [L]
+    post:
+      hand_hold: same
+      position: open
+      slot: leader_slot
+      leader_weight: L
+    notes: >
+      Oft als Stilmittel in Shine-Sections. Bei Hand-Kontakt: Handgelenk
+      geschmeidig halten damit Follower nicht gestört wird.
+
+  - id: shine_section
+    name: "Shine Section (Solo)"
+    description: >
+      Leader und Follower tanzen kurzzeitig ohne Körperkontakt individuell.
+      Jeder kann individuell stylen, bevor ein Element den Kontakt wiederherstellt.
+    counts: 8
+    level: 2
+    tags: [shine, solo, styling]
+    pre:
+      hand_hold: [R_L, free, two_hand]
+      position: [open]
+      slot: [neutral]
+      leader_weight: [L]
+    post:
+      hand_hold: free
+      position: open
+      slot: neutral
+      leader_weight: L
+    signals:
+      - type: release_hands
+        beat: 1
+        description: "Hände loslassen, Blickkontakt halten"
+    notes: >
+      Reconnection meist über two_hand_hold_entry oder direktes Greifen auf Beat 1.
+
+  # ---------------------------------------------------------------------------
+  # LEVEL 4 – ADVANCED
+  # ---------------------------------------------------------------------------
+
+  - id: titanic
+    name: "Titanic (Back-to-Back)"
+    description: >
+      Leader und Follower stehen Rücken an Rücken. Beide Arme sind
+      ausgestreckt, der Leader hält Follower-Hände seitlich.
+      Spektakuläres Bild-Element.
+    counts: 8
+    level: 4
+    tags: [titanic, back_to_back, styling, advanced]
+    pre:
+      hand_hold: [LL, two_hand]
+      position: [open]
+      slot: [neutral]
+      leader_weight: [L]
+    post:
+      hand_hold: LL
+      position: back_to_back
+      slot: neutral
+      leader_weight: L
+    signals:
+      - type: guide_into_back
+        description: "Follower wird sanft in Leader-Rücken geführt"
+
+  - id: titanic_exit
+    name: "Titanic Exit (Back to Open)"
+    description: >
+      Auflösung der Rücken-an-Rücken-Position. Leader dreht sich,
+      beide öffnen zur Open-Position.
+    counts: 8
+    level: 4
+    tags: [titanic, exit, advanced]
+    pre:
+      hand_hold: [LL]
+      position: [back_to_back]
+      slot: [neutral]
+      leader_weight: [L]
+    post:
+      hand_hold: R_L
+      position: open
+      slot: leader_slot
+      leader_weight: L
+    signals:
+      - type: rotate_out
+        beat: 1
+        description: "Beide drehen sich nach außen, Leader öffnet zur Follower"
+
+  - id: neck_loop
+    name: "Neck Loop (Lasso)"
+    description: >
+      Leader führt Follower-Hand in einem Bogen über Leaders Kopf.
+      Die Hand kommt hinter Leaders Kopf – ein Loop entsteht.
+    counts: 8
+    level: 4
+    tags: [neck_loop, arm_styling, advanced]
+    pre:
+      hand_hold: [L_R]
+      position: [open]
+      slot: [leader_slot]
+      leader_weight: [L]
+    post:
+      hand_hold: L_R
+      position: open
+      slot: leader_slot
+      leader_weight: L
+    notes: >
+      Leader-linke Hand führt Follower-rechte Hand über Leaders Kopf.
+      Vorsicht: Follower-Handgelenk nicht überdrehen.
+
+  - id: dip
+    name: "Dip"
+    description: >
+      Follower wird auf Beat 5 oder 1 in eine Rücken-Neigung (Dip) geführt.
+      Leader stützt mit rechtem Arm unter Follower-Schulterblatt.
+    counts: 8
+    level: 4
+    tags: [dip, partnering, advanced, musicality]
+    pre:
+      hand_hold: [R_L, two_hand]
+      position: [closed, open]
+      slot: [leader_slot]
+      leader_weight: [L]
+    post:
+      hand_hold: R_L
+      position: open
+      slot: leader_slot
+      leader_weight: L
+    signals:
+      - type: support_and_dip
+        beat: 5
+        description: "Rechter Arm unter Follower-Schulterblatt, sanfter Rückwärtsdruck"
+    notes: >
+      Nur mit vertrautem Partner und nach explizitem Einverständnis!
+      Leader trägt Follower-Gewicht – stabiles Standbein entscheidend.
+
+  - id: al_capone
+    name: "Al Capone (Wrap)"
+    description: >
+      Follower wird in eine enge Wrap-Position geführt, steht vor dem Leader
+      mit verschlungenen Armen. Enge Variante der Copa-Familie.
+    counts: 8
+    level: 4
+    tags: [wrap, advanced, copa_family]
+    pre:
+      hand_hold: [two_hand]
+      position: [open]
+      slot: [leader_slot]
+      leader_weight: [L]
+    post:
+      hand_hold: two_hand
+      position: copa
+      slot: neutral
+      leader_weight: L
