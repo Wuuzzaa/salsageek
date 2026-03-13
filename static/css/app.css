@@ -27,17 +27,20 @@ body {
 .figure-card,
 .recommendation-card,
 .repertoire-card,
+.element-card,
 .info-box,
 .card {
     border-radius: 1rem;
 }
 
-.repertoire-card {
+.repertoire-card,
+.element-card {
     transition: all 0.18s ease;
     cursor: pointer;
 }
 
-.repertoire-card:hover {
+.repertoire-card:hover,
+.element-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 0.5rem 1rem rgba(20, 20, 20, 0.08);
     border-color: rgba(180, 35, 47, 0.35);
@@ -54,6 +57,34 @@ body {
     bottom: 1rem;
     z-index: 10;
     padding-top: 1rem;
+}
+
+.timeline-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.timeline-item {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 1rem;
+    align-items: start;
+}
+
+.timeline-beat {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--app-red-dark);
+    background: var(--app-rose);
+    border-radius: 999px;
+    padding: 0.35rem 0.75rem;
+    text-align: center;
+}
+
+.timeline-content {
+    border-left: 3px solid #f0d4d8;
+    padding-left: 1rem;
 }
 
 code {

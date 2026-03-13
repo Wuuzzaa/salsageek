@@ -68,6 +68,15 @@
                                                     <span class="badge rounded-pill text-bg-light border">{{ tag }}</span>
                                                 {% endfor %}
                                             </div>
+
+                                            <div class="mt-3">
+                                                <a
+                                                    href="{{ url_for('element_detail', element_id=elem.id) }}"
+                                                    class="small link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+                                                >
+                                                    Details ansehen →
+                                                </a>
+                                            </div>
                                         </label>
                                     </div>
                                 </div>

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Elemente · SalsaGeek{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="h3 mb-1">Elemente</h2>
+    <p class="text-secondary mb-0">
+        Schneller Zugriff auf alle Tanzbausteine. Ideal zum Nachsehen beim Üben.
+    </p>
+</div>
+
+{% for level, items in grouped.items() %}
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h3 class="h5 mb-0">Level {{ level }}</h3>
+            <span class="badge text-bg-{{ level_badge.get(level, 'secondary') }}">
+                {{ level_label.get(level, level) }}
+            </span>
+        </div>
+
+        <div class="card-body">
+            <div class="row g-3">
+                {% for elem in items %}
+                    <div class="col-12 col-md-6 col-xl-4">
+                        <a
+                            href="{{ url_for('element_detail', element_id=elem.id) }}"
+                            class="card h-100 border text-decoration-none text-reset element-card"
+                        >
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start gap-3">
+                                    <div>
+                                        <h4 class="h6 mb-1">{{ elem.name }}</h4>
+                                        <div class="small text-secondary">{{ elem.id }}</div>
+                                    </div>
+
+                                    {% if elem.id in known_ids %}
+                                        <span class="badge text-bg-success">bekannt</span>
+                                    {% endif %}
+                                </div>
+
+                                <p class="small text-secondary mt-3 mb-3">
+                                    {{ elem.description[:140] }}{% if elem.description|length > 140 %}…{% endif %}
+                                </p>
+
+                                <div class="d-flex flex-wrap gap-2 mb-3">
+                                    <span class="badge text-bg-light border">{{ elem.counts }} Takte</span>
+                                    {% for tag in elem.tags[:3] %}
+                                        <span class="badge rounded-pill text-bg-light border">{{ tag }}</span>
+                                    {% endfor %}
+                                </div>
+
+                                <span class="small link-danger">Zum Element →</span>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endfor %}
+{% endblock %}

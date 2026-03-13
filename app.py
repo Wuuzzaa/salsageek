@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Dict, List, Set
 
 import yaml
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, abort, redirect, render_template, request, url_for
 
 from src.salsa_notation import (
     Element,
@@ -94,6 +94,14 @@ def group_elements_by_level() -> Dict[int, List[Element]]:
     return dict(sorted(grouped.items()))
 
 
+def find_figures_using_element(element_id: str) -> List[Figure]:
+    used_in = [
+        fig for fig in figures.values()
+        if fig.valid and element_id in fig.sequence
+    ]
+    return sorted(used_in, key=lambda fig: (fig.level, fig.name))
+
+
 @app.context_processor
 def inject_globals():
     return {
@@ -116,6 +124,37 @@ def index():
         executable=executable,
         invalid=invalid,
         current_level=current_level_for(known_ids),
+    )
+
+
+@app.route("/elemente")
+def elemente():
+    known_ids = load_profile()
+    grouped = group_elements_by_level()
+
+    return render_template(
+        "elemente.html",
+        grouped=grouped,
+        known_ids=known_ids,
+    )
+
+
+@app.route("/element/<element_id>")
+def element_detail(element_id: str):
+    element = elements.get(element_id)
+    if element is None:
+        abort(404)
+
+    known_ids = load_profile()
+    used_in_figures = find_figures_using_element(element_id)
+
+    return render_template(
+        "element_detail.html",
+        element=element,
+        is_known=element_id in known_ids,
+        used_in_figures=used_in_figures,
+        pre_state=state_str(element.pre),
+        post_state=state_str(element.post),
     )
 
 

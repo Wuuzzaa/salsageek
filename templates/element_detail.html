@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block title %}{{ element.name }} · SalsaGeek{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a
+        href="{{ url_for('elemente') }}"
+        class="small link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+    >
+        ← Zurück zur Elementübersicht
+    </a>
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body p-4 p-lg-5">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3">
+            <div>
+                <div class="text-secondary small mb-2">{{ element.id }}</div>
+                <h2 class="h2 mb-2">{{ element.name }}</h2>
+                <p class="lead text-secondary mb-0">
+                    {{ element.description }}
+                </p>
+            </div>
+
+            <div class="text-end">
+                <div class="mb-2">
+                    <span class="badge text-bg-{{ level_badge.get(element.level, 'secondary') }}">
+                        {{ level_label.get(element.level, element.level) }}
+                    </span>
+                </div>
+                <div>
+                    <span class="badge text-bg-light border">{{ element.counts }} Takte</span>
+                    {% if is_known %}
+                        <span class="badge text-bg-success">im Repertoire</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 mt-3">
+            {% for tag in element.tags %}
+                <span class="badge rounded-pill text-bg-light border">{{ tag }}</span>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body p-4">
+                <h3 class="h5 mb-3">Vor dem Element</h3>
+                <p class="mb-0">{{ pre_state }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body p-4">
+                <h3 class="h5 mb-3">Nach dem Element</h3>
+                <p class="mb-0">{{ post_state }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-1">
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body p-4">
+                <h3 class="h5 mb-3">Leader-Aktionen</h3>
+
+                {% if element.leader_actions %}
+                    <div class="timeline-list">
+                        {% for action in element.leader_actions %}
+                            <div class="timeline-item">
+                                <div class="timeline-beat">Beat {{ action.beat }}</div>
+                                <div class="timeline-content">
+                                    <div class="fw-semibold">
+                                        {{ action.description if action.description else "Aktion" }}
+                                    </div>
+
+                                    <div class="small text-secondary mt-1">
+                                        {% if action.foot %}<span>Fuß: {{ action.foot }}</span>{% endif %}
+                                        {% if action.direction %}<span class="me-2"> · Richtung: {{ action.direction }}</span>{% endif %}
+                                        {% if action.hand %}<span class="me-2"> · Hand: {{ action.hand }}</span>{% endif %}
+                                        {% if action.action %}<span> · Aktion: {{ action.action }}</span>{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-secondary mb-0">Für dieses Element sind aktuell keine Leader-Aktionen hinterlegt.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body p-4">
+                <h3 class="h5 mb-3">Führungssignale</h3>
+
+                {% if element.signals %}
+                    <div class="timeline-list">
+                        {% for signal in element.signals %}
+                            <div class="timeline-item">
+                                <div class="timeline-beat">
+                                    {% if signal.beat %}Beat {{ signal.beat }}{% else %}Signal{% endif %}
+                                </div>
+                                <div class="timeline-content">
+                                    <div class="fw-semibold">
+                                        {{ signal.description if signal.description else signal.type }}
+                                    </div>
+
+                                    <div class="small text-secondary mt-1">
+                                        <span>Typ: {{ signal.type }}</span>
+                                        {% if signal.hand %}<span class="me-2"> · Hand: {{ signal.hand }}</span>{% endif %}
+                                        {% if signal.direction %}<span> · Richtung: {{ signal.direction }}</span>{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-secondary mb-0">Für dieses Element sind aktuell keine Führungssignale hinterlegt.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if element.notes %}
+<div class="card shadow-sm border-0 mt-4">
+    <div class="card-body p-4">
+        <h3 class="h5 mb-3">Hinweise</h3>
+        <p class="mb-0">{{ element.notes }}</p>
+    </div>
+</div>
+{% endif %}
+
+<div class="card shadow-sm border-0 mt-4">
+    <div class="card-body p-4">
+        <h3 class="h5 mb-3">Verwendet in Figuren</h3>
+
+        {% if used_in_figures %}
+            <div class="row g-3">
+                {% for fig in used_in_figures %}
+                    <div class="col-12 col-lg-6">
+                        <div class="info-box h-100">
+                            <div class="d-flex justify-content-between align-items-start gap-3">
+                                <div>
+                                    <div class="fw-semibold">{{ fig.name }}</div>
+                                    <div class="small text-secondary mt-1">
+                                        {{ fig.description[:120] }}{% if fig.description|length > 120 %}…{% endif %}
+                                    </div>
+                                </div>
+                                <span class="badge text-bg-{{ level_badge.get(fig.level, 'secondary') }}">
+                                    {{ level_label.get(fig.level, fig.level) }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-secondary mb-0">
+                Dieses Element ist aktuell in keiner gültigen Figur referenziert.
+            </p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

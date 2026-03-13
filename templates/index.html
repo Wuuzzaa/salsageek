@@ -51,12 +51,14 @@
                 <h2 class="h4 mb-3">Willkommen</h2>
                 <p class="text-secondary">
                     Diese App zeigt dir, welche Figuren du mit deinem aktuellen Repertoire tanzen kannst,
-                    welche Elemente als Nächstes sinnvoll sind und ob eine selbst gebaute Sequenz technisch zusammenpasst.
+                    welche Elemente als Nächstes sinnvoll sind, wie ein einzelnes Element genau funktioniert
+                    und ob eine selbst gebaute Sequenz technisch zusammenpasst.
                 </p>
 
                 <div class="d-flex flex-wrap gap-2 mt-4">
-                    <a class="btn btn-danger" href="{{ url_for('repertoire') }}">Repertoire bearbeiten</a>
-                    <a class="btn btn-outline-danger" href="{{ url_for('figuren_view') }}">Meine Figuren</a>
+                    <a class="btn btn-danger" href="{{ url_for('elemente') }}">Elemente ansehen</a>
+                    <a class="btn btn-outline-danger" href="{{ url_for('repertoire') }}">Repertoire bearbeiten</a>
+                    <a class="btn btn-outline-secondary" href="{{ url_for('figuren_view') }}">Meine Figuren</a>
                     <a class="btn btn-outline-secondary" href="{{ url_for('empfehlungen') }}">Empfehlungen</a>
                 </div>
             </div>
