@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Baukasten · SalsaGeek{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="h3 mb-1">Figuren-Baukasten</h2>
+    <p class="text-secondary mb-0">
+        Gib Element-IDs kommasepariert ein und prüfe, ob die Sequenz kompatibel ist.
+    </p>
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body p-4">
+        <form method="post" class="row g-3">
+            <div class="col-12">
+                <label for="sequence" class="form-label fw-semibold">Element-Sequenz</label>
+                <input
+                    type="text"
+                    class="form-control form-control-lg"
+                    id="sequence"
+                    name="sequence"
+                    value="{{ raw }}"
+                    placeholder="basic_open, cbl, follower_right_turn"
+                >
+                <div class="form-text">
+                    Beispiel:
+                    <code>basic_open, cbl, follower_right_turn</code>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-danger">Sequenz prüfen</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if error %}
+    <div class="alert alert-danger shadow-sm">
+        {{ error }}
+    </div>
+{% endif %}
+
+{% if result %}
+    {% if result.valid %}
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <h3 class="h5 text-success mb-3">✓ Sequenz ist gültig</h3>
+
+                <div class="mb-3">
+                    <div class="text-muted small mb-1">Sequenz</div>
+                    <div class="fw-semibold">{{ result.sequence_names|join(" → ") }}</div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="info-box h-100">
+                            <div class="text-muted">Gesamt-Takte</div>
+                            <div class="display-6 fw-semibold">{{ result.total_counts }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-box h-100">
+                            <div class="text-muted">8er-Phrasen</div>
+                            <div class="display-6 fw-semibold">{{ "%.1f"|format(result.phrase_count) }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="info-box h-100">
+                            <div class="text-muted">Status</div>
+                            <div class="fw-semibold text-success mt-2">Kompatibel</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <div class="mb-2"><strong>Start-Zustand:</strong> {{ result.start_state }}</div>
+                    <div><strong>End-Zustand:</strong> {{ result.end_state }}</div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <h3 class="h5 text-danger mb-3">Kompatibilitätsfehler</h3>
+
+                <div class="list-group list-group-flush">
+                    {% for err in result.errors %}
+                        <div class="list-group-item px-0">
+                            <div class="fw-semibold">
+                                {{ err.from_name }} → {{ err.to_name }}
+                            </div>
+                            <div class="small text-secondary mt-1">
+                                <strong>Post:</strong> {{ err.post_state }}
+                            </div>
+                            <div class="small text-secondary">
+                                <strong>Pre:</strong> {{ err.pre_state }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-4">
+        <h3 class="h5 mb-3">Verfügbare Element-IDs</h3>
+        <div class="d-flex flex-wrap gap-2">
+            {% for item in all_ids %}
+                <span class="badge text-bg-light border">{{ item }}</span>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

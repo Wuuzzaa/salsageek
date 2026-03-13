@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Repertoire · SalsaGeek{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <div>
+        <h2 class="h3 mb-1">Repertoire bearbeiten</h2>
+        <p class="text-secondary mb-0">
+            Wähle alle Elemente aus, die du bereits sicher tanzen kannst.
+        </p>
+    </div>
+    <div>
+        <span class="badge text-bg-{{ level_badge.get(current_level, 'secondary') }} fs-6">
+            {{ level_label.get(current_level, current_level) }}
+        </span>
+    </div>
+</div>
+
+{% if saved %}
+<div class="alert alert-success shadow-sm">
+    Profil gespeichert. Sehr schön, der Browser tanzt jetzt offiziell mit.
+</div>
+{% endif %}
+
+<form method="post">
+    {% for level, items in grouped.items() %}
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h3 class="h5 mb-0">Level {{ level }}</h3>
+                    <span class="badge text-bg-{{ level_badge.get(level, 'secondary') }}">
+                        {{ level_label.get(level, level) }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="row g-3">
+                    {% for elem in items %}
+                        <div class="col-12 col-lg-6">
+                            <label class="card h-100 border repertoire-card">
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            name="known_ids"
+                                            value="{{ elem.id }}"
+                                            id="elem_{{ elem.id }}"
+                                            {% if elem.id in known_ids %}checked{% endif %}
+                                        >
+                                        <label class="form-check-label w-100" for="elem_{{ elem.id }}">
+                                            <div class="d-flex justify-content-between align-items-start gap-3">
+                                                <div>
+                                                    <div class="fw-semibold">{{ elem.name }}</div>
+                                                    <div class="small text-secondary mt-1">
+                                                        {{ elem.description[:180] }}{% if elem.description|length > 180 %}…{% endif %}
+                                                    </div>
+                                                </div>
+                                                <span class="badge text-bg-light border">{{ elem.counts }} Takte</span>
+                                            </div>
+
+                                            <div class="mt-3 d-flex flex-wrap gap-2">
+                                                <span class="badge text-bg-secondary-subtle text-secondary-emphasis">
+                                                    {{ elem.id }}
+                                                </span>
+                                                {% for tag in elem.tags %}
+                                                    <span class="badge rounded-pill text-bg-light border">{{ tag }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+    <div class="sticky-actions">
+        <button type="submit" class="btn btn-danger btn-lg shadow-sm">
+            Profil speichern
+        </button>
+    </div>
+</form>
+{% endblock %}

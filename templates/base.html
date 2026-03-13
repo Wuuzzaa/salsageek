@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}SalsaGeek{% endblock %}</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/app.css') }}"
+    >
+</head>
+<body class="bg-body-tertiary">
+    <nav class="navbar navbar-expand-lg navbar-dark app-navbar shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-semibold" href="{{ url_for('index') }}">
+                🎵 SalsaGeek
+            </a>
+
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#mainNav"
+            >
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">Start</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('repertoire') }}">Repertoire</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('figuren_view') }}">Figuren</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('empfehlungen') }}">Empfehlungen</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('builder') }}">Baukasten</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero-band text-white">
+        <div class="container py-5">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-8">
+                    <p class="text-uppercase small mb-2 opacity-75">LA Style On1 · Leader</p>
+                    <h1 class="display-6 fw-bold mb-3">Salsa-Lernhilfe als Web-App</h1>
+                    <p class="lead mb-0">
+                        Figuren, Repertoire, Empfehlungen und ein kleiner Baukasten –
+                        alles ohne Terminal-Akrobatik.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container my-4 my-lg-5">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    ></script>
+</body>
+</html>

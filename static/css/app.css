@@ -1,0 +1,72 @@
+:root {
+    --app-red: #b4232f;
+    --app-red-dark: #7d1720;
+    --app-rose: #f7e8ea;
+    --app-ink: #1f2937;
+}
+
+body {
+    color: var(--app-ink);
+}
+
+.app-navbar {
+    background: linear-gradient(90deg, var(--app-red-dark), var(--app-red));
+}
+
+.hero-band {
+    background:
+        radial-gradient(circle at top right, rgba(255, 255, 255, 0.18), transparent 30%),
+        linear-gradient(135deg, #3a0c12, #8f1d2c 55%, #c23848);
+}
+
+.stat-card {
+    background: linear-gradient(180deg, #ffffff, #fcf7f8);
+    border-radius: 1rem;
+}
+
+.figure-card,
+.recommendation-card,
+.repertoire-card,
+.info-box,
+.card {
+    border-radius: 1rem;
+}
+
+.repertoire-card {
+    transition: all 0.18s ease;
+    cursor: pointer;
+}
+
+.repertoire-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(20, 20, 20, 0.08);
+    border-color: rgba(180, 35, 47, 0.35);
+}
+
+.info-box {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    padding: 1rem;
+}
+
+.sticky-actions {
+    position: sticky;
+    bottom: 1rem;
+    z-index: 10;
+    padding-top: 1rem;
+}
+
+code {
+    color: var(--app-red-dark);
+    background: var(--app-rose);
+    padding: 0.15rem 0.4rem;
+    border-radius: 0.35rem;
+}
+
+.badge.text-bg-secondary-subtle {
+    background-color: #f1f3f5;
+}
+
+.card {
+    overflow: hidden;
+}

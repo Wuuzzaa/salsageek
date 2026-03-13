@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Empfehlungen · SalsaGeek{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <div>
+        <h2 class="h3 mb-1">Lernempfehlungen</h2>
+        <p class="text-secondary mb-0">
+            Welche Elemente dir als Nächstes den meisten Nutzen bringen.
+        </p>
+    </div>
+    <div>
+        <span class="badge text-bg-{{ level_badge.get(current_level, 'secondary') }} fs-6">
+            {{ level_label.get(current_level, current_level) }}
+        </span>
+    </div>
+</div>
+
+{% if not known_ids %}
+    <div class="alert alert-warning shadow-sm">
+        Bitte zuerst dein Repertoire pflegen, damit sinnvolle Empfehlungen berechnet werden können.
+    </div>
+{% elif not recs %}
+    <div class="alert alert-success shadow-sm">
+        Du kennst bereits alle aktuell relevanten Elemente. Stark. 🎉
+    </div>
+{% else %}
+    <div class="row g-4">
+        {% for rec in recs %}
+            <div class="col-12">
+                <div class="card shadow-sm border-0 recommendation-card">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3">
+                            <div>
+                                <div class="text-muted small">Empfehlung #{{ loop.index }}</div>
+                                <h3 class="h4 mb-1">{{ rec.element.name }}</h3>
+                                <p class="text-secondary mb-0">
+                                    {{ rec.element.description[:220] }}{% if rec.element.description|length > 220 %}…{% endif %}
+                                </p>
+                            </div>
+
+                            <div class="text-end">
+                                <div class="badge text-bg-{{ level_badge.get(rec.element.level, 'secondary') }} mb-2">
+                                    {{ level_label.get(rec.element.level, rec.element.level) }}
+                                </div>
+                                <div class="fw-semibold">Score: {{ rec.score }}</div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="info-box h-100">
+                                    <div class="fw-semibold mb-2">Schaltet neue Figuren frei</div>
+                                    <div class="display-6 mb-2">{{ rec.new_figures|length }}</div>
+
+                                    {% if rec.new_figures %}
+                                        <ul class="mb-0">
+                                            {% for fig in rec.new_figures[:5] %}
+                                                <li>{{ fig.name }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <div class="text-secondary small">Noch keine direkten Freischaltungen.</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="info-box h-100">
+                                    <div class="fw-semibold mb-2">Fast freigeschaltet</div>
+                                    <div class="display-6 mb-2">{{ rec.almost_unlocked|length }}</div>
+
+                                    {% if rec.almost_unlocked %}
+                                        <ul class="mb-0">
+                                            {% for fig in rec.almost_unlocked[:5] %}
+                                                <li>{{ fig.name }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <div class="text-secondary small">Keine Fast-Fertig-Figuren in Sicht.</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 d-flex flex-wrap gap-2">
+                            <span class="badge text-bg-light border">{{ rec.element.id }}</span>
+                            {% for tag in rec.element.tags %}
+                                <span class="badge rounded-pill text-bg-light border">{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}

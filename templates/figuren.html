@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Figuren · SalsaGeek{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="h3 mb-1">Meine Figuren</h2>
+    <p class="text-secondary mb-0">
+        Alle Figuren, die mit deinem aktuellen Repertoire ausführbar sind.
+    </p>
+</div>
+
+{% if not known_ids %}
+    <div class="alert alert-warning shadow-sm">
+        Du hast noch kein Repertoire gespeichert. Starte am besten mit der Repertoire-Seite.
+    </div>
+{% elif not executable %}
+    <div class="alert alert-warning shadow-sm">
+        Mit den aktuell bekannten Elementen sind noch keine vordefinierten Figuren ausführbar.
+    </div>
+{% else %}
+    <div class="row g-4">
+        {% for item in executable %}
+            {% set fig = item.figure %}
+            <div class="col-12 col-xl-6">
+                <div class="card shadow-sm border-0 h-100 figure-card">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                            <div>
+                                <h3 class="h5 mb-1">{{ fig.name }}</h3>
+                                <p class="text-secondary mb-0">
+                                    {{ fig.description[:180] }}{% if fig.description|length > 180 %}…{% endif %}
+                                </p>
+                            </div>
+                            <span class="badge text-bg-{{ level_badge.get(fig.level, 'secondary') }}">
+                                {{ level_label.get(fig.level, fig.level) }}
+                            </span>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="small text-uppercase text-muted mb-1">Sequenz</div>
+                            <div class="fw-semibold">
+                                {{ item.sequence_names|join(" → ") }}
+                            </div>
+                        </div>
+
+                        <div class="row g-3 small">
+                            <div class="col-sm-6">
+                                <div class="info-box">
+                                    <div class="text-muted">Takte</div>
+                                    <div class="fw-semibold">{{ fig.total_counts }}</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="info-box">
+                                    <div class="text-muted">Tags</div>
+                                    <div class="fw-semibold">{{ fig.tags|join(", ") }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if fig.notes %}
+                            <div class="mt-3 small text-secondary">
+                                <strong>Notiz:</strong> {{ fig.notes }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}
