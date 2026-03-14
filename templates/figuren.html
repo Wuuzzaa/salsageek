@@ -2,11 +2,18 @@
 {% block title %}Figuren · SalsaGeek{% endblock %}
 
 {% block content %}
-<div class="mb-4">
-    <h2 class="h3 mb-1">Meine Figuren</h2>
-    <p class="text-secondary mb-0">
-        Alle Figuren, die mit deinem aktuellen Repertoire ausführbar sind.
-    </p>
+<div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div>
+        <h2 class="h3 mb-1">Meine Figuren</h2>
+        <p class="text-secondary mb-0">
+            Alle Figuren, die mit deinem aktuellen Repertoire ausführbar sind.
+        </p>
+    </div>
+    {% if known_ids %}
+    <div class="col-12 col-md-4">
+        <input type="text" id="figureFilter" class="form-control" placeholder="Figuren suchen...">
+    </div>
+    {% endif %}
 </div>
 
 {% if not known_ids %}
@@ -19,9 +26,9 @@
 {% else %}
     {% if executable %}
         <h3 class="h4 mb-4">Ausführbare Figuren</h3>
-        <div class="row g-4 mb-5">
+        <div class="row g-4 mb-5" id="executableList">
             {% for fig in executable %}
-                <div class="col-12 col-xl-6">
+                <div class="col-12 col-xl-6 figure-item" data-name="{{ fig.name|lower }}" data-tags="{{ fig.tags|join(' ')|lower }}">
                     <a href="{{ url_for('figure_detail', figure_id=fig.id) }}" class="text-decoration-none text-reset h-100 d-block">
                         <div class="card shadow-sm border-0 h-100 figure-card border-start border-success border-4">
                             <div class="card-body p-4">
@@ -77,9 +84,9 @@
         <h3 class="h4 mb-2">Fast möglich</h3>
         <p class="text-secondary mb-4">Für diese Figuren fehlt dir nur noch genau ein Element:</p>
         
-        <div class="row g-4">
+        <div class="row g-4" id="almostList">
             {% for fig in almost_executable %}
-                <div class="col-12 col-xl-6">
+                <div class="col-12 col-xl-6 figure-item" data-name="{{ fig.name|lower }}" data-tags="{{ fig.tags|join(' ')|lower }}">
                     <a href="{{ url_for('figure_detail', figure_id=fig.id) }}" class="text-decoration-none text-reset h-100 d-block">
                         <div class="card shadow-sm border-0 h-100 figure-card border-start border-warning border-4 opacity-75">
                             <div class="card-body p-4">
@@ -121,4 +128,28 @@
         </div>
     {% endif %}
 {% endif %}
+
+<script>
+document.getElementById('figureFilter')?.addEventListener('input', function(e) {
+    const term = e.target.value.toLowerCase();
+    const items = document.querySelectorAll('.figure-item');
+    
+    items.forEach(item => {
+        const name = item.getAttribute('data-name');
+        const tags = item.getAttribute('data-tags');
+        if (name.includes(term) || tags.includes(term)) {
+            item.classList.remove('d-none');
+        } else {
+            item.classList.add('d-none');
+        }
+    });
+
+    // Sektionen verstecken
+    const execVisible = document.querySelectorAll('#executableList .figure-item:not(.d-none)').length;
+    const almostVisible = document.querySelectorAll('#almostList .figure-item:not(.d-none)').length;
+    
+    document.querySelector('#executableList')?.parentElement.toggleAttribute('hidden', execVisible === 0);
+    document.querySelector('#almostList')?.parentElement.toggleAttribute('hidden', almostVisible === 0);
+});
+</script>
 {% endblock %}

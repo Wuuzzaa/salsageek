@@ -79,6 +79,8 @@ def state_str(state) -> str:
         parts.append(f"Slot: {', '.join(sorted(state.slot))}")
     if state.leader_weight:
         parts.append(f"Leader-Gewicht: {', '.join(sorted(state.leader_weight))}")
+    if state.follower_weight:
+        parts.append(f"Follower-Gewicht: {', '.join(sorted(state.follower_weight))}")
 
     return " · ".join(parts)
 
@@ -194,8 +196,8 @@ def element_detail(element_id: str):
         element=element,
         is_known=element_id in known_ids,
         used_in_figures=used_in_figures,
-        pre_state=state_str(element.pre),
-        post_state=state_str(element.post),
+        pre_state=element.pre,
+        post_state=element.post,
     )
 
 

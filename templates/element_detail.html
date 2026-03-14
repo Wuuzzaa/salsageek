@@ -45,23 +45,49 @@
     </div>
 </div>
 
-<div class="row g-4">
-    <div class="col-lg-6">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-body p-4">
-                <h3 class="h5 mb-3">Vor dem Element</h3>
-                <p class="mb-0">{{ pre_state }}</p>
+{% macro state_display(state, title) %}
+<div class="card shadow-sm border-0 h-100">
+    <div class="card-body p-4">
+        <h3 class="h5 mb-3 border-bottom pb-2">{{ title }}</h3>
+        <div class="row g-2">
+            <div class="col-6 text-muted small">Handverbindung:</div>
+            <div class="col-6 fw-semibold">
+                {% for h in state.hand_hold|sort %}
+                    <span class="badge bg-light text-dark border">{{ h }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="col-6 text-muted small">Position:</div>
+            <div class="col-6 fw-semibold text-danger">
+                {{ state.position|sort|join(", ") }}
+            </div>
+
+            <div class="col-6 text-muted small">Slot:</div>
+            <div class="col-6 fw-semibold text-primary">
+                {{ state.slot|sort|join(", ") }}
+            </div>
+
+            <div class="col-6 text-muted small">Leader-Gewicht:</div>
+            <div class="col-6 fw-semibold">
+                {{ state.leader_weight|sort|join(", ") }}
+            </div>
+
+            <div class="col-6 text-muted small">Follower-Gewicht:</div>
+            <div class="col-6 fw-semibold">
+                {{ state.follower_weight|sort|join(", ") }}
             </div>
         </div>
     </div>
+</div>
+{% endmacro %}
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        {{ state_display(pre_state, "Vor dem Element (Startbedingung)") }}
+    </div>
 
     <div class="col-lg-6">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-body p-4">
-                <h3 class="h5 mb-3">Nach dem Element</h3>
-                <p class="mb-0">{{ post_state }}</p>
-            </div>
-        </div>
+        {{ state_display(post_state, "Nach dem Element (Endzustand)") }}
     </div>
 </div>
 

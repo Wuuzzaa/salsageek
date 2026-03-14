@@ -2,15 +2,20 @@
 {% block title %}Elemente · SalsaGeek{% endblock %}
 
 {% block content %}
-<div class="mb-4">
-    <h2 class="h3 mb-1">Elemente</h2>
-    <p class="text-secondary mb-0">
-        Schneller Zugriff auf alle Tanzbausteine. Ideal zum Nachsehen beim Üben.
-    </p>
+<div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div>
+        <h2 class="h3 mb-1">Elemente</h2>
+        <p class="text-secondary mb-0">
+            Schneller Zugriff auf alle Tanzbausteine. Ideal zum Nachsehen beim Üben.
+        </p>
+    </div>
+    <div class="col-12 col-md-4">
+        <input type="text" id="elementFilter" class="form-control" placeholder="Elemente suchen...">
+    </div>
 </div>
 
 {% for level, items in grouped.items() %}
-    <div class="card shadow-sm border-0 mb-4">
+    <div class="card shadow-sm border-0 mb-4 level-section">
         <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
             <h3 class="h5 mb-0">Level {{ level }}</h3>
             <span class="badge text-bg-{{ level_badge.get(level, 'secondary') }}">
@@ -21,7 +26,7 @@
         <div class="card-body">
             <div class="row g-3">
                 {% for elem in items %}
-                    <div class="col-12 col-md-6 col-xl-4">
+                    <div class="col-12 col-md-6 col-xl-4 element-item" data-name="{{ elem.name|lower }}" data-tags="{{ elem.tags|join(' ')|lower }}">
                         <a
                             href="{{ url_for('element_detail', element_id=elem.id) }}"
                             class="card h-100 border text-decoration-none text-reset element-card"
@@ -58,4 +63,26 @@
         </div>
     </div>
 {% endfor %}
+
+<script>
+document.getElementById('elementFilter').addEventListener('input', function(e) {
+    const term = e.target.value.toLowerCase();
+    const items = document.querySelectorAll('.element-item');
+    
+    items.forEach(item => {
+        const name = item.getAttribute('data-name');
+        const tags = item.getAttribute('data-tags');
+        if (name.includes(term) || tags.includes(term)) {
+            item.classList.remove('d-none');
+        } else {
+            item.classList.add('d-none');
+        }
+    });
+    
+    document.querySelectorAll('.level-section').forEach(section => {
+        const visibleItems = section.querySelectorAll('.element-item:not(.d-none)');
+        section.classList.toggle('d-none', visibleItems.length === 0);
+    });
+});
+</script>
 {% endblock %}
