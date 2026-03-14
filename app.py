@@ -336,6 +336,7 @@ def builder():
 
     # Validierung durchführen
     validation = builder_service.validate_sequence(sequence)
+    custom_figure = None
     if not validation.get("valid"):
         if validation.get("error"):
             error = validation.get("error")
@@ -344,6 +345,7 @@ def builder():
     else:
         if not validation.get("empty"):
             result = validation
+            custom_figure = builder_service.create_custom_figure(validation)
 
     recommendations = builder_service.get_recommendations(sequence)
 
@@ -355,6 +357,8 @@ def builder():
         error=error,
         recommendations=recommendations,
         all_elements=sorted(elements.values(), key=lambda e: (e.level, e.name)),
+        figure=custom_figure,
+        known_ids=load_profile()
     )
 
 

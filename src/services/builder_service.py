@@ -1,5 +1,5 @@
 from typing import List, Dict, Optional, Tuple, Set
-from src.salsa_notation import Element
+from src.salsa_notation import Element, Figure
 
 class BuilderService:
     def __init__(self, elements: Dict[str, Element]):
@@ -115,3 +115,27 @@ class BuilderService:
         if not (first.post.follower_weight & second.pre.follower_weight):
             reasons.append(f"Gewicht Follower passt nicht: {first.post.follower_weight} vs {second.pre.follower_weight}")
         return " / ".join(reasons)
+
+    def create_custom_figure(self, validation_result: Dict) -> Optional[Figure]:
+        if not validation_result.get("valid") or validation_result.get("empty"):
+            return None
+
+        elem_list = validation_result.get("elem_list", [])
+        if not elem_list:
+            return None
+
+        # Max Level ermitteln
+        max_level = max(e.level for e in elem_list) if elem_list else 1
+
+        return Figure(
+            id="custom_builder_figure",
+            name="Eigene Figur",
+            description="Im Baukasten zusammengestellte Sequenz.",
+            level=max_level,
+            sequence=[e.id for e in elem_list],
+            total_counts=validation_result.get("total_counts", 0),
+            tags=["Baukasten", "Custom"],
+            notes="",
+            elements=elem_list,
+            valid=True
+        )
