@@ -69,7 +69,9 @@
     <div class="col-lg-6">
         <div class="card shadow-sm border-0 h-100">
             <div class="card-body p-4">
-                <h3 class="h5 mb-3">Leader-Aktionen</h3>
+                <h3 class="h5 mb-3 text-primary">
+                    <i class="bi bi-person-fill"></i> Leader-Schritte
+                </h3>
 
                 {% if element.leader_actions %}
                     <div class="timeline-list">
@@ -100,6 +102,41 @@
 
     <div class="col-lg-6">
         <div class="card shadow-sm border-0 h-100">
+            <div class="card-body p-4">
+                <h3 class="h5 mb-3 text-danger">
+                    <i class="bi bi-person-fill"></i> Follower-Schritte
+                </h3>
+
+                {% if element.follower_actions %}
+                    <div class="timeline-list">
+                        {% for action in element.follower_actions %}
+                            <div class="timeline-item">
+                                <div class="timeline-beat">Beat {{ action.beat }}</div>
+                                <div class="timeline-content">
+                                    <div class="fw-semibold">
+                                        {{ action.description if action.description else "Aktion" }}
+                                    </div>
+
+                                    <div class="small text-secondary mt-1">
+                                        {% if action.foot %}<span>Fuß: {{ action.foot }}</span>{% endif %}
+                                        {% if action.direction %}<span class="me-2"> · Richtung: {{ action.direction }}</span>{% endif %}
+                                        {% if action.action %}<span> · Aktion: {{ action.action }}</span>{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-secondary mb-0">Für dieses Element sind aktuell keine Follower-Aktionen hinterlegt.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-1">
+    <div class="col-12">
+        <div class="card shadow-sm border-0">
             <div class="card-body p-4">
                 <h3 class="h5 mb-3">Führungssignale</h3>
 

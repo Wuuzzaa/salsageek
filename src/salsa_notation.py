@@ -20,6 +20,7 @@ class SalsaState:
     position: Set[str]
     slot: Set[str]
     leader_weight: Set[str]
+    follower_weight: Set[str]
 
     def compatible_with(self, other: "SalsaState") -> bool:
         """Prüft ob dieser Zustand als Post mit 'other' als Pre kompatibel ist."""
@@ -27,7 +28,8 @@ class SalsaState:
             self.hand_hold & other.hand_hold and
             self.position & other.position and
             self.slot & other.slot and
-            self.leader_weight & other.leader_weight
+            self.leader_weight & other.leader_weight and
+            self.follower_weight & other.follower_weight
         )
 
     def resolve_same(self, pre: "SalsaState") -> "SalsaState":
@@ -38,6 +40,7 @@ class SalsaState:
             position=self.position,
             slot=self.slot,
             leader_weight=self.leader_weight,
+            follower_weight=self.follower_weight,
         )
 
 
@@ -48,6 +51,15 @@ class LeaderAction:
     direction: Optional[str] = None
     action: Optional[str] = None
     hand: Optional[str] = None
+    description: str = ""
+
+
+@dataclass
+class FollowerAction:
+    beat: str
+    foot: Optional[str] = None
+    direction: Optional[str] = None
+    action: Optional[str] = None
     description: str = ""
 
 
@@ -71,6 +83,7 @@ class Element:
     pre: SalsaState
     post: SalsaState  # bereits resolved (kein 'same' mehr)
     leader_actions: List[LeaderAction]
+    follower_actions: List[FollowerAction]
     signals: List[Signal]
     notes: str = ""
 
@@ -120,6 +133,7 @@ def _parse_state(raw: dict, key: str = None) -> SalsaState:
         position=as_set(raw.get("position")),
         slot=as_set(raw.get("slot")),
         leader_weight=as_set(raw.get("leader_weight", ["L", "R"])),
+        follower_weight=as_set(raw.get("follower_weight", ["L", "R"])),
     )
 
 
@@ -134,6 +148,21 @@ def _parse_actions(raw_list: list) -> List[LeaderAction]:
             direction=item.get("direction"),
             action=item.get("action"),
             hand=item.get("hand"),
+            description=item.get("description", ""),
+        ))
+    return result
+
+
+def _parse_follower_actions(raw_list: list) -> List[FollowerAction]:
+    if not raw_list:
+        return []
+    result = []
+    for item in raw_list:
+        result.append(FollowerAction(
+            beat=str(item.get("beat", "?")),
+            foot=item.get("foot"),
+            direction=item.get("direction"),
+            action=item.get("action"),
             description=item.get("description", ""),
         ))
     return result
@@ -174,6 +203,7 @@ def load_elements(path: Path) -> Dict[str, Element]:
             pre=pre,
             post=post,
             leader_actions=_parse_actions(raw.get("leader_actions", [])),
+            follower_actions=_parse_follower_actions(raw.get("follower_actions", [])),
             signals=_parse_signals(raw.get("signals", [])),
             notes=raw.get("notes", "").strip(),
         )
