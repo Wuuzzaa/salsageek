@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Dict, List, Set
 
 import yaml
-from flask import Flask, abort, redirect, render_template, request, url_for
+from flask import Flask, abort, redirect, render_template, request, url_for, session
 
 from src.salsa_notation import (
     Element,
@@ -18,12 +18,20 @@ from src.salsa_notation import (
     load_figures,
     recommend_elements_to_learn,
 )
+from src.services.profile_service import ProfileService
+from src.services.builder_service import BuilderService
 
 BASE_DIR = Path(__file__).parent
 DATA_DIR = BASE_DIR / "data"
-PROFILE_FILE = BASE_DIR / "profil.yaml"
 
 app = Flask(__name__)
+app.secret_key = "salsa-geek-secret-key" # In Produktion ändern
+
+elements: Dict[str, Element] = load_elements(DATA_DIR / "elements.yaml")
+figures: Dict[str, Figure] = load_figures(DATA_DIR / "figures.yaml", elements)
+
+profile_service = ProfileService()
+builder_service = BuilderService(elements)
 
 LEVEL_LABEL = {
     0: "Noch offen",
@@ -45,22 +53,11 @@ elements: Dict[str, Element] = load_elements(DATA_DIR / "elements.yaml")
 figures: Dict[str, Figure] = load_figures(DATA_DIR / "figures.yaml", elements)
 
 
+def get_active_profile() -> str:
+    return session.get("profile_name", "default")
+
 def load_profile() -> Set[str]:
-    if not PROFILE_FILE.exists():
-        return set()
-
-    with open(PROFILE_FILE, encoding="utf-8") as f:
-        data = yaml.safe_load(f) or {}
-
-    known_ids = set(data.get("bekannte_elemente", []))
-    return {eid for eid in known_ids if eid in elements}
-
-
-def save_profile(known_ids: Set[str]) -> None:
-    data = {"bekannte_elemente": sorted(known_ids)}
-    with open(PROFILE_FILE, "w", encoding="utf-8") as f:
-        yaml.dump(data, f, allow_unicode=True, default_flow_style=False)
-
+    return profile_service.load_profile(get_active_profile())
 
 def current_level_for(known_ids: Set[str]) -> int:
     if not known_ids:
@@ -142,6 +139,8 @@ def inject_globals():
         "level_label": LEVEL_LABEL,
         "level_badge": LEVEL_BADGE,
         "elements": elements,
+        "active_profile": get_active_profile(),
+        "available_profiles": profile_service.list_profiles(),
     }
 
 
@@ -203,13 +202,14 @@ def element_detail(element_id: str):
 
 @app.route("/repertoire", methods=["GET", "POST"])
 def repertoire():
+    active_profile = get_active_profile()
     if request.method == "POST":
         selected = set(request.form.getlist("known_ids"))
         selected = {eid for eid in selected if eid in elements}
-        save_profile(selected)
+        profile_service.save_profile(active_profile, selected)
         return redirect(url_for("repertoire", saved="1"))
 
-    known_ids = load_profile()
+    known_ids = profile_service.load_profile(active_profile)
 
     return render_template(
         "repertoire.html",
@@ -217,7 +217,33 @@ def repertoire():
         known_ids=known_ids,
         current_level=current_level_for(known_ids),
         saved=request.args.get("saved") == "1",
+        active_profile=active_profile
     )
+
+
+@app.route("/profile/switch", methods=["POST"])
+def switch_profile():
+    name = request.form.get("profile_name", "default").strip()
+    if not name:
+        name = "default"
+    
+    slug = profile_service.slugify(name)
+    session["profile_name"] = slug
+    
+    # Sicherstellen, dass das Profil existiert (ggf. leer anlegen)
+    if slug not in profile_service.list_profiles():
+        profile_service.save_profile(slug, set())
+        
+    return redirect(request.referrer or url_for("index"))
+
+
+@app.route("/profile/delete/<name>", methods=["POST"])
+def delete_profile(name: str):
+    if name != "default":
+        profile_service.delete_profile(name)
+        if session.get("profile_name") == name:
+            session["profile_name"] = "default"
+    return redirect(url_for("repertoire"))
 
 
 @app.route("/figuren")
@@ -281,70 +307,53 @@ def empfehlungen():
 def builder():
     result = None
     error = None
-    raw = ""
-
+    raw = request.args.get("sequence", "").strip() or request.form.get("sequence", "").strip()
+    
+    sequence = builder_service.sequence_from_raw(raw)
+    
     if request.method == "POST":
         action = request.form.get("action")
-        raw = request.form.get("sequence", "").strip()
         
         if action == "reset":
-            raw = ""
+            sequence = []
         elif action == "add":
             new_id = request.form.get("element_id")
             if new_id:
-                if raw:
-                    raw += "," + new_id
-                else:
-                    raw = new_id
+                sequence = builder_service.add_element(sequence, new_id)
+        elif action == "remove":
+            index = int(request.form.get("index", -1))
+            sequence = builder_service.remove_element(sequence, index)
+        elif action == "move":
+            index = int(request.form.get("index", -1))
+            direction = int(request.form.get("direction", 0))
+            sequence = builder_service.move_element(sequence, index, direction)
+        
+        raw = builder_service.raw_from_sequence(sequence)
+        
+        # Falls wir nur modifizieren, Redirect um POST-Wiederholung zu vermeiden (optional, aber sauberer)
+        if action in ["reset", "add", "remove", "move"]:
+             return redirect(url_for("builder", sequence=raw))
 
-        seq = [item.strip() for item in raw.split(",") if item.strip()]
-
-        if not seq:
-            if action != "reset":
-                error = "Deine Sequenz ist noch leer. Wähle Elemente aus der Liste aus."
+    # Validierung durchführen
+    validation = builder_service.validate_sequence(sequence)
+    if not validation.get("valid"):
+        if validation.get("error"):
+            error = validation.get("error")
         else:
-            unknown = [eid for eid in seq if eid not in elements]
-            if unknown:
-                error = f"Unbekannte Elemente: {', '.join(unknown)}"
-            else:
-                elem_list = [elements[eid] for eid in seq]
-                errors = []
+            result = validation # Enthält "errors" Liste
+    else:
+        if not validation.get("empty"):
+            result = validation
 
-                for i in range(len(elem_list) - 1):
-                    first = elem_list[i]
-                    second = elem_list[i + 1]
-                    if not second.can_follow(first):
-                        errors.append(
-                            {
-                                "from_name": first.name,
-                                "to_name": second.name,
-                                "explanation": explain_compatibility_error(first, second),
-                                "post_state": state_str(first.post),
-                                "pre_state": state_str(second.pre),
-                            }
-                        )
-
-                if errors:
-                    result = {
-                        "valid": False,
-                        "errors": errors,
-                    }
-                else:
-                    total_counts = sum(elem.counts for elem in elem_list)
-                    result = {
-                        "valid": True,
-                        "sequence_names": [elem.name for elem in elem_list],
-                        "total_counts": total_counts,
-                        "phrase_count": total_counts / 8,
-                        "start_state": state_str(elem_list[0].pre),
-                        "end_state": state_str(elem_list[-1].post),
-                    }
+    recommendations = builder_service.get_recommendations(sequence)
 
     return render_template(
         "builder.html",
         raw=raw,
+        sequence=sequence,
         result=result,
         error=error,
+        recommendations=recommendations,
         all_elements=sorted(elements.values(), key=lambda e: (e.level, e.name)),
     )
 

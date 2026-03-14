@@ -1,0 +1,8 @@
+known_elements:
+- basic_closed
+- basic_open
+- cbl
+- cbl_with_left_turn
+- cbl_with_right_turn
+- follower_right_turn
+- hand_change_front

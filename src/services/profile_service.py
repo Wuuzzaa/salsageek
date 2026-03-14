@@ -1,0 +1,51 @@
+import os
+import yaml
+import re
+from pathlib import Path
+from typing import List, Set, Optional
+
+class ProfileService:
+    def __init__(self, profiles_dir: str = "profiles"):
+        self.profiles_dir = Path(profiles_dir)
+        self.profiles_dir.mkdir(exist_ok=True)
+
+    def slugify(self, name: str) -> str:
+        """Normalisiert den Profilnamen für die Verwendung als Dateiname."""
+        name = name.lower().strip()
+        name = re.sub(r"[^a-z0-9_\-]", "_", name)
+        return name if name else "unnamed"
+
+    def get_profile_path(self, profile_name: str) -> Path:
+        return self.profiles_dir / f"{self.slugify(profile_name)}.yaml"
+
+    def list_profiles(self) -> List[str]:
+        """Listet alle verfügbaren Profilnamen auf (basierend auf Dateinamen)."""
+        profiles = []
+        for f in self.profiles_dir.glob("*.yaml"):
+            profiles.append(f.stem)
+        return sorted(profiles)
+
+    def load_profile(self, profile_name: str) -> Set[str]:
+        """Lädt die bekannten Element-IDs für ein Profil."""
+        path = self.get_profile_path(profile_name)
+        if not path.exists():
+            return set()
+        
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                data = yaml.safe_load(f)
+                return set(data.get("known_elements", []))
+        except Exception:
+            return set()
+
+    def save_profile(self, profile_name: str, known_ids: Set[str]):
+        """Speichert die bekannten Element-IDs für ein Profil."""
+        path = self.get_profile_path(profile_name)
+        data = {"known_elements": sorted(list(known_ids))}
+        with open(path, "w", encoding="utf-8") as f:
+            yaml.dump(data, f, allow_unicode=True)
+
+    def delete_profile(self, profile_name: str):
+        path = self.get_profile_path(profile_name)
+        if path.exists():
+            path.unlink()

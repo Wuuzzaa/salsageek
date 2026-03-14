@@ -51,6 +51,31 @@
                         <a class="nav-link" href="{{ url_for('builder') }}">Baukasten</a>
                     </li>
                 </ul>
+                <div class="ms-lg-3 dropdown">
+                    <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        👤 {{ active_profile }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow">
+                        <li><h6 class="dropdown-header">Profil wechseln</h6></li>
+                        {% for p in available_profiles %}
+                        <li>
+                            <form action="{{ url_for('switch_profile') }}" method="post" class="px-3 py-1">
+                                <input type="hidden" name="profile_name" value="{{ p }}">
+                                <button type="submit" class="dropdown-item p-0 {% if p == active_profile %}active{% endif %}">{{ p }}</button>
+                            </form>
+                        </li>
+                        {% endfor %}
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form action="{{ url_for('switch_profile') }}" method="post" class="px-3 py-1">
+                                <div class="input-group input-group-sm">
+                                    <input type="text" name="profile_name" class="form-control" placeholder="Neu..." required>
+                                    <button class="btn btn-primary" type="submit">+</button>
+                                </div>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </nav>

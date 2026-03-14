@@ -14,9 +14,12 @@
         <div class="card shadow-sm border-0 h-100">
             <div class="card-body p-4">
                 <h3 class="h5 mb-3">Elemente auswählen</h3>
-                <div class="row row-cols-1 row-cols-md-2 g-2 overflow-auto" style="max-height: 500px;">
+                <div class="mb-3">
+                    <input type="text" id="elementSearch" class="form-control" placeholder="Suchen...">
+                </div>
+                <div class="row row-cols-1 row-cols-md-2 g-2 overflow-auto element-list" style="max-height: 500px;">
                     {% for elem in all_elements %}
-                        <div class="col">
+                        <div class="col element-item" data-name="{{ elem.name|lower }}">
                             <form method="post" class="h-100">
                                 <input type="hidden" name="sequence" value="{{ raw }}">
                                 <input type="hidden" name="element_id" value="{{ elem.id }}">
@@ -38,34 +41,72 @@
     <div class="col-lg-4">
         <div class="card shadow-sm border-0 h-100">
             <div class="card-body p-4">
-                <h3 class="h5 mb-3">Deine Sequenz</h3>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="h5 mb-0">Deine Sequenz</h3>
+                    {% if sequence %}
+                    <form method="post" class="d-inline">
+                        <input type="hidden" name="sequence" value="{{ raw }}">
+                        <button type="submit" name="action" value="reset" class="btn btn-sm btn-outline-danger">Leeren</button>
+                    </form>
+                    {% endif %}
+                </div>
                 
-                {% if raw %}
+                {% if sequence %}
                     <div class="mb-3">
-                        {% set seq_ids = raw.split(',') %}
                         <div class="list-group mb-3">
-                            {% for eid in seq_ids %}
+                            {% for eid in sequence %}
                                 {% if eid in elements %}
-                                    <div class="list-group-item d-flex justify-content-between align-items-center">
-                                        {{ elements[eid].name }}
-                                        <span class="text-muted smaller">#{{ loop.index }}</span>
+                                    {% set elem = elements[eid] %}
+                                    <div class="list-group-item p-2">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="fw-bold">{{ elem.name }}</span>
+                                            <span class="badge text-bg-light border text-muted smaller">#{{ loop.index }}</span>
+                                        </div>
+                                        <div class="d-flex gap-1 justify-content-end mt-2">
+                                            <form method="post">
+                                                <input type="hidden" name="sequence" value="{{ raw }}">
+                                                <input type="hidden" name="index" value="{{ loop.index0 }}">
+                                                <button type="submit" name="action" value="move" data-direction="-1" class="btn btn-sm btn-light border py-0 px-2" title="Nach oben">↑</button>
+                                                <input type="hidden" name="direction" value="-1">
+                                            </form>
+                                            <form method="post">
+                                                <input type="hidden" name="sequence" value="{{ raw }}">
+                                                <input type="hidden" name="index" value="{{ loop.index0 }}">
+                                                <button type="submit" name="action" value="move" data-direction="1" class="btn btn-sm btn-light border py-0 px-2" title="Nach unten">↓</button>
+                                                <input type="hidden" name="direction" value="1">
+                                            </form>
+                                            <form method="post">
+                                                <input type="hidden" name="sequence" value="{{ raw }}">
+                                                <input type="hidden" name="index" value="{{ loop.index0 }}">
+                                                <button type="submit" name="action" value="remove" class="btn btn-sm btn-outline-danger py-0 px-2" title="Entfernen">&times;</button>
+                                            </form>
+                                        </div>
                                     </div>
                                 {% else %}
                                     <div class="list-group-item list-group-item-danger">{{ eid }} (Unbekannt)</div>
                                 {% endif %}
                             {% endfor %}
                         </div>
-                        
-                        <form method="post" class="d-flex gap-2">
-                            <input type="hidden" name="sequence" value="{{ raw }}">
-                            <button type="submit" class="btn btn-danger flex-grow-1">Prüfen</button>
-                            <button type="submit" name="action" value="reset" class="btn btn-outline-secondary">Reset</button>
-                        </form>
+
+                        {% if recommendations %}
+                        <div class="mb-3 p-3 bg-light rounded border border-info border-start border-4">
+                            <h6 class="small fw-bold text-info text-uppercase mb-2">Vorschläge (kompatibel)</h6>
+                            <div class="d-flex flex-wrap gap-1">
+                                {% for rec in recommendations[:6] %}
+                                <form method="post">
+                                    <input type="hidden" name="sequence" value="{{ raw }}">
+                                    <input type="hidden" name="element_id" value="{{ rec.id }}">
+                                    <button type="submit" name="action" value="add" class="btn btn-xs btn-outline-info py-0 px-2 smaller">{{ rec.name }}</button>
+                                </form>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
                 {% else %}
                     <div class="text-center py-5 text-muted">
                         <p>Noch keine Elemente ausgewählt.</p>
-                        <p class="smaller">Klicke links auf ein Element, um es hinzuzufügen.</p>
+                        <p class="smaller">Wähle links Elemente aus, um deine Figur zu bauen.</p>
                     </div>
                 {% endif %}
 
@@ -162,4 +203,14 @@
         </form>
     </div>
 </div>
+
+<script>
+document.getElementById('elementSearch')?.addEventListener('input', function(e) {
+    const term = e.target.value.toLowerCase();
+    document.querySelectorAll('.element-item').forEach(item => {
+        const name = item.dataset.name;
+        item.style.display = name.includes(term) ? '' : 'none';
+    });
+});
+</script>
 {% endblock %}
