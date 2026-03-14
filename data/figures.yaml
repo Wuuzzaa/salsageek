@@ -6,7 +6,7 @@
 #                          AND post[n].position ∈ pre[n+1].position
 #                          AND post[n].slot     ∈ pre[n+1].slot
 #                          AND post[n].leader_weight ∈ pre[n+1].leader_weight
-#                             (oder pre[n+1].leader_weight = beliebig)
+#                          AND post[n].follower_weight ∈ pre[n+1].follower_weight
 #
 # FIGUR FELDER:
 #   id            Eindeutiger Bezeichner
@@ -14,7 +14,7 @@
 #   description   Textbeschreibung
 #   level         Schwierigkeit (max Level aller enthaltenen Elemente)
 #   sequence      Geordnete Liste von Element-IDs
-#   total_counts  Gesamtanzahl Takte (Summe der Element-counts)
+#   total_counts  Gesamtanzahl Counts (Summe der Element-counts)
 #   tags          Kategorien
 #   notes         Tipps & Stilhinweise
 # =============================================================================
@@ -22,38 +22,36 @@
 figures:
 
   # ---------------------------------------------------------------------------
-  # LEVEL 1 – ANFÄNGER-FIGUREN
+  # LEVEL 1 – ANFÄNGER
   # ---------------------------------------------------------------------------
 
   - id: basic_basic
     name: "Double Basic"
-    description: "Zwei Basic Steps hintereinander – der Standard-Loop für Anfänger."
+    description: "Zwei Open Basics hintereinander."
     level: 1
     sequence:
       - basic_open
       - basic_open
     total_counts: 16
-    tags: [beginner, loop]
+    tags: [beginner, basic, loop]
 
   - id: basic_right_turn
     name: "Basic + Right Turn"
     description: >
-      Ein Basic Step gefolgt von einer Follower-Rechtsdrehung.
-      Die häufigste Kombination im LA-Salsa.
+      Klassische Anfänger-Kombination:
+      ein Open Basic gefolgt von einer Follower-Rechtsdrehung.
     level: 1
     sequence:
       - basic_open
       - follower_right_turn
     total_counts: 16
     tags: [beginner, turn, classic]
-    notes: >
-      Nach der Drehung sind beide wieder in R_L open – sofort wieder loopbar.
 
-  - id: basic_right_turn_loop
-    name: "Endless Right Turn Loop"
+  - id: right_turn_loop
+    name: "Right Turn Loop"
     description: >
-      Follower Right Turn direkt auf sich selbst geloopt.
-      Funktioniert weil post = pre (R_L, open).
+      Mehrere Rechtsdrehungen nacheinander sind möglich,
+      da die Endverbindung wieder in offene R_L-Position zurückkehrt.
     level: 1
     sequence:
       - follower_right_turn
@@ -61,65 +59,60 @@ figures:
     total_counts: 16
     tags: [beginner, turn, loop]
 
-  - id: open_close_open
+  - id: open_closed_open
     name: "Open – Closed – Open"
     description: >
-      Wechsel in geschlossene Haltung und zurück. Gute Übung für
-      Positionswechsel und Rahmen-Führung.
+      Wechsel von offener zu geschlossener Haltung und wieder zurück.
     level: 1
     sequence:
       - open_to_closed
       - basic_closed
       - closed_to_open
     total_counts: 24
-    tags: [beginner, position_change]
+    tags: [beginner, transition, frame]
+
+  - id: two_hand_basic
+    name: "Two-Hand Entry + Basic"
+    description: >
+      Einstieg in Two-Hand-Hold und anschließend ein normaler Open Basic.
+    level: 1
+    sequence:
+      - two_hand_hold_entry
+      - basic_open
+    total_counts: 16
+    tags: [beginner, two_hand, basic]
 
   # ---------------------------------------------------------------------------
-  # LEVEL 2 – EINSTEIGER-FIGUREN
+  # LEVEL 2 – EINSTIEG MIT CBL UND HANDWECHSEL
   # ---------------------------------------------------------------------------
 
   - id: basic_cbl
     name: "Basic + CBL"
     description: >
-      Grundschritt gefolgt vom Cross Body Lead. Der wichtigste
-      Baustein-Übergang im LA-Stil.
+      Open Basic gefolgt von einem Cross Body Lead.
+      Kernfigur für Salsa LA Style.
     level: 2
     sequence:
       - basic_open
       - cbl
     total_counts: 16
-    tags: [classic, cbl, slot_change]
-    notes: >
-      Nach CBL: Leader und Follower haben die Seiten getauscht.
-      Kein Problem – Basic Steps und CBLs normalisieren immer.
+    tags: [classic, cbl, traveling]
 
-  - id: cbl_right_turn_combo
+  - id: cbl_right_turn
     name: "CBL + Right Turn"
     description: >
-      Cross Body Lead direkt gefolgt von einer Follower-Rechtsdrehung.
-      Klassische und ästhetische Kombination.
+      Cross Body Lead mit anschließender Follower-Rechtsdrehung.
     level: 2
     sequence:
       - cbl
       - follower_right_turn
     total_counts: 16
-    tags: [classic, cbl, turn]
+    tags: [cbl, turn, classic]
 
-  - id: copa_sequence
-    name: "Copa Basic Sequence"
-    description: "In Copa-Position gehen, Basic halten, wieder öffnen."
-    level: 2
-    sequence:
-      - copa
-      - copa_exit
-    total_counts: 16
-    tags: [copa, parallel]
-
-  - id: two_hand_turns
+  - id: two_hand_right_turn
     name: "Two-Hand Entry + Right Turn"
     description: >
-      Leader nimmt zweite Hand auf, dann Follower Right Turn.
-      Two-Hand gibt mehr Kontrolle für die Drehung.
+      Two-Hand-Hold aufnehmen und daraus eine Rechtsdrehung tanzen.
     level: 2
     sequence:
       - two_hand_hold_entry
@@ -127,170 +120,62 @@ figures:
     total_counts: 16
     tags: [two_hand, turn]
 
-  - id: basic_left_turn
-    name: "Basic + Left Turn"
+  - id: hand_change_left_turn
+    name: "Hand Change + Left Turn"
     description: >
-      Basic Step gefolgt von Outside Turn (Linksdrehung) der Follower.
+      Vorbereitender Handwechsel auf L_R und danach Follower-Linksdrehung.
     level: 2
     sequence:
-      - basic_open
+      - hand_change_front
       - follower_left_turn
     total_counts: 16
-    tags: [turn, outside_turn]
-    notes: "Technisch anspruchsvoller als Right Turn – Leader muss Hand früh wechseln."
-
-  - id: right_left_turns
-    name: "Right Turn + Left Turn Combo"
-    description: "Rechtsdrehung direkt gefolgt von Linksdrehung."
-    level: 2
-    sequence:
-      - follower_right_turn
-      - follower_left_turn
-    total_counts: 16
-    tags: [turn, combo]
-    notes: >
-      Nach Right Turn ist post = R_L – passt als pre für Left Turn.
-      Aber: Leader muss Hand auf Beat 1 der Left Turn schnell positionieren.
+    tags: [hand_change, left_turn]
 
   - id: shine_reconnect
     name: "Shine + Reconnect"
     description: >
-      Hände loslassen für Shine-Section, dann wieder aufnehmen.
+      Solo-Phase, dann Wiedereinstieg über Two-Hand-Hold in den Open Basic.
     level: 2
     sequence:
       - shine_section
       - two_hand_hold_entry
       - basic_open
     total_counts: 24
-    tags: [shine, musicality]
+    tags: [shine, reconnect, musicality]
 
   # ---------------------------------------------------------------------------
-  # LEVEL 3 – MITTELSTUFE
+  # LEVEL 3 – KOMBINATIONEN
   # ---------------------------------------------------------------------------
 
-  - id: hammerlock_basic_exit
-    name: "Hammerlock Full Sequence"
+  - id: cbl_right_turn_loop
+    name: "CBL + Right Turn + Basic"
     description: >
-      Vollständige Hammerlock-Sequenz: Entry, Basic im Hammerlock, Exit.
-    level: 3
-    sequence:
-      - hammerlock_entry
-      - hammerlock_basic
-      - hammerlock_exit_turn
-    total_counts: 24
-    tags: [hammerlock, full_sequence]
-
-  - id: sombrero_full
-    name: "Sombrero Full"
-    description: >
-      Vollständige Sombrero-Figur: Two-Hand Entry → Sombrero → Exit.
-    level: 3
-    sequence:
-      - two_hand_hold_entry
-      - sombrero_entry
-      - sombrero_exit
-    total_counts: 24
-    tags: [sombrero, full_sequence]
-    notes: "Benötigt Two-Hand-Hold als Ausgangspunkt."
-
-  - id: cbl_hammerlock
-    name: "CBL into Hammerlock"
-    description: >
-      Cross Body Lead direkt in Hammerlock übergeleitet.
-      Der Arm wird während des CBLs gewickelt.
-    level: 3
+      Traveling-Kombination mit sauberem Rückweg in den normalen Open-Basic-Flow.
+    level: 2
     sequence:
       - cbl_with_right_turn
-      - hammerlock_entry
-      - hammerlock_exit_turn
-    total_counts: 24
-    tags: [cbl, hammerlock, advanced_combo]
-
-  - id: double_turn_sequence
-    name: "Double Turn Sequence"
-    description: "Zwei Rechtsdrehungen hintereinander – mehr Energie!"
-    level: 3
-    sequence:
       - basic_open
-      - double_right_turn
     total_counts: 16
-    tags: [turn, double, energy]
+    tags: [cbl, turn, loopable]
 
-  - id: copa_sombrero
-    name: "Copa → Sombrero"
+  - id: hand_change_cbl_left_turn
+    name: "Hand Change + CBL Left Turn"
     description: >
-      Copa-Position direkt in Sombrero übergeleitet.
-      Setzt Two-Hand-Hold vor der Copa voraus.
+      Erst Handwechsel auf L_R, dann Cross Body Lead mit Follower-Linksdrehung.
     level: 3
-    sequence:
-      - two_hand_hold_entry
-      - copa
-      - sombrero_entry
-      - sombrero_exit
-    total_counts: 32
-    tags: [copa, sombrero, extended]
-
-  - id: cbl_left_turn_hand_change
-    name: "CBL + Left Turn + Hand Change"
-    description: >
-      CBL gefolgt von Linksdrehung und Hand-Wechsel.
-      Leader nutzt Hand-Change hinter dem Rücken für Extra-Style.
-    level: 3
-    sequence:
-      - hand_change_behind_back
-      - cbl_with_left_turn
-    total_counts: 16
-    tags: [cbl, turn, hand_change]
-
-  # ---------------------------------------------------------------------------
-  # LEVEL 4 – FORTGESCHRITTEN
-  # ---------------------------------------------------------------------------
-
-  - id: titanic_sequence
-    name: "Titanic Entry + Basic + Exit"
-    description: >
-      Rücken-an-Rücken Position aufbauen, halten und auflösen.
-    level: 4
-    sequence:
-      - titanic
-      - titanic_exit
-    total_counts: 16
-    tags: [titanic, advanced, visual]
-
-  - id: neck_loop_sequence
-    name: "Neck Loop Sequence"
-    description: >
-      Hand-Change auf Leader-Seite, Neck Loop, zurück in Open.
-    level: 4
     sequence:
       - hand_change_front
-      - neck_loop
-      - cbl
-    total_counts: 24
-    tags: [neck_loop, advanced]
+      - cbl_with_left_turn
+    total_counts: 16
+    tags: [hand_change, cbl, left_turn]
 
-  - id: dip_ending
-    name: "CBL into Dip"
+  - id: left_turn_to_cbl_left_turn
+    name: "Left Turn + CBL Left Turn"
     description: >
-      CBL-Sequence mit Dip als dramatischem Abschluss.
-      Ideal für Phrasenenden in der Musik.
-    level: 4
+      Zwei aufeinanderfolgende L_R-basierte Linksdrehmuster.
+    level: 3
     sequence:
-      - basic_open
-      - cbl
-      - dip
-    total_counts: 24
-    tags: [dip, musicality, dramatic]
-    notes: "Nur mit vertrautem Partner und vorher besprechen!"
-
-  - id: al_capone_sequence
-    name: "Al Capone Full Sequence"
-    description: >
-      Two-Hand Entry, Al Capone Wrap, Copa Exit.
-    level: 4
-    sequence:
-      - two_hand_hold_entry
-      - al_capone
-      - copa_exit
-    total_counts: 24
-    tags: [al_capone, wrap, advanced]
+      - follower_left_turn
+      - cbl_with_left_turn
+    total_counts: 16
+    tags: [left_turn, cbl, combo]
