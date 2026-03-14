@@ -72,13 +72,13 @@ def state_str(state) -> str:
     parts: List[str] = []
 
     if state.hand_hold:
-        parts.append(f"Hand: {', '.join(sorted(state.hand_hold))}")
+        parts.append(f"Handverbindung: {', '.join(sorted(state.hand_hold))}")
     if state.position:
         parts.append(f"Position: {', '.join(sorted(state.position))}")
     if state.slot:
         parts.append(f"Slot: {', '.join(sorted(state.slot))}")
     if state.leader_weight:
-        parts.append(f"Gewicht: {', '.join(sorted(state.leader_weight))}")
+        parts.append(f"Leader-Gewicht: {', '.join(sorted(state.leader_weight))}")
 
     return " · ".join(parts)
 
@@ -102,11 +102,44 @@ def find_figures_using_element(element_id: str) -> List[Figure]:
     return sorted(used_in, key=lambda fig: (fig.level, fig.name))
 
 
+def get_almost_executable_figures(known_ids: Set[str]) -> List[Figure]:
+    """Figuren, bei denen genau ein Element fehlt."""
+    result = [
+        fig for fig in figures.values()
+        if fig.valid and fig.is_almost_executable(known_ids)
+    ]
+    return sorted(result, key=lambda f: (f.level, f.name))
+
+
+def explain_compatibility_error(first: Element, second: Element) -> str:
+    """Erklärt benutzerfreundlich, warum Element B nicht auf Element A folgen kann."""
+    post = first.post
+    pre = second.pre
+    
+    reasons = []
+    if not (post.hand_hold & pre.hand_hold):
+        reasons.append(f"die Handverbindung nicht passt (Ende: {', '.join(sorted(post.hand_hold))} vs. Start: {', '.join(sorted(pre.hand_hold))})")
+    if not (post.position & pre.position):
+        reasons.append(f"die Position im Raum unterschiedlich ist")
+    if not (post.slot & pre.slot):
+        reasons.append(f"die Ausrichtung im Slot nicht übereinstimmt")
+    if not (post.leader_weight & pre.leader_weight):
+        reasons.append(f"das Gewicht des Leaders auf dem falschen Fuß ist")
+    if not (post.follower_weight & pre.follower_weight):
+        reasons.append(f"das Gewicht des Followers auf dem falschen Fuß ist")
+    
+    if not reasons:
+        return "ein unbekannter technischer Fehler vorliegt."
+    
+    return "weil " + " und ".join(reasons) + "."
+
+
 @app.context_processor
 def inject_globals():
     return {
         "level_label": LEVEL_LABEL,
         "level_badge": LEVEL_BADGE,
+        "elements": elements,
     }
 
 
@@ -114,7 +147,13 @@ def inject_globals():
 def index():
     known_ids = load_profile()
     executable = get_executable_figures(known_ids, figures)
+    almost_executable = get_almost_executable_figures(known_ids)
     invalid = [fig for fig in figures.values() if not fig.valid]
+    current_level = current_level_for(known_ids)
+    
+    # Nächste Empfehlung für Zusammenfassung
+    recs = recommend_elements_to_learn(known_ids, figures, elements, current_level, top_n=1)
+    top_rec = recs[0] if recs else None
 
     return render_template(
         "index.html",
@@ -122,8 +161,10 @@ def index():
         elements=elements,
         figures=figures,
         executable=executable,
+        almost_executable=almost_executable,
         invalid=invalid,
-        current_level=current_level_for(known_ids),
+        current_level=current_level,
+        top_rec=top_rec
     )
 
 
@@ -181,11 +222,13 @@ def repertoire():
 def figuren_view():
     known_ids = load_profile()
     executable = get_executable_figures(known_ids, figures)
+    almost_executable = get_almost_executable_figures(known_ids)
 
     return render_template(
         "figuren.html",
         known_ids=known_ids,
         executable=executable,
+        almost_executable=almost_executable,
     )
 
 
@@ -239,11 +282,24 @@ def builder():
     raw = ""
 
     if request.method == "POST":
+        action = request.form.get("action")
         raw = request.form.get("sequence", "").strip()
+        
+        if action == "reset":
+            raw = ""
+        elif action == "add":
+            new_id = request.form.get("element_id")
+            if new_id:
+                if raw:
+                    raw += "," + new_id
+                else:
+                    raw = new_id
+
         seq = [item.strip() for item in raw.split(",") if item.strip()]
 
         if not seq:
-            error = "Bitte mindestens eine Element-ID eingeben."
+            if action != "reset":
+                error = "Deine Sequenz ist noch leer. Wähle Elemente aus der Liste aus."
         else:
             unknown = [eid for eid in seq if eid not in elements]
             if unknown:
@@ -260,6 +316,7 @@ def builder():
                             {
                                 "from_name": first.name,
                                 "to_name": second.name,
+                                "explanation": explain_compatibility_error(first, second),
                                 "post_state": state_str(first.post),
                                 "pre_state": state_str(second.pre),
                             }
@@ -286,7 +343,7 @@ def builder():
         raw=raw,
         result=result,
         error=error,
-        all_ids=sorted(elements.keys()),
+        all_elements=sorted(elements.values(), key=lambda e: (e.level, e.name)),
     )
 
 

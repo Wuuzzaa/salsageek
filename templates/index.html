@@ -48,18 +48,42 @@
     <div class="col-lg-8">
         <div class="card shadow-sm border-0 h-100">
             <div class="card-body p-4">
-                <h2 class="h4 mb-3">Willkommen</h2>
-                <p class="text-secondary">
-                    Diese App zeigt dir, welche Figuren du mit deinem aktuellen Repertoire tanzen kannst,
-                    welche Elemente als Nächstes sinnvoll sind, wie ein einzelnes Element genau funktioniert
-                    und ob eine selbst gebaute Sequenz technisch zusammenpasst.
+                <h2 class="h4 mb-3">Willkommen bei SalsaGeek</h2>
+                <p class="text-secondary fs-5">
+                    Deine interaktive Lernhilfe für Salsa LA Style. Wir unterstützen dich dabei, dein Repertoire zu erweitern und neue Figuren zu entdecken.
                 </p>
 
-                <div class="d-flex flex-wrap gap-2 mt-4">
-                    <a class="btn btn-danger" href="{{ url_for('elemente') }}">Elemente ansehen</a>
-                    <a class="btn btn-outline-danger" href="{{ url_for('repertoire') }}">Repertoire bearbeiten</a>
-                    <a class="btn btn-outline-secondary" href="{{ url_for('figuren_view') }}">Meine Figuren</a>
-                    <a class="btn btn-outline-secondary" href="{{ url_for('empfehlungen') }}">Empfehlungen</a>
+                <div class="row g-3 mt-4">
+                    <div class="col-md-6">
+                        <div class="card h-100 border-0 bg-light-subtle shadow-sm p-3">
+                            <h5 class="h6 fw-bold">1. Repertoire pflegen</h5>
+                            <p class="small text-muted mb-3">Wähle aus, was du bereits kannst, um passende Empfehlungen zu erhalten.</p>
+                            <a class="btn btn-{% if not known_ids %}danger{% else %}outline-danger{% endif %} mt-auto" href="{{ url_for('repertoire') }}">
+                                {% if not known_ids %}Jetzt starten{% else %}Repertoire bearbeiten{% endif %}
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100 border-0 bg-light-subtle shadow-sm p-3">
+                            <h5 class="h6 fw-bold">2. Neue Figuren entdecken</h5>
+                            <p class="small text-muted mb-3">Sieh dir an, welche Figuren du bereits tanzen kannst oder fast erreicht hast.</p>
+                            <a class="btn btn-outline-danger mt-auto" href="{{ url_for('figuren_view') }}">Meine Figuren</a>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100 border-0 bg-light-subtle shadow-sm p-3">
+                            <h5 class="h6 fw-bold">3. Lernpfad folgen</h5>
+                            <p class="small text-muted mb-3">Erhalte gezielte Vorschläge für die nächsten Elemente in deinem Level.</p>
+                            <a class="btn btn-outline-secondary mt-auto" href="{{ url_for('empfehlungen') }}">Empfehlungen</a>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100 border-0 bg-light-subtle shadow-sm p-3">
+                            <h5 class="h6 fw-bold">4. Eigene Wege gehen</h5>
+                            <p class="small text-muted mb-3">Baue eigene Sequenzen und prüfe sie auf technische Korrektheit.</p>
+                            <a class="btn btn-outline-secondary mt-auto" href="{{ url_for('builder') }}">Baukasten</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -68,47 +92,52 @@
     <div class="col-lg-4">
         <div class="card shadow-sm border-0 h-100">
             <div class="card-body p-4">
-                <h2 class="h5 mb-3">Status</h2>
+                <h2 class="h5 mb-3">Dein Status</h2>
 
                 {% if known_ids %}
-                    <div class="alert alert-success mb-3">
-                        Profil geladen mit <strong>{{ known_ids|length }}</strong> bekannten Elementen.
+                    <div class="mb-4">
+                        <div class="p-3 rounded bg-success-subtle border border-success-subtle mb-3">
+                            <div class="fw-bold text-success mb-1">Profil aktiv</div>
+                            <div class="small text-success-emphasis"><strong>{{ known_ids|length }}</strong> bekannte Elemente</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="small text-muted mb-1">Ausführbare Figuren:</div>
+                            <div class="h4 mb-0 fw-bold">{{ executable|length }}</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="small text-muted mb-1">Fast erreichbar (+1 Element):</div>
+                            <div class="h4 mb-0 fw-bold text-warning">{{ almost_executable|length }}</div>
+                        </div>
+
+                        {% if top_rec %}
+                            <hr>
+                            <div class="small text-muted mb-2">Nächste Empfehlung:</div>
+                            <div class="p-2 rounded bg-light border">
+                                <div class="fw-bold">{{ top_rec.element.name }}</div>
+                                <div class="small text-secondary">{{ top_rec.new_figures|length }} neue Figuren möglich</div>
+                                <a href="{{ url_for('empfehlungen') }}" class="small link-danger mt-1 d-block">Details ansehen →</a>
+                            </div>
+                        {% endif %}
                     </div>
                 {% else %}
-                    <div class="alert alert-warning mb-3">
-                        Noch kein Repertoire gespeichert.
+                    <div class="alert alert-warning mb-4">
+                        <div class="fw-bold mb-1">Noch kein Repertoire</div>
+                        <div class="small">Pflege dein Repertoire, um personalisierte Tipps zu erhalten.</div>
                     </div>
+                    <a href="{{ url_for('repertoire') }}" class="btn btn-warning w-100">Zum Repertoire</a>
                 {% endif %}
 
-                <p class="mb-2">
-                    Ausführbare Figuren:
-                    <strong>{{ executable|length }}</strong>
-                </p>
-
-                <p class="mb-0">
-                    Ungültige Figuren:
-                    <strong>{{ invalid|length }}</strong>
-                </p>
+                {% if invalid %}
+                    <hr>
+                    <div class="mt-3">
+                        <div class="text-danger small fw-bold mb-1">Validierungswarnungen ({{ invalid|length }})</div>
+                        <p class="smaller text-muted">Es gibt Fehler in der Figurendefinition.</p>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
 </div>
-
-{% if invalid %}
-<div class="card shadow-sm border-0 mt-4">
-    <div class="card-body p-4">
-        <h2 class="h5 mb-3">Validierungswarnungen</h2>
-        <ul class="mb-0">
-            {% for fig in invalid %}
-                <li>
-                    <strong>{{ fig.name }}</strong>
-                    {% if fig.validation_errors %}
-                        – {{ fig.validation_errors|join(", ") }}
-                    {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
-</div>
-{% endif %}
 {% endblock %}

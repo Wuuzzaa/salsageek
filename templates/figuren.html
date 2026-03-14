@@ -10,66 +10,115 @@
 </div>
 
 {% if not known_ids %}
-    <div class="alert alert-warning shadow-sm">
-        Du hast noch kein Repertoire gespeichert. Starte am besten mit der Repertoire-Seite.
-    </div>
-{% elif not executable %}
-    <div class="alert alert-warning shadow-sm">
-        Mit den aktuell bekannten Elementen sind noch keine vordefinierten Figuren ausführbar.
+    <div class="alert alert-warning shadow-sm p-4">
+        <h4 class="alert-heading">Noch kein Repertoire gespeichert</h4>
+        <p>Du hast noch keine Elemente ausgewählt. Bitte gehe zuerst zur Repertoire-Seite, um dein Können zu pflegen.</p>
+        <hr>
+        <a href="{{ url_for('repertoire') }}" class="btn btn-warning">Zum Repertoire</a>
     </div>
 {% else %}
-    <div class="row g-4">
-        {% for fig in executable %}
-            <div class="col-12 col-xl-6">
-                <a href="{{ url_for('figure_detail', figure_id=fig.id) }}" class="text-decoration-none text-reset h-100 d-block">
-                    <div class="card shadow-sm border-0 h-100 figure-card">
-                        <div class="card-body p-4">
-                            <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
-                                <div>
-                                    <h3 class="h5 mb-1">{{ fig.name }}</h3>
-                                    <p class="text-secondary mb-0">
-                                        {{ fig.description[:180] }}{% if fig.description|length > 180 %}…{% endif %}
-                                    </p>
+    {% if executable %}
+        <h3 class="h4 mb-4">Ausführbare Figuren</h3>
+        <div class="row g-4 mb-5">
+            {% for fig in executable %}
+                <div class="col-12 col-xl-6">
+                    <a href="{{ url_for('figure_detail', figure_id=fig.id) }}" class="text-decoration-none text-reset h-100 d-block">
+                        <div class="card shadow-sm border-0 h-100 figure-card border-start border-success border-4">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                                    <div>
+                                        <h3 class="h5 mb-1">{{ fig.name }}</h3>
+                                        <p class="text-secondary mb-0">
+                                            {{ fig.description[:180] }}{% if fig.description|length > 180 %}…{% endif %}
+                                        </p>
+                                    </div>
+                                    <span class="badge text-bg-{{ level_badge.get(fig.level, 'secondary') }}">
+                                        {{ level_label.get(fig.level, fig.level) }}
+                                    </span>
                                 </div>
-                                <span class="badge text-bg-{{ level_badge.get(fig.level, 'secondary') }}">
-                                    {{ level_label.get(fig.level, fig.level) }}
-                                </span>
-                            </div>
 
-                            <div class="mb-3">
-                                <div class="small text-uppercase text-muted mb-1">Sequenz</div>
-                                <div class="fw-semibold">
-                                    {% for elem in fig.elements %}
-                                        {{ elem.name }}{% if not loop.last %} → {% endif %}
-                                    {% endfor %}
-                                </div>
-                            </div>
-
-                            <div class="row g-3 small">
-                                <div class="col-sm-6">
-                                    <div class="info-box">
-                                        <div class="text-muted">Takte</div>
-                                        <div class="fw-semibold">{{ fig.total_counts }}</div>
+                                <div class="mb-3">
+                                    <div class="small text-uppercase text-muted mb-1">Sequenz</div>
+                                    <div class="fw-semibold">
+                                        {% for elem in fig.elements %}
+                                            {{ elem.name }}{% if not loop.last %} → {% endif %}
+                                        {% endfor %}
                                     </div>
                                 </div>
-                                <div class="col-sm-6">
-                                    <div class="info-box">
-                                        <div class="text-muted">Tags</div>
-                                        <div class="fw-semibold">{{ fig.tags|join(", ") }}</div>
+
+                                <div class="row g-3 small">
+                                    <div class="col-sm-6">
+                                        <div class="info-box">
+                                            <div class="text-muted">Takte</div>
+                                            <div class="fw-semibold">{{ fig.total_counts }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="info-box">
+                                            <div class="text-muted">Tags</div>
+                                            <div class="fw-semibold">{{ fig.tags|join(", ") }}</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-
-                            {% if fig.notes %}
-                                <div class="mt-3 small text-secondary">
-                                    <strong>Notiz:</strong> {{ fig.notes }}
-                                </div>
-                            {% endif %}
                         </div>
-                    </div>
-                </a>
-            </div>
-        {% endfor %}
-    </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-light border shadow-sm mb-5">
+            Keine vollständig ausführbaren Figuren gefunden. Lerne neue Elemente, um mehr Figuren freizuschalten!
+        </div>
+    {% endif %}
+
+    {% if almost_executable %}
+        <hr class="my-5">
+        <h3 class="h4 mb-2">Fast möglich</h3>
+        <p class="text-secondary mb-4">Für diese Figuren fehlt dir nur noch genau ein Element:</p>
+        
+        <div class="row g-4">
+            {% for fig in almost_executable %}
+                <div class="col-12 col-xl-6">
+                    <a href="{{ url_for('figure_detail', figure_id=fig.id) }}" class="text-decoration-none text-reset h-100 d-block">
+                        <div class="card shadow-sm border-0 h-100 figure-card border-start border-warning border-4 opacity-75">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                                    <div>
+                                        <h3 class="h5 mb-1">{{ fig.name }}</h3>
+                                        <div class="badge bg-warning text-dark mb-2">
+                                            Fehlt nur noch: 
+                                            {% set missing = fig.missing_elements(known_ids) %}
+                                            {% for mid in missing %}
+                                                {{ elements[mid].name if mid in elements else mid }}{% if not loop.last %}, {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <p class="text-secondary mb-0 small">
+                                            {{ fig.description[:120] }}{% if fig.description|length > 120 %}…{% endif %}
+                                        </p>
+                                    </div>
+                                    <span class="badge text-bg-{{ level_badge.get(fig.level, 'secondary') }}">
+                                        {{ level_label.get(fig.level, fig.level) }}
+                                    </span>
+                                </div>
+
+                                <div class="mb-0 small">
+                                    <div class="text-muted mb-1">Sequenz:</div>
+                                    <div class="text-secondary">
+                                        {% for eid in fig.sequence %}
+                                            <span class="{% if eid not in known_ids %}text-warning fw-bold{% endif %}">
+                                                {{ elements[eid].name if eid in elements else eid }}
+                                            </span>
+                                            {% if not loop.last %} → {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 {% endif %}
 {% endblock %}

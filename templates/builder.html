@@ -5,96 +5,145 @@
 <div class="mb-4">
     <h2 class="h3 mb-1">Figuren-Baukasten</h2>
     <p class="text-secondary mb-0">
-        Gib Element-IDs kommasepariert ein und prüfe, ob die Sequenz kompatibel ist.
+        Stelle deine eigene Sequenz zusammen und prüfe, ob die Elemente technisch zusammenpassen.
     </p>
 </div>
 
-<div class="card shadow-sm border-0 mb-4">
-    <div class="card-body p-4">
-        <form method="post" class="row g-3">
-            <div class="col-12">
-                <label for="sequence" class="form-label fw-semibold">Element-Sequenz</label>
-                <input
-                    type="text"
-                    class="form-control form-control-lg"
-                    id="sequence"
-                    name="sequence"
-                    value="{{ raw }}"
-                    placeholder="basic_open, cbl, follower_right_turn"
-                >
-                <div class="form-text">
-                    Beispiel:
-                    <code>basic_open, cbl, follower_right_turn</code>
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body p-4">
+                <h3 class="h5 mb-3">Elemente auswählen</h3>
+                <div class="row row-cols-1 row-cols-md-2 g-2 overflow-auto" style="max-height: 500px;">
+                    {% for elem in all_elements %}
+                        <div class="col">
+                            <form method="post" class="h-100">
+                                <input type="hidden" name="sequence" value="{{ raw }}">
+                                <input type="hidden" name="element_id" value="{{ elem.id }}">
+                                <button type="submit" name="action" value="add" class="btn btn-outline-light text-dark border w-100 h-100 text-start d-flex justify-content-between align-items-center">
+                                    <span>
+                                        <span class="fw-semibold d-block">{{ elem.name }}</span>
+                                        <span class="badge text-bg-{{ level_badge.get(elem.level, 'secondary') }} smaller">Lvl {{ elem.level }}</span>
+                                    </span>
+                                    <span class="text-danger fs-4">+</span>
+                                </button>
+                            </form>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div class="col-12">
-                <button type="submit" class="btn btn-danger">Sequenz prüfen</button>
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body p-4">
+                <h3 class="h5 mb-3">Deine Sequenz</h3>
+                
+                {% if raw %}
+                    <div class="mb-3">
+                        {% set seq_ids = raw.split(',') %}
+                        <div class="list-group mb-3">
+                            {% for eid in seq_ids %}
+                                {% if eid in elements %}
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        {{ elements[eid].name }}
+                                        <span class="text-muted smaller">#{{ loop.index }}</span>
+                                    </div>
+                                {% else %}
+                                    <div class="list-group-item list-group-item-danger">{{ eid }} (Unbekannt)</div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        
+                        <form method="post" class="d-flex gap-2">
+                            <input type="hidden" name="sequence" value="{{ raw }}">
+                            <button type="submit" class="btn btn-danger flex-grow-1">Prüfen</button>
+                            <button type="submit" name="action" value="reset" class="btn btn-outline-secondary">Reset</button>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5 text-muted">
+                        <p>Noch keine Elemente ausgewählt.</p>
+                        <p class="smaller">Klicke links auf ein Element, um es hinzuzufügen.</p>
+                    </div>
+                {% endif %}
+
+                {% if error %}
+                    <div class="alert alert-warning mt-3 mb-0 py-2 smaller">
+                        {{ error }}
+                    </div>
+                {% endif %}
             </div>
-        </form>
+        </div>
     </div>
 </div>
 
-{% if error %}
-    <div class="alert alert-danger shadow-sm">
-        {{ error }}
-    </div>
-{% endif %}
-
 {% if result %}
     {% if result.valid %}
-        <div class="card shadow-sm border-0 mb-4">
+        <div class="card shadow-sm border-0 mb-4 border-start border-success border-4">
             <div class="card-body p-4">
                 <h3 class="h5 text-success mb-3">✓ Sequenz ist gültig</h3>
 
-                <div class="mb-3">
-                    <div class="text-muted small mb-1">Sequenz</div>
-                    <div class="fw-semibold">{{ result.sequence_names|join(" → ") }}</div>
+                <div class="mb-4">
+                    <div class="text-muted small mb-1">Vollständiger Name</div>
+                    <div class="fs-5 fw-bold text-dark">{{ result.sequence_names|join(" → ") }}</div>
                 </div>
 
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <div class="info-box h-100">
-                            <div class="text-muted">Gesamt-Takte</div>
-                            <div class="display-6 fw-semibold">{{ result.total_counts }}</div>
+                        <div class="p-3 bg-light rounded h-100">
+                            <div class="text-muted small">Gesamt-Counts</div>
+                            <div class="h3 mb-0 fw-bold">{{ result.total_counts }}</div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="info-box h-100">
-                            <div class="text-muted">8er-Phrasen</div>
-                            <div class="display-6 fw-semibold">{{ "%.1f"|format(result.phrase_count) }}</div>
+                        <div class="p-3 bg-light rounded h-100">
+                            <div class="text-muted small">8er-Phrasen</div>
+                            <div class="h3 mb-0 fw-bold">{{ "%.1f"|format(result.phrase_count) }}</div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="info-box h-100">
-                            <div class="text-muted">Status</div>
-                            <div class="fw-semibold text-success mt-2">Kompatibel</div>
+                        <div class="p-3 bg-light rounded h-100">
+                            <div class="text-muted small">Status</div>
+                            <div class="h3 mb-0 fw-bold text-success">OK</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="mt-4">
-                    <div class="mb-2"><strong>Start-Zustand:</strong> {{ result.start_state }}</div>
-                    <div><strong>End-Zustand:</strong> {{ result.end_state }}</div>
+                <div class="mt-4 pt-3 border-top">
+                    <div class="mb-2"><span class="badge bg-secondary me-2">START</span> {{ result.start_state }}</div>
+                    <div><span class="badge bg-secondary me-2">ENDE</span> {{ result.end_state }}</div>
                 </div>
             </div>
         </div>
     {% else %}
-        <div class="card shadow-sm border-0 mb-4">
+        <div class="card shadow-sm border-0 mb-4 border-start border-danger border-4">
             <div class="card-body p-4">
                 <h3 class="h5 text-danger mb-3">Kompatibilitätsfehler</h3>
+                <p class="text-secondary mb-4">Diese Elemente können so nicht direkt hintereinander getanzt werden:</p>
 
                 <div class="list-group list-group-flush">
                     {% for err in result.errors %}
-                        <div class="list-group-item px-0">
-                            <div class="fw-semibold">
-                                {{ err.from_name }} → {{ err.to_name }}
+                        <div class="list-group-item px-0 py-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="badge bg-danger rounded-circle me-2">!</span>
+                                <span class="fw-bold fs-5">{{ err.from_name }}</span>
+                                <span class="mx-2 text-muted">→</span>
+                                <span class="fw-bold fs-5 text-danger">{{ err.to_name }}</span>
                             </div>
-                            <div class="small text-secondary mt-1">
-                                <strong>Post:</strong> {{ err.post_state }}
+                            <div class="alert alert-danger mb-2 py-2">
+                                <strong>Warum?</strong> {{ err.explanation }}
                             </div>
-                            <div class="small text-secondary">
-                                <strong>Pre:</strong> {{ err.pre_state }}
+                            <div class="row g-2 mt-2">
+                                <div class="col-md-6">
+                                    <div class="small text-muted mb-1">Zustand nach <em>{{ err.from_name }}</em>:</div>
+                                    <div class="p-2 bg-light rounded smaller">{{ err.post_state }}</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="small text-muted mb-1">Erforderlich für <em>{{ err.to_name }}</em>:</div>
+                                    <div class="p-2 bg-light rounded smaller">{{ err.pre_state }}</div>
+                                </div>
                             </div>
                         </div>
                     {% endfor %}
@@ -104,14 +153,13 @@
     {% endif %}
 {% endif %}
 
-<div class="card shadow-sm border-0">
+<div class="card shadow-sm border-0 d-none">
     <div class="card-body p-4">
-        <h3 class="h5 mb-3">Verfügbare Element-IDs</h3>
-        <div class="d-flex flex-wrap gap-2">
-            {% for item in all_ids %}
-                <span class="badge text-bg-light border">{{ item }}</span>
-            {% endfor %}
-        </div>
+        <h3 class="h5 mb-3">Direkte ID-Eingabe (Experten)</h3>
+        <form method="post">
+            <input type="text" class="form-control" name="sequence" value="{{ raw }}">
+            <button type="submit" class="btn btn-sm btn-outline-secondary mt-2">Manuell prüfen</button>
+        </form>
     </div>
 </div>
 {% endblock %}

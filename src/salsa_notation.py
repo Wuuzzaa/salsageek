@@ -114,6 +114,11 @@ class Figure:
     def missing_elements(self, known_ids: Set[str]) -> List[str]:
         return [eid for eid in self.sequence if eid not in known_ids]
 
+    def is_almost_executable(self, known_ids: Set[str]) -> bool:
+        """Fehlt genau ein Element aus dem Repertoire?"""
+        missing = self.missing_elements(known_ids)
+        return len(missing) == 1
+
 
 # ---------------------------------------------------------------------------
 # Laden & Validieren
