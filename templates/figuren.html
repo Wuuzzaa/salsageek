@@ -63,7 +63,12 @@
                                     <div class="col-sm-6">
                                         <div class="info-box">
                                             <div class="text-muted">Tags</div>
-                                            <div class="fw-semibold">{{ fig.tags|join(", ") }}</div>
+                                            <div class="fw-semibold">
+                                                {{ fig.tags|join(", ") }}
+                                                {% if fig.id.startswith('custom_') %}
+                                                    <span class="badge text-bg-primary smaller ms-1">Eigene Figur</span>
+                                                {% endif %}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

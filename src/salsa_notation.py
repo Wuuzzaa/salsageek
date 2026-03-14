@@ -22,6 +22,20 @@ class SalsaState:
     leader_weight: Set[str]
     follower_weight: Set[str]
 
+    def state_str(self) -> str:
+        parts: List[str] = []
+        if self.hand_hold:
+            parts.append(f"Handverbindung: {', '.join(sorted(self.hand_hold))}")
+        if self.position:
+            parts.append(f"Position: {', '.join(sorted(self.position))}")
+        if self.slot:
+            parts.append(f"Slot: {', '.join(sorted(self.slot))}")
+        if self.leader_weight:
+            parts.append(f"Leader-Gewicht: {', '.join(sorted(self.leader_weight))}")
+        if self.follower_weight:
+            parts.append(f"Follower-Gewicht: {', '.join(sorted(self.follower_weight))}")
+        return " · ".join(parts)
+
     def compatible_with(self, other: "SalsaState") -> bool:
         """Prüft ob dieser Zustand als Post mit 'other' als Pre kompatibel ist."""
         return bool(
@@ -90,6 +104,27 @@ class Element:
     def can_follow(self, other: "Element") -> bool:
         """Kann self direkt nach 'other' kommen?"""
         return other.post.compatible_with(self.pre)
+
+    def explain_compatibility_error(self, other: "Element") -> str:
+        """Erklärt benutzerfreundlich, warum dieses Element nicht auf 'other' folgen kann."""
+        post = other.post
+        pre = self.pre
+        
+        reasons = []
+        if not (post.hand_hold & pre.hand_hold):
+            reasons.append(f"die Handverbindung nicht passt (Ende: {', '.join(sorted(post.hand_hold))} vs. Start: {', '.join(sorted(pre.hand_hold))})")
+        if not (post.position & pre.position):
+            reasons.append(f"die Position im Raum unterschiedlich ist")
+        if not (post.slot & pre.slot):
+            reasons.append(f"die Ausrichtung im Slot nicht übereinstimmt")
+        if not (post.leader_weight & pre.leader_weight):
+            reasons.append(f"das Gewicht des Leaders auf dem falschen Fuß ist")
+        if not (post.follower_weight & pre.follower_weight):
+            reasons.append(f"das Gewicht des Followers auf dem falschen Fuß ist")
+            
+        if not reasons:
+            return "Unbekannter Grund"
+        return f"weil " + " und ".join(reasons)
 
 
 @dataclass

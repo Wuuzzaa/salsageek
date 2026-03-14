@@ -16,7 +16,18 @@
         <div class="card stat-card h-100 shadow-sm border-0">
             <div class="card-body">
                 <div class="text-muted small">Figuren</div>
-                <div class="display-6 fw-bold">{{ figures|length }}</div>
+                <div class="display-6 fw-bold">
+                    {{ figures|length }}
+                    {% set custom_count = namespace(value=0) %}
+                    {% for fid in figures.keys() %}
+                        {% if fid.startswith('custom_') %}
+                            {% set custom_count.value = custom_count.value + 1 %}
+                        {% endif %}
+                    {% endfor %}
+                    {% if custom_count.value > 0 %}
+                        <span class="fs-6 text-primary fw-normal">(+{{ custom_count.value }} eigene)</span>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>

@@ -160,6 +160,28 @@
         </div>
 
         {% if figure %}
+        <div class="card shadow-sm border-0 mb-4 border-start border-primary border-4">
+            <div class="card-body p-4">
+                <h3 class="h5 text-primary mb-3">Figur speichern</h3>
+                <form method="post" class="row g-3">
+                    <input type="hidden" name="sequence" value="{{ raw }}">
+                    <div class="col-md-6">
+                        <label class="small text-muted mb-1">Name der Figur</label>
+                        <input type="text" name="figure_name" class="form-control" placeholder="Eigene Figur" value="Eigene Figur">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="small text-muted mb-1">Beschreibung (optional)</label>
+                        <input type="text" name="figure_description" class="form-control" placeholder="Zusammengestellt im Baukasten">
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" name="action" value="save" class="btn btn-primary">
+                            <i class="bi bi-save me-2"></i>In meinem Profil speichern
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <div class="mb-4">
             <h3 class="h4 mb-4">Deine Figur zum Nachtanzen</h3>
             <div class="accordion shadow-sm" id="figureAccordion">

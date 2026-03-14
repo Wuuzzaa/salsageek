@@ -93,28 +93,10 @@ class BuilderService:
         return sorted(recommendations, key=lambda e: (e.level, e.name))
 
     def _state_str(self, state) -> str:
-        """Kopie der Hilfsfunktion aus app.py (oder in utils auslagern)"""
-        hh = ", ".join(sorted(state.hand_hold))
-        pos = ", ".join(sorted(state.position))
-        sl = ", ".join(sorted(state.slot))
-        lw = ", ".join(sorted(state.leader_weight))
-        fw = ", ".join(sorted(state.follower_weight))
-        return f"Hände: {hh} | Pos: {pos} | Slot: {sl} | Gewicht: L:{lw}/F:{fw}"
+        return state.state_str()
 
     def _explain_compatibility_error(self, first: Element, second: Element) -> str:
-        """Kopie der Hilfsfunktion aus app.py (oder in utils auslagern)"""
-        reasons = []
-        if not (first.post.hand_hold & second.pre.hand_hold):
-            reasons.append(f"Haltung passt nicht: {first.post.hand_hold} vs {second.pre.hand_hold}")
-        if not (first.post.position & second.pre.position):
-            reasons.append(f"Position passt nicht: {first.post.position} vs {second.pre.position}")
-        if not (first.post.slot & second.pre.slot):
-            reasons.append(f"Slot/Ausrichtung passt nicht: {first.post.slot} vs {second.pre.slot}")
-        if not (first.post.leader_weight & second.pre.leader_weight):
-            reasons.append(f"Gewicht Leader passt nicht: {first.post.leader_weight} vs {second.pre.leader_weight}")
-        if not (first.post.follower_weight & second.pre.follower_weight):
-            reasons.append(f"Gewicht Follower passt nicht: {first.post.follower_weight} vs {second.pre.follower_weight}")
-        return " / ".join(reasons)
+        return second.explain_compatibility_error(first)
 
     def create_custom_figure(self, validation_result: Dict) -> Optional[Figure]:
         if not validation_result.get("valid") or validation_result.get("empty"):

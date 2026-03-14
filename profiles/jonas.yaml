@@ -6,3 +6,17 @@ known_elements:
 - cbl_with_right_turn
 - follower_right_turn
 - hand_change_front
+custom_figures:
+- id: custom_1773516627
+  name: Erster Test
+  description: ''
+  level: 2
+  sequence:
+  - basic_open
+  - follower_right_turn
+  - cbl
+  total_counts: 24
+  tags:
+  - Baukasten
+  - Custom
+  notes: ''

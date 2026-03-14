@@ -49,88 +49,56 @@ LEVEL_BADGE = {
     5: "dark",
 }
 
-elements: Dict[str, Element] = load_elements(DATA_DIR / "elements.yaml")
-figures: Dict[str, Figure] = load_figures(DATA_DIR / "figures.yaml", elements)
-
 
 def get_active_profile() -> str:
     return session.get("profile_name", "default")
 
+def get_all_figures(profile_name: str = None) -> Dict[str, Figure]:
+    """Kombiniert globale Figuren mit benutzerdefinierten Figuren aus dem Profil."""
+    if profile_name is None:
+        profile_name = get_active_profile()
+    
+    all_figs = figures.copy()
+    profile_data = profile_service.load_profile(profile_name)
+    custom_figs_raw = profile_data.get("custom_figures", [])
+    
+    for raw in custom_figs_raw:
+        fig = Figure(
+            id=raw["id"],
+            name=raw["name"],
+            description=raw.get("description", "").strip(),
+            level=int(raw.get("level", 1)),
+            sequence=raw.get("sequence", []),
+            total_counts=int(raw.get("total_counts", 0)),
+            tags=raw.get("tags", []),
+            notes=raw.get("notes", "").strip(),
+        )
+        
+        # Elemente auflösen
+        elem_list = []
+        for eid in fig.sequence:
+            if eid in elements:
+                elem_list.append(elements[eid])
+        
+        fig.elements = elem_list
+        # Da sie im Builder validiert wurden, setzen wir sie als valide (oder re-validieren hier)
+        if fig.total_counts == 0 and elem_list:
+            fig.total_counts = sum(e.counts for e in elem_list)
+        
+        all_figs[fig.id] = fig
+        
+    return all_figs
+
+
 def load_profile() -> Set[str]:
-    return profile_service.load_profile(get_active_profile())
+    profile_data = profile_service.load_profile(get_active_profile())
+    return set(profile_data.get("known_elements", []))
 
 def current_level_for(known_ids: Set[str]) -> int:
     if not known_ids:
         return 0
-    return max(elements[eid].level for eid in known_ids if eid in elements)
-
-
-def state_str(state) -> str:
-    parts: List[str] = []
-
-    if state.hand_hold:
-        parts.append(f"Handverbindung: {', '.join(sorted(state.hand_hold))}")
-    if state.position:
-        parts.append(f"Position: {', '.join(sorted(state.position))}")
-    if state.slot:
-        parts.append(f"Slot: {', '.join(sorted(state.slot))}")
-    if state.leader_weight:
-        parts.append(f"Leader-Gewicht: {', '.join(sorted(state.leader_weight))}")
-    if state.follower_weight:
-        parts.append(f"Follower-Gewicht: {', '.join(sorted(state.follower_weight))}")
-
-    return " · ".join(parts)
-
-
-def group_elements_by_level() -> Dict[int, List[Element]]:
-    grouped: Dict[int, List[Element]] = {}
-    for elem in elements.values():
-        grouped.setdefault(elem.level, []).append(elem)
-
-    for level in grouped:
-        grouped[level] = sorted(grouped[level], key=lambda e: e.id)
-
-    return dict(sorted(grouped.items()))
-
-
-def find_figures_using_element(element_id: str) -> List[Figure]:
-    used_in = [
-        fig for fig in figures.values()
-        if fig.valid and element_id in fig.sequence
-    ]
-    return sorted(used_in, key=lambda fig: (fig.level, fig.name))
-
-
-def get_almost_executable_figures(known_ids: Set[str]) -> List[Figure]:
-    """Figuren, bei denen genau ein Element fehlt."""
-    result = [
-        fig for fig in figures.values()
-        if fig.valid and fig.is_almost_executable(known_ids)
-    ]
-    return sorted(result, key=lambda f: (f.level, f.name))
-
-
-def explain_compatibility_error(first: Element, second: Element) -> str:
-    """Erklärt benutzerfreundlich, warum Element B nicht auf Element A folgen kann."""
-    post = first.post
-    pre = second.pre
-    
-    reasons = []
-    if not (post.hand_hold & pre.hand_hold):
-        reasons.append(f"die Handverbindung nicht passt (Ende: {', '.join(sorted(post.hand_hold))} vs. Start: {', '.join(sorted(pre.hand_hold))})")
-    if not (post.position & pre.position):
-        reasons.append(f"die Position im Raum unterschiedlich ist")
-    if not (post.slot & pre.slot):
-        reasons.append(f"die Ausrichtung im Slot nicht übereinstimmt")
-    if not (post.leader_weight & pre.leader_weight):
-        reasons.append(f"das Gewicht des Leaders auf dem falschen Fuß ist")
-    if not (post.follower_weight & pre.follower_weight):
-        reasons.append(f"das Gewicht des Followers auf dem falschen Fuß ist")
-    
-    if not reasons:
-        return "ein unbekannter technischer Fehler vorliegt."
-    
-    return "weil " + " und ".join(reasons) + "."
+    levels = [elements[eid].level for eid in known_ids if eid in elements]
+    return max(levels) if levels else 0
 
 
 @app.context_processor
@@ -147,20 +115,21 @@ def inject_globals():
 @app.route("/")
 def index():
     known_ids = load_profile()
-    executable = get_executable_figures(known_ids, figures)
-    almost_executable = get_almost_executable_figures(known_ids)
-    invalid = [fig for fig in figures.values() if not fig.valid]
+    all_figs = get_all_figures()
+    executable = get_executable_figures(known_ids, all_figs)
+    almost_executable = get_almost_executable_figures(known_ids, all_figs)
+    invalid = [fig for fig in all_figs.values() if not fig.valid]
     current_level = current_level_for(known_ids)
     
     # Nächste Empfehlung für Zusammenfassung
-    recs = recommend_elements_to_learn(known_ids, figures, elements, current_level, top_n=1)
+    recs = recommend_elements_to_learn(known_ids, all_figs, elements, current_level, top_n=1)
     top_rec = recs[0] if recs else None
 
     return render_template(
         "index.html",
         known_ids=known_ids,
         elements=elements,
-        figures=figures,
+        figures=all_figs,
         executable=executable,
         almost_executable=almost_executable,
         invalid=invalid,
@@ -200,6 +169,38 @@ def element_detail(element_id: str):
     )
 
 
+def group_elements_by_level() -> Dict[int, List[Element]]:
+    grouped: Dict[int, List[Element]] = {}
+    for elem in elements.values():
+        grouped.setdefault(elem.level, []).append(elem)
+
+    for level in grouped:
+        grouped[level] = sorted(grouped[level], key=lambda e: e.id)
+
+    return dict(sorted(grouped.items()))
+
+
+def find_figures_using_element(element_id: str, figs: Dict[str, Figure] = None) -> List[Figure]:
+    if figs is None:
+        figs = get_all_figures()
+    used_in = [
+        fig for fig in figs.values()
+        if fig.valid and element_id in fig.sequence
+    ]
+    return sorted(used_in, key=lambda fig: (fig.level, fig.name))
+
+
+def get_almost_executable_figures(known_ids: Set[str], figs: Dict[str, Figure] = None) -> List[Figure]:
+    """Figuren, bei denen genau ein Element fehlt."""
+    if figs is None:
+        figs = get_all_figures()
+    result = [
+        fig for fig in figs.values()
+        if fig.valid and fig.is_almost_executable(known_ids)
+    ]
+    return sorted(result, key=lambda f: (f.level, f.name))
+
+
 @app.route("/repertoire", methods=["GET", "POST"])
 def repertoire():
     active_profile = get_active_profile()
@@ -209,7 +210,8 @@ def repertoire():
         profile_service.save_profile(active_profile, selected)
         return redirect(url_for("repertoire", saved="1"))
 
-    known_ids = profile_service.load_profile(active_profile)
+    known_ids_raw = profile_service.load_profile(active_profile)
+    known_ids = set(known_ids_raw.get("known_elements", []))
 
     return render_template(
         "repertoire.html",
@@ -249,8 +251,9 @@ def delete_profile(name: str):
 @app.route("/figuren")
 def figuren_view():
     known_ids = load_profile()
-    executable = get_executable_figures(known_ids, figures)
-    almost_executable = get_almost_executable_figures(known_ids)
+    all_figs = get_all_figures()
+    executable = get_executable_figures(known_ids, all_figs)
+    almost_executable = get_almost_executable_figures(known_ids, all_figs)
 
     return render_template(
         "figuren.html",
@@ -262,10 +265,11 @@ def figuren_view():
 
 @app.route("/figuren/<figure_id>")
 def figure_detail(figure_id: str):
-    if figure_id not in figures:
+    all_figs = get_all_figures()
+    if figure_id not in all_figs:
         abort(404)
 
-    fig = figures[figure_id]
+    fig = all_figs[figure_id]
     known_ids = load_profile()
 
     # Prüfung ob ausführbar
@@ -285,11 +289,12 @@ def figure_detail(figure_id: str):
 @app.route("/empfehlungen")
 def empfehlungen():
     known_ids = load_profile()
+    all_figs = get_all_figures()
     current_level = current_level_for(known_ids)
 
     recs = recommend_elements_to_learn(
         known_ids=known_ids,
-        figures=figures,
+        figures=all_figs,
         elements=elements,
         current_level=current_level,
         top_n=5,
@@ -346,6 +351,34 @@ def builder():
         if not validation.get("empty"):
             result = validation
             custom_figure = builder_service.create_custom_figure(validation)
+
+    # Speichern-Logik
+    if request.method == "POST" and request.form.get("action") == "save" and custom_figure:
+        name = request.form.get("figure_name", "Eigene Figur").strip() or "Eigene Figur"
+        description = request.form.get("figure_description", "").strip()
+        
+        profile_data = profile_service.load_profile(get_active_profile())
+        custom_figs = profile_data.get("custom_figures", [])
+        
+        # Neue ID generieren
+        import time
+        fig_id = f"custom_{int(time.time())}"
+        
+        new_fig_raw = {
+            "id": fig_id,
+            "name": name,
+            "description": description,
+            "level": custom_figure.level,
+            "sequence": custom_figure.sequence,
+            "total_counts": custom_figure.total_counts,
+            "tags": ["Baukasten", "Custom"],
+            "notes": ""
+        }
+        
+        custom_figs.append(new_fig_raw)
+        profile_service.save_profile(get_active_profile(), set(profile_data.get("known_elements", [])), custom_figs)
+        
+        return redirect(url_for("figure_detail", figure_id=fig_id))
 
     recommendations = builder_service.get_recommendations(sequence)
 
