@@ -182,23 +182,32 @@ def figuren_view():
     known_ids = load_profile()
     executable = get_executable_figures(known_ids, figures)
 
-    enriched = []
-    for fig in executable:
-        sequence_names = [
-            elements[eid].name if eid in elements else eid
-            for eid in fig.sequence
-        ]
-        enriched.append(
-            {
-                "figure": fig,
-                "sequence_names": sequence_names,
-            }
-        )
-
     return render_template(
         "figuren.html",
         known_ids=known_ids,
-        executable=enriched,
+        executable=executable,
+    )
+
+
+@app.route("/figuren/<figure_id>")
+def figure_detail(figure_id: str):
+    if figure_id not in figures:
+        abort(404)
+
+    fig = figures[figure_id]
+    known_ids = load_profile()
+
+    # Prüfung ob ausführbar
+    is_executable = fig.is_executable_with(known_ids)
+
+    # Details für die Sequenz-Elemente
+    # fig.elements ist bereits beim Laden befüllt worden
+    
+    return render_template(
+        "figure_detail.html",
+        figure=fig,
+        is_executable=is_executable,
+        known_ids=known_ids,
     )
 
 

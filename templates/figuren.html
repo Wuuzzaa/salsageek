@@ -19,52 +19,55 @@
     </div>
 {% else %}
     <div class="row g-4">
-        {% for item in executable %}
-            {% set fig = item.figure %}
+        {% for fig in executable %}
             <div class="col-12 col-xl-6">
-                <div class="card shadow-sm border-0 h-100 figure-card">
-                    <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
-                            <div>
-                                <h3 class="h5 mb-1">{{ fig.name }}</h3>
-                                <p class="text-secondary mb-0">
-                                    {{ fig.description[:180] }}{% if fig.description|length > 180 %}…{% endif %}
-                                </p>
+                <a href="{{ url_for('figure_detail', figure_id=fig.id) }}" class="text-decoration-none text-reset h-100 d-block">
+                    <div class="card shadow-sm border-0 h-100 figure-card">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                                <div>
+                                    <h3 class="h5 mb-1">{{ fig.name }}</h3>
+                                    <p class="text-secondary mb-0">
+                                        {{ fig.description[:180] }}{% if fig.description|length > 180 %}…{% endif %}
+                                    </p>
+                                </div>
+                                <span class="badge text-bg-{{ level_badge.get(fig.level, 'secondary') }}">
+                                    {{ level_label.get(fig.level, fig.level) }}
+                                </span>
                             </div>
-                            <span class="badge text-bg-{{ level_badge.get(fig.level, 'secondary') }}">
-                                {{ level_label.get(fig.level, fig.level) }}
-                            </span>
-                        </div>
 
-                        <div class="mb-3">
-                            <div class="small text-uppercase text-muted mb-1">Sequenz</div>
-                            <div class="fw-semibold">
-                                {{ item.sequence_names|join(" → ") }}
-                            </div>
-                        </div>
-
-                        <div class="row g-3 small">
-                            <div class="col-sm-6">
-                                <div class="info-box">
-                                    <div class="text-muted">Takte</div>
-                                    <div class="fw-semibold">{{ fig.total_counts }}</div>
+                            <div class="mb-3">
+                                <div class="small text-uppercase text-muted mb-1">Sequenz</div>
+                                <div class="fw-semibold">
+                                    {% for elem in fig.elements %}
+                                        {{ elem.name }}{% if not loop.last %} → {% endif %}
+                                    {% endfor %}
                                 </div>
                             </div>
-                            <div class="col-sm-6">
-                                <div class="info-box">
-                                    <div class="text-muted">Tags</div>
-                                    <div class="fw-semibold">{{ fig.tags|join(", ") }}</div>
+
+                            <div class="row g-3 small">
+                                <div class="col-sm-6">
+                                    <div class="info-box">
+                                        <div class="text-muted">Takte</div>
+                                        <div class="fw-semibold">{{ fig.total_counts }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="info-box">
+                                        <div class="text-muted">Tags</div>
+                                        <div class="fw-semibold">{{ fig.tags|join(", ") }}</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {% if fig.notes %}
-                            <div class="mt-3 small text-secondary">
-                                <strong>Notiz:</strong> {{ fig.notes }}
-                            </div>
-                        {% endif %}
+                            {% if fig.notes %}
+                                <div class="mt-3 small text-secondary">
+                                    <strong>Notiz:</strong> {{ fig.notes }}
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
         {% endfor %}
     </div>
