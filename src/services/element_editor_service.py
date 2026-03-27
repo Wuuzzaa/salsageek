@@ -52,10 +52,14 @@ class ElementEditorService:
     def add_custom_element(self, name: str, level: int, counts: int, pre: Dict, post: Dict, 
                            description: str = "", tags: List[str] = None, 
                            leader_actions: List[Dict] = None, follower_actions: List[Dict] = None,
-                           signals: List[Dict] = None, notes: str = "") -> Tuple[Optional[str], List[str]]:
-        # Generate ID
-        import time
-        elem_id = f"custom_{self._slugify(name)}_{int(time.time())}"
+                           signals: List[Dict] = None, notes: str = "",
+                           custom_id: str = None) -> Tuple[Optional[str], List[str]]:
+        # Generate ID if not provided
+        if not custom_id:
+            import time
+            elem_id = f"custom_{self._slugify(name)}_{int(time.time())}"
+        else:
+            elem_id = custom_id
         
         new_element = {
             "id": elem_id,
@@ -85,6 +89,10 @@ class ElementEditorService:
                 if existing and "elements" in existing:
                     data = existing
         
+        # If updating, replace existing element with same ID
+        if custom_id:
+            data["elements"] = [e for e in data["elements"] if e["id"] != custom_id]
+            
         data["elements"].append(new_element)
 
         # Save

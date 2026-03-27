@@ -296,7 +296,8 @@ def builder():
 
 
 @app.route("/element-editor", methods=["GET", "POST"])
-def element_editor():
+@app.route("/element-editor/<element_id>", methods=["GET", "POST"])
+def element_editor(element_id: str = None):
     # Last 5 created custom_elements for quick access
     recent_custom = sorted(
         [e for e in salsa_service.elements.values() if "Custom" in e.tags],
@@ -304,6 +305,12 @@ def element_editor():
         reverse=True
     )[:5]
     
+    element_to_edit = None
+    if element_id:
+        element_to_edit = salsa_service.get_element(element_id)
+        if not element_to_edit:
+            abort(404)
+
     if request.method == "POST":
         action = request.form.get("action")
         if action == "add_element":
@@ -375,7 +382,8 @@ def element_editor():
                     pre=pre, post=post, description=desc, 
                     tags=tags, signals=signals, notes=notes,
                     leader_actions=leader_actions,
-                    follower_actions=follower_actions
+                    follower_actions=follower_actions,
+                    custom_id=element_id
                 )
                 
                 if new_id:
@@ -388,13 +396,15 @@ def element_editor():
                     return render_template(
                         "element_editor.html",
                         recent_custom=recent_custom,
-                        error=f"Validierungsfehler: {', '.join(errors)}"
+                        error=f"Validierungsfehler: {', '.join(errors)}",
+                        element=element_to_edit
                     )
     
     return render_template(
         "element_editor.html",
         recent_custom=recent_custom,
-        last_added_id=request.args.get("last_added")
+        last_added_id=request.args.get("last_added"),
+        element=element_to_edit
     )
 
 
