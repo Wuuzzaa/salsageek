@@ -12,8 +12,10 @@ hand_holds:
     name: "L (Leader) - L (Follower)"
   - id: two_hand
     name: "Beide (R-L & L-R)"
-  - id: two_hand_crossed
-    name: "Beide (Gekreuzt)"
+  - id: two_hand_crossed_l_up
+    name: "Beide (Gekreuzt, L oben)"
+  - id: two_hand_crossed_r_up
+    name: "Beide (Gekreuzt, R oben)"
   - id: free
     name: "Frei (Kein Kontakt)"
   - id: shadow
