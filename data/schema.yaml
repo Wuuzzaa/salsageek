@@ -3,27 +3,31 @@
 
 hand_holds:
   - id: R_L
-    name: Rechts an Links (Standard)
+    name: "R (Leader) - L (Follower)"
   - id: L_R
-    name: Links an Rechts
+    name: "L (Leader) - R (Follower)"
+  - id: R_R
+    name: "R (Leader) - R (Follower)"
+  - id: L_L
+    name: "L (Leader) - L (Follower)"
   - id: two_hand
-    name: Beidhändig
-  - id: crossed
-    name: Gekreuzt
+    name: "Beide (R-L & L-R)"
+  - id: two_hand_crossed
+    name: "Beide (Gekreuzt)"
   - id: free
-    name: Offen/Frei
+    name: "Frei (Kein Kontakt)"
   - id: shadow
-    name: Shadow-Haltung
+    name: "Shadow"
   - id: cuddle
-    name: Cuddle-Position (Kuschel)
+    name: "Cuddle"
   - id: hammerlock
-    name: Hammerlock
+    name: "Hammerlock"
 
 positions:
   - id: open
-    name: Offen (Open)
+    name: Offen (Gegenüber)
   - id: closed
-    name: Geschlossen (Closed)
+    name: Geschlossen (Tanzhaltung)
   - id: shadow
     name: Shadow
   - id: cuddle
@@ -32,6 +36,8 @@ positions:
     name: Nebeneinander
   - id: back_to_back
     name: Rücken an Rücken
+  - id: side_of_leader
+    name: Seite vom Leader (L/R)
 
 slots:
   - id: left
@@ -47,27 +53,37 @@ weights:
   - id: R
     name: Rechts (R)
   - id: both
-    name: Beide
+    name: Beide (Neutral)
 
 directions:
   - id: forward
-    name: vor
+    name: Vorwärts
   - id: back
-    name: rück
+    name: Rückwärts
   - id: in_place
-    name: Platz
+    name: Am Platz
   - id: back_to_center
-    name: Mitte
+    name: Zurück zur Mitte
   - id: side
-    name: Seite
-  - id: turn
-    name: Drehung
+    name: Seitwärts
+  - id: turn_cw
+    name: Drehung (Uhrzeigersinn)
+  - id: turn_ccw
+    name: Drehung (Gegen-Uhrzeigersinn)
   - id: pause
     name: Pause
   - id: cross_over
     name: Überkreuzen
   - id: side_step
     name: Seitenschritt
+
+turn_types:
+  - id: spot
+    name: Spot Turn (Am Platz)
+  - id: traveling
+    name: Traveling Turn (Wandernd)
+  - id: hook
+    name: Hook Turn
 
 feet:
   - id: L
@@ -79,22 +95,32 @@ feet:
 
 levels:
   - id: 1
-    name: Anfänger
+    name: Anfänger (A1)
   - id: 2
-    name: Einsteiger
+    name: Einsteiger (A2)
   - id: 3
-    name: Mittelstufe
+    name: Mittelstufe (M)
   - id: 4
-    name: Fortgeschritten
+    name: Fortgeschritten (F)
   - id: 5
-    name: Experte
+    name: Experte (E)
 
 signal_types:
   - id: none
     name: Keins
   - id: visual
     name: Visuell
-  - id: physical
-    name: Physisch (Zug/Druck)
+  - id: physical_lead
+    name: Physisch (Lead)
+  - id: physical_follow
+    name: Physisch (Follow)
   - id: verbal
     name: Verbal
+
+connections:
+  - id: tension
+    name: Tension (Zug)
+  - id: compression
+    name: Compression (Druck)
+  - id: neutral
+    name: Neutral

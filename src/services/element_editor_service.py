@@ -17,30 +17,54 @@ class ElementEditorService:
         # Hand hold
         valid_hands = {h["id"] for h in self.schema.get("hand_holds", [])}
         valid_hands.add("same")
+        valid_hands.add("any")
         
         pre_hands = data.get("pre", {}).get("hand_hold", [])
         for h in pre_hands:
             if h not in valid_hands:
                 errors.append(f"Invalid pre-hand hold: {h}")
         
-        post_hand = data.get("post", {}).get("hand_hold")
-        if post_hand and post_hand not in valid_hands:
-            errors.append(f"Invalid post-hand hold: {post_hand}")
+        post_hands = data.get("post", {}).get("hand_hold", [])
+        if isinstance(post_hands, str): post_hands = [post_hands]
+        for h in post_hands:
+            if h not in valid_hands:
+                errors.append(f"Invalid post-hand hold: {h}")
+
+        # Connection
+        valid_conn = {c["id"] for c in self.schema.get("connections", [])}
+        valid_conn.add("same")
+        valid_conn.add("any")
+        for c in data.get("pre", {}).get("connection", []):
+            if c not in valid_conn:
+                errors.append(f"Invalid pre-connection: {c}")
+        post_conn = data.get("post", {}).get("connection", [])
+        if isinstance(post_conn, str): post_conn = [post_conn]
+        for c in post_conn:
+            if c not in valid_conn:
+                errors.append(f"Invalid post-connection: {c}")
 
         # Position
         valid_pos = {p["id"] for p in self.schema.get("positions", [])}
+        valid_pos.add("any")
         for p in data.get("pre", {}).get("position", []):
             if p not in valid_pos:
                 errors.append(f"Invalid pre-position: {p}")
-        if data.get("post", {}).get("position") not in valid_pos:
-            errors.append(f"Invalid post-position: {data.get('post', {}).get('position')}")
+        post_pos = data.get("post", {}).get("position", [])
+        if isinstance(post_pos, str): post_pos = [post_pos]
+        for p in post_pos:
+            if p not in valid_pos:
+                errors.append(f"Invalid post-position: {p}")
 
         # Actions
         valid_dirs = {d["id"] for d in self.schema.get("directions", [])}
+        valid_turns = {t["id"] for t in self.schema.get("turn_types", [])}
         for action in data.get("leader_actions", []) + data.get("follower_actions", []):
             d = action.get("direction")
             if d and d not in valid_dirs:
                 errors.append(f"Invalid direction in actions: {d}")
+            t = action.get("turn_type")
+            if t and t not in valid_turns:
+                errors.append(f"Invalid turn_type in actions: {t}")
 
         return len(errors) == 0, errors
 

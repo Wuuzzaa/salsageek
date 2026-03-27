@@ -324,13 +324,15 @@ def element_editor(element_id: str = None):
                 "hand_hold": request.form.getlist("pre_hand"),
                 "position": request.form.getlist("pre_pos"),
                 "slot": request.form.getlist("pre_slot"),
-                "leader_weight": request.form.get("pre_leader_weight"),
-                "follower_weight": request.form.get("pre_follower_weight")
+                "connection": request.form.getlist("pre_conn"),
+                "leader_weight": request.form.getlist("pre_leader_weight"),
+                "follower_weight": request.form.getlist("pre_follower_weight")
             }
             post = {
-                "hand_hold": request.form.get("post_hand", "same"),
-                "position": request.form.get("post_pos", "open"),
-                "slot": request.form.get("post_slot", "left"),
+                "hand_hold": request.form.getlist("post_hand"),
+                "position": request.form.getlist("post_pos"),
+                "slot": request.form.getlist("post_slot"),
+                "connection": request.form.getlist("post_conn"),
                 "leader_weight": request.form.get("post_leader_weight"),
                 "follower_weight": request.form.get("post_follower_weight")
             }
@@ -348,7 +350,7 @@ def element_editor(element_id: str = None):
             # Notes
             notes = request.form.get("notes", "").strip()
 
-            # Parse actions (simple: "beat: foot direction")
+            # Parse actions (simple: "beat: foot direction [turn_type]")
             def parse_actions(raw_text):
                 actions = []
                 for line in raw_text.splitlines():
@@ -360,6 +362,7 @@ def element_editor(element_id: str = None):
                         # Special case: "-" or "pause" means no foot action
                         foot = rest[0] if len(rest) > 0 else ""
                         direction = rest[1] if len(rest) > 1 else ""
+                        turn_type = rest[2] if len(rest) > 2 else ""
                         
                         if foot in ["-", "pause"]:
                             foot = ""
@@ -369,6 +372,7 @@ def element_editor(element_id: str = None):
                             "beat": beat,
                             "foot": foot,
                             "direction": direction,
+                            "turn_type": turn_type,
                             "description": line.strip()
                         })
                 return actions

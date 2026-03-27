@@ -67,6 +67,16 @@
                                 </div>
 
                                 <div class="mb-3">
+                                    <label class="form-label small fw-bold">Connection (multiple possible)</label>
+                                    {% for conn in schema.connections %}
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="pre_conn" value="{{ conn.id }}" id="pre_conn_{{ conn.id }}" {% if (element and conn.id in element.pre.connection) or (not element and conn.id == 'neutral') %}checked{% endif %}>
+                                        <label class="form-check-label small" for="pre_conn_{{ conn.id }}">{{ conn.name }}</label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="mb-3">
                                     <label class="form-label small fw-bold">Position</label>
                                     <select name="pre_pos" class="form-select form-select-sm" multiple size="3">
                                         {% for pos in schema.positions %}
@@ -112,18 +122,30 @@
                                 <h4 class="h6 fw-bold mb-3 border-bottom pb-2">Post-conditions (End state)</h4>
                                 
                                 <div class="mb-3">
-                                    <label class="form-label small fw-bold">Hand Hold</label>
-                                    <select name="post_hand" class="form-select form-select-sm">
-                                        <option value="same" {% if (element and 'same' in element.post.hand_hold) or (not element) %}selected{% endif %}>Unchanged (same)</option>
-                                        {% for hh in schema.hand_holds %}
-                                        <option value="{{ hh.id }}" {% if element and hh.id in element.post.hand_hold and not 'same' in element.post.hand_hold %}selected{% endif %}>{{ hh.id }} ({{ hh.name }})</option>
+                                    <label class="form-label small fw-bold">Hand Hold (multiple possible)</label>
+                                    <div class="mb-2">
+                                        <select name="post_hand" class="form-select form-select-sm" multiple size="3">
+                                            <option value="same" {% if (element and 'same' in element.post.hand_hold) or (not element) %}selected{% endif %}>Unchanged (same)</option>
+                                            {% for hh in schema.hand_holds %}
+                                            <option value="{{ hh.id }}" {% if element and hh.id in element.post.hand_hold and not 'same' in element.post.hand_hold %}selected{% endif %}>{{ hh.id }} ({{ hh.name }})</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold">Connection</label>
+                                    <select name="post_conn" class="form-select form-select-sm" multiple size="2">
+                                        <option value="same" {% if (element and 'same' in element.post.connection) or (not element) %}selected{% endif %}>Unchanged (same)</option>
+                                        {% for conn in schema.connections %}
+                                        <option value="{{ conn.id }}" {% if element and conn.id in element.post.connection and not 'same' in element.post.connection %}selected{% endif %}>{{ conn.name }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
 
                                 <div class="mb-3">
                                     <label class="form-label small fw-bold">Position</label>
-                                    <select name="post_pos" class="form-select form-select-sm">
+                                    <select name="post_pos" class="form-select form-select-sm" multiple size="2">
                                         {% for pos in schema.positions %}
                                         <option value="{{ pos.id }}" {% if (element and pos.id in element.post.position) or (not element and pos.id == 'open') %}selected{% endif %}>{{ pos.name }}</option>
                                         {% endfor %}
@@ -132,7 +154,7 @@
 
                                 <div class="mb-3">
                                     <label class="form-label small fw-bold">Slot</label>
-                                    <select name="post_slot" class="form-select form-select-sm">
+                                    <select name="post_slot" class="form-select form-select-sm" multiple size="2">
                                         {% for slot in schema.slots %}
                                         <option value="{{ slot.id }}" {% if (element and slot.id in element.post.slot) or (not element and slot.id == 'left') %}selected{% endif %}>{{ slot.name }}</option>
                                         {% endfor %}
@@ -217,6 +239,14 @@
                                                         >{{ dir.name }}</option>
                                                         {% endfor %}
                                                     </select>
+
+                                                    <!-- Turn Type Selection -->
+                                                    <select class="form-select form-select-sm flex-grow-1" id="l_turn_{{ i }}" onchange="updateActionsRaw('leader')" style="max-width: 100px;">
+                                                        <option value="">- No Turn -</option>
+                                                        {% for turn in schema.turn_types %}
+                                                        <option value="{{ turn.id }}" {% if current_action and current_action.turn_type == turn.id %}selected{% endif %}>{{ turn.name }}</option>
+                                                        {% endfor %}
+                                                    </select>
                                                 </div>
                                                 {% endfor %}
                                             </div>
@@ -268,6 +298,14 @@
                                                         >{{ dir.name }}</option>
                                                         {% endfor %}
                                                     </select>
+
+                                                    <!-- Turn Type Selection -->
+                                                    <select class="form-select form-select-sm flex-grow-1" id="f_turn_{{ i }}" onchange="updateActionsRaw('follower')" style="max-width: 100px;">
+                                                        <option value="">- No Turn -</option>
+                                                        {% for turn in schema.turn_types %}
+                                                        <option value="{{ turn.id }}" {% if current_action and current_action.turn_type == turn.id %}selected{% endif %}>{{ turn.name }}</option>
+                                                        {% endfor %}
+                                                    </select>
                                                 </div>
                                                 {% endfor %}
                                             </div>
@@ -285,11 +323,11 @@
                                                 <div class="col-6 small fw-bold">Leader Raw</div>
                                                 <div class="col-6 small fw-bold">Follower Raw</div>
                                                 <div class="col-6">
-                                                    <textarea name="leader_actions_raw" id="leader_actions_raw" class="form-control form-control-sm font-monospace" rows="4" placeholder="1: L forward...">{% if element and element.leader_actions %}{% for a in element.leader_actions %}{{ a.beat }}: {{ a.foot if a.foot else '-' }} {{ a.direction if a.direction else 'pause' }}
+                                                    <textarea name="leader_actions_raw" id="leader_actions_raw" class="form-control form-control-sm font-monospace" rows="4" placeholder="1: L forward...">{% if element and element.leader_actions %}{% for a in element.leader_actions %}{{ a.beat }}: {{ a.foot if (a.foot and a.foot != '-') else '-' }} {{ a.direction if a.direction else 'pause' }} {{ a.turn_type if a.turn_type else '' }}
 {% endfor %}{% endif %}</textarea>
                                                 </div>
                                                 <div class="col-6">
-                                                    <textarea name="follower_actions_raw" id="follower_actions_raw" class="form-control form-control-sm font-monospace" rows="4" placeholder="1: R back...">{% if element and element.follower_actions %}{% for a in element.follower_actions %}{{ a.beat }}: {{ a.foot if a.foot else '-' }} {{ a.direction if a.direction else 'pause' }}
+                                                    <textarea name="follower_actions_raw" id="follower_actions_raw" class="form-control form-control-sm font-monospace" rows="4" placeholder="1: R back...">{% if element and element.follower_actions %}{% for a in element.follower_actions %}{{ a.beat }}: {{ a.foot if (a.foot and a.foot != '-') else '-' }} {{ a.direction if a.direction else 'pause' }} {{ a.turn_type if a.turn_type else '' }}
 {% endfor %}{% endif %}</textarea>
                                                 </div>
                                             </div>
@@ -430,10 +468,13 @@ function updateActionsRaw(role) {
         const dirSelect = document.getElementById(`${prefix}_dir_${i}`);
         const direction = dirSelect.value;
         
+        // Find turn type
+        const turnSelect = document.getElementById(`${prefix}_turn_${i}`);
+        const turnType = turnSelect ? turnSelect.value : "";
+        
         // Only add to text if it's not a pause or foot is selected
-        // But for consistency with current parser, we might want all lines
-        if (selectedFoot !== "-" || direction !== "pause") {
-            output += `${i}: ${selectedFoot} ${direction}\n`;
+        if (selectedFoot !== "-" || direction !== "pause" || turnType !== "") {
+            output += `${i}: ${selectedFoot} ${direction} ${turnType}`.trim() + "\n";
         } else {
             // For pauses, we still add them to keep the count clear
             output += `${i}: pause\n`;

@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Dict, Optional, Set, Tuple
+from typing import List, Dict, Optional, Set
 import yaml
 
 
@@ -21,6 +21,7 @@ class SalsaState:
     slot: Set[str]
     leader_weight: Set[str]
     follower_weight: Set[str]
+    connection: Set[str] = field(default_factory=lambda: {"neutral"})
 
     def state_str(self) -> str:
         parts: List[str] = []
@@ -30,6 +31,8 @@ class SalsaState:
             parts.append(f"Position: {', '.join(sorted(self.position))}")
         if self.slot:
             parts.append(f"Slot: {', '.join(sorted(self.slot))}")
+        if self.connection and "neutral" not in self.connection:
+            parts.append(f"Connection: {', '.join(sorted(self.connection))}")
         if self.leader_weight:
             parts.append(f"Leader Weight: {', '.join(sorted(self.leader_weight))}")
         if self.follower_weight:
@@ -43,18 +46,21 @@ class SalsaState:
             self.position & other.position and
             self.slot & other.slot and
             self.leader_weight & other.leader_weight and
-            self.follower_weight & other.follower_weight
+            self.follower_weight & other.follower_weight and
+            (not self.connection or not other.connection or self.connection & other.connection)
         )
 
     def resolve_same(self, pre: "SalsaState") -> "SalsaState":
         """'same' in hand_hold means: take value from pre-state."""
         hh = pre.hand_hold if "same" in self.hand_hold else self.hand_hold
+        conn = pre.connection if "same" in self.connection else self.connection
         return SalsaState(
             hand_hold=hh,
             position=self.position,
             slot=self.slot,
             leader_weight=self.leader_weight,
             follower_weight=self.follower_weight,
+            connection=conn,
         )
 
 
@@ -63,6 +69,7 @@ class LeaderAction:
     beat: str
     foot: Optional[str] = None
     direction: Optional[str] = None
+    turn_type: Optional[str] = None
     action: Optional[str] = None
     hand: Optional[str] = None
     description: str = ""
@@ -73,6 +80,7 @@ class FollowerAction:
     beat: str
     foot: Optional[str] = None
     direction: Optional[str] = None
+    turn_type: Optional[str] = None
     action: Optional[str] = None
     description: str = ""
 
@@ -174,6 +182,7 @@ def _parse_state(raw: dict, key: str = None) -> SalsaState:
         slot=as_set(raw.get("slot")),
         leader_weight=as_set(raw.get("leader_weight", ["L", "R"])),
         follower_weight=as_set(raw.get("follower_weight", ["L", "R"])),
+        connection=as_set(raw.get("connection", ["neutral"])),
     )
 
 
@@ -186,6 +195,7 @@ def _parse_actions(raw_list: list) -> List[LeaderAction]:
             beat=str(item.get("beat", "?")),
             foot=item.get("foot"),
             direction=item.get("direction"),
+            turn_type=item.get("turn_type"),
             action=item.get("action"),
             hand=item.get("hand"),
             description=item.get("description", ""),
@@ -202,6 +212,7 @@ def _parse_follower_actions(raw_list: list) -> List[FollowerAction]:
             beat=str(item.get("beat", "?")),
             foot=item.get("foot"),
             direction=item.get("direction"),
+            turn_type=item.get("turn_type"),
             action=item.get("action"),
             description=item.get("description", ""),
         ))

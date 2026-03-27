@@ -62,6 +62,11 @@
                 {% endfor %}
             </div>
 
+            <div class="col-6 text-muted small">Connection:</div>
+            <div class="col-6 fw-semibold text-success">
+                {{ state.connection|list|sort|join(", ") if state.connection else "neutral" }}
+            </div>
+
             <div class="col-6 text-muted small">Position:</div>
             <div class="col-6 fw-semibold text-danger">
                 {{ state.position|list|sort|join(", ") }}
@@ -117,6 +122,7 @@
                                     <div class="small text-secondary mt-1">
                                         {% if action.foot %}<span>Foot: {{ action.foot }}</span>{% endif %}
                                         {% if action.direction %}<span class="me-2"> · Direction: {{ action.direction }}</span>{% endif %}
+                                        {% if action.turn_type %}<span class="me-2 badge text-bg-warning">Turn: {{ action.turn_type }}</span>{% endif %}
                                         {% if action.hand %}<span class="me-2"> · Hand: {{ action.hand }}</span>{% endif %}
                                         {% if action.action %}<span> · Action: {{ action.action }}</span>{% endif %}
                                     </div>
@@ -151,6 +157,7 @@
                                     <div class="small text-secondary mt-1">
                                         {% if action.foot %}<span>Foot: {{ action.foot }}</span>{% endif %}
                                         {% if action.direction %}<span class="me-2"> · Direction: {{ action.direction }}</span>{% endif %}
+                                        {% if action.turn_type %}<span class="me-2 badge text-bg-warning">Turn: {{ action.turn_type }}</span>{% endif %}
                                         {% if action.action %}<span> · Action: {{ action.action }}</span>{% endif %}
                                     </div>
                                 </div>
