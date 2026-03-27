@@ -5,21 +5,15 @@ Flask-based web application for Salsa learning aid.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Dict, List, Set
 
 from flask import Flask, abort, redirect, render_template, request, url_for, session
 
 from src.salsa_notation import (
-    Element,
-    Figure,
     get_executable_figures,
-    load_elements,
-    load_figures,
-    recommend_elements_to_learn,
 )
-from src.services.profile_service import ProfileService
 from src.services.builder_service import BuilderService
 from src.services.element_editor_service import ElementEditorService
+from src.services.salsa_service import SalsaService
 
 BASE_DIR = Path(__file__).parent
 DATA_DIR = BASE_DIR / "data"
@@ -27,123 +21,45 @@ DATA_DIR = BASE_DIR / "data"
 app = Flask(__name__)
 app.secret_key = "salsa-geek-secret-key" # Change in production
 
-elements: Dict[str, Element] = load_elements(DATA_DIR / "elements.yaml")
-custom_elements = load_elements(DATA_DIR / "custom_elements.yaml")
-elements.update(custom_elements)
-
-figures: Dict[str, Figure] = load_figures(DATA_DIR / "figures.yaml", elements)
-
-def load_schema() -> Dict:
-    schema_path = DATA_DIR / "schema.yaml"
-    if schema_path.exists():
-        import yaml as yaml_lib
-        with open(schema_path, "r", encoding="utf-8") as f:
-            return yaml_lib.safe_load(f)
-    return {}
-
-schema = load_schema()
-
-profile_service = ProfileService()
-builder_service = BuilderService(elements)
-element_editor_service = ElementEditorService(DATA_DIR / "custom_elements.yaml", schema=schema)
-
-LEVEL_LABEL = {
-    0: "TBD",
-    1: "Novice",
-    2: "Beginner",
-    3: "Intermediate",
-    4: "Advanced",
-    5: "Expert",
-}
-LEVEL_BADGE = {
-    1: "success",
-    2: "info",
-    3: "warning",
-    4: "danger",
-    5: "dark",
-}
-
+salsa_service = SalsaService(DATA_DIR)
+profile_service = salsa_service.profile_service
+builder_service = BuilderService(salsa_service.elements)
+element_editor_service = ElementEditorService(DATA_DIR / "custom_elements.yaml", schema=salsa_service.schema)
 
 def get_active_profile() -> str:
     return session.get("profile_name", "default")
-
-def get_all_figures(profile_name: str = None) -> Dict[str, Figure]:
-    """Combines global figures with custom figures from the profile."""
-    if profile_name is None:
-        profile_name = get_active_profile()
-    
-    all_figs = figures.copy()
-    profile_data = profile_service.load_profile(profile_name)
-    custom_figs_raw = profile_data.get("custom_figures", [])
-    
-    for raw in custom_figs_raw:
-        fig = Figure(
-            id=raw["id"],
-            name=raw["name"],
-            description=raw.get("description", "").strip(),
-            level=int(raw.get("level", 1)),
-            sequence=raw.get("sequence", []),
-            total_counts=int(raw.get("total_counts", 0)),
-            tags=raw.get("tags", []),
-            notes=raw.get("notes", "").strip(),
-        )
-        
-        # Resolve elements
-        elem_list = []
-        for eid in fig.sequence:
-            if eid in elements:
-                elem_list.append(elements[eid])
-        
-        fig.elements = elem_list
-        # Since they were validated in the builder, we set them as valid
-        if fig.total_counts == 0 and elem_list:
-            fig.total_counts = sum(e.counts for e in elem_list)
-        
-        all_figs[fig.id] = fig
-        
-    return all_figs
-
-
-def load_profile() -> Set[str]:
-    profile_data = profile_service.load_profile(get_active_profile())
-    return set(profile_data.get("known_elements", []))
-
-def current_level_for(known_ids: Set[str]) -> int:
-    if not known_ids:
-        return 0
-    levels = [elements[eid].level for eid in known_ids if eid in elements]
-    return max(levels) if levels else 0
 
 
 @app.context_processor
 def inject_globals():
     return {
-        "level_label": LEVEL_LABEL,
-        "level_badge": LEVEL_BADGE,
-        "elements": elements,
+        "level_label": salsa_service.level_label,
+        "level_badge": salsa_service.level_badge,
+        "elements": salsa_service.elements,
         "active_profile": get_active_profile(),
         "available_profiles": profile_service.list_profiles(),
-        "schema": schema,
+        "schema": salsa_service.schema,
     }
 
 
 @app.route("/")
 def index():
-    known_ids = load_profile()
-    all_figs = get_all_figures()
+    profile_name = get_active_profile()
+    known_ids = salsa_service.get_known_elements(profile_name)
+    all_figs = salsa_service.get_all_figures_with_custom(profile_name)
     executable = get_executable_figures(known_ids, all_figs)
-    almost_executable = get_almost_executable_figures(known_ids, all_figs)
+    almost_executable = salsa_service.get_almost_executable_figures(known_ids, all_figs)
     invalid = [fig for fig in all_figs.values() if not fig.valid]
-    current_level = current_level_for(known_ids)
+    current_level = salsa_service.get_current_level(known_ids)
     
     # Next recommendation for summary
-    recs = recommend_elements_to_learn(known_ids, all_figs, elements, current_level, top_n=1)
+    recs = salsa_service.get_recommendations(known_ids, all_figs, current_level)
     top_rec = recs[0] if recs else None
 
     return render_template(
         "index.html",
         known_ids=known_ids,
-        elements=elements,
+        elements=salsa_service.elements,
         figures=all_figs,
         executable=executable,
         almost_executable=almost_executable,
@@ -155,8 +71,9 @@ def index():
 
 @app.route("/elemente")
 def elemente():
-    known_ids = load_profile()
-    grouped = group_elements_by_level()
+    profile_name = get_active_profile()
+    known_ids = salsa_service.get_known_elements(profile_name)
+    grouped = salsa_service.group_elements_by_level()
 
     return render_template(
         "elemente.html",
@@ -167,12 +84,14 @@ def elemente():
 
 @app.route("/element/<element_id>")
 def element_detail(element_id: str):
-    element = elements.get(element_id)
+    element = salsa_service.get_element(element_id)
     if element is None:
         abort(404)
 
-    known_ids = load_profile()
-    used_in_figures = find_figures_using_element(element_id)
+    profile_name = get_active_profile()
+    known_ids = salsa_service.get_known_elements(profile_name)
+    all_figs = salsa_service.get_all_figures_with_custom(profile_name)
+    used_in_figures = salsa_service.find_figures_using_element(element_id, all_figs)
 
     return render_template(
         "element_detail.html",
@@ -184,55 +103,22 @@ def element_detail(element_id: str):
     )
 
 
-def group_elements_by_level() -> Dict[int, List[Element]]:
-    grouped: Dict[int, List[Element]] = {}
-    for elem in elements.values():
-        grouped.setdefault(elem.level, []).append(elem)
-
-    for level in grouped:
-        grouped[level] = sorted(grouped[level], key=lambda e: e.id)
-
-    return dict(sorted(grouped.items()))
-
-
-def find_figures_using_element(element_id: str, figs: Dict[str, Figure] = None) -> List[Figure]:
-    if figs is None:
-        figs = get_all_figures()
-    used_in = [
-        fig for fig in figs.values()
-        if fig.valid and element_id in fig.sequence
-    ]
-    return sorted(used_in, key=lambda fig: (fig.level, fig.name))
-
-
-def get_almost_executable_figures(known_ids: Set[str], figs: Dict[str, Figure] = None) -> List[Figure]:
-    """Figures where exactly one element is missing."""
-    if figs is None:
-        figs = get_all_figures()
-    result = [
-        fig for fig in figs.values()
-        if fig.valid and fig.is_almost_executable(known_ids)
-    ]
-    return sorted(result, key=lambda f: (f.level, f.name))
-
-
 @app.route("/repertoire", methods=["GET", "POST"])
 def repertoire():
     active_profile = get_active_profile()
     if request.method == "POST":
         selected = set(request.form.getlist("known_ids"))
-        selected = {eid for eid in selected if eid in elements}
+        selected = {eid for eid in selected if eid in salsa_service.elements}
         profile_service.save_profile(active_profile, selected)
         return redirect(url_for("repertoire", saved="1"))
 
-    known_ids_raw = profile_service.load_profile(active_profile)
-    known_ids = set(known_ids_raw.get("known_elements", []))
+    known_ids = salsa_service.get_known_elements(active_profile)
 
     return render_template(
         "repertoire.html",
-        grouped=group_elements_by_level(),
+        grouped=salsa_service.group_elements_by_level(),
         known_ids=known_ids,
-        current_level=current_level_for(known_ids),
+        current_level=salsa_service.get_current_level(known_ids),
         saved=request.args.get("saved") == "1",
         active_profile=active_profile
     )
@@ -265,10 +151,11 @@ def delete_profile(name: str):
 
 @app.route("/figuren")
 def figuren_view():
-    known_ids = load_profile()
-    all_figs = get_all_figures()
+    profile_name = get_active_profile()
+    known_ids = salsa_service.get_known_elements(profile_name)
+    all_figs = salsa_service.get_all_figures_with_custom(profile_name)
     executable = get_executable_figures(known_ids, all_figs)
-    almost_executable = get_almost_executable_figures(known_ids, all_figs)
+    almost_executable = salsa_service.get_almost_executable_figures(known_ids, all_figs)
 
     return render_template(
         "figuren.html",
@@ -280,17 +167,16 @@ def figuren_view():
 
 @app.route("/figuren/<figure_id>")
 def figure_detail(figure_id: str):
-    all_figs = get_all_figures()
+    profile_name = get_active_profile()
+    all_figs = salsa_service.get_all_figures_with_custom(profile_name)
     if figure_id not in all_figs:
         abort(404)
 
     fig = all_figs[figure_id]
-    known_ids = load_profile()
+    known_ids = salsa_service.get_known_elements(profile_name)
 
     # Check if executable
     is_executable = fig.is_executable_with(known_ids)
-
-    # figure.elements is already populated during loading
     
     return render_template(
         "figure_detail.html",
@@ -302,16 +188,15 @@ def figure_detail(figure_id: str):
 
 @app.route("/empfehlungen")
 def empfehlungen():
-    known_ids = load_profile()
-    all_figs = get_all_figures()
-    current_level = current_level_for(known_ids)
+    profile_name = get_active_profile()
+    known_ids = salsa_service.get_known_elements(profile_name)
+    all_figs = salsa_service.get_all_figures_with_custom(profile_name)
+    current_level = salsa_service.get_current_level(known_ids)
 
-    recs = recommend_elements_to_learn(
+    recs = salsa_service.get_recommendations(
         known_ids=known_ids,
-        figures=all_figs,
-        elements=elements,
-        current_level=current_level,
-        top_n=5,
+        all_figures=all_figs,
+        current_level=current_level
     )
 
     return render_template(
@@ -371,7 +256,8 @@ def builder():
         name = request.form.get("figure_name", "Custom Figure").strip() or "Custom Figure"
         description = request.form.get("figure_description", "").strip()
         
-        profile_data = profile_service.load_profile(get_active_profile())
+        active_profile = get_active_profile()
+        profile_data = profile_service.load_profile(active_profile)
         custom_figs = profile_data.get("custom_figures", [])
         
         # Generate new ID
@@ -390,7 +276,7 @@ def builder():
         }
         
         custom_figs.append(new_fig_raw)
-        profile_service.save_profile(get_active_profile(), set(profile_data.get("known_elements", [])), custom_figs)
+        profile_service.save_profile(active_profile, set(profile_data.get("known_elements", [])), custom_figs)
         
         return redirect(url_for("figure_detail", figure_id=fig_id))
 
@@ -403,19 +289,17 @@ def builder():
         result=result,
         error=error,
         recommendations=recommendations,
-        all_elements=sorted(elements.values(), key=lambda e: (e.level, e.name)),
+        all_elements=sorted(salsa_service.elements.values(), key=lambda e: (e.level, e.name)),
         figure=custom_figure,
-        known_ids=load_profile()
+        known_ids=salsa_service.get_known_elements(get_active_profile())
     )
 
 
 @app.route("/element-editor", methods=["GET", "POST"])
 def element_editor():
-    global elements # Update global variable when new element is added
-    
     # Last 5 created custom_elements for quick access
     recent_custom = sorted(
-        [e for e in elements.values() if "Custom" in e.tags],
+        [e for e in salsa_service.elements.values() if "Custom" in e.tags],
         key=lambda e: e.id,
         reverse=True
     )[:5]
@@ -473,7 +357,7 @@ def element_editor():
                         if foot in ["-", "pause"]:
                             foot = ""
                             if not direction: direction = "pause"
-
+                        
                         actions.append({
                             "beat": beat,
                             "foot": foot,
@@ -495,10 +379,9 @@ def element_editor():
                 )
                 
                 if new_id:
-                    # Globales Dict neu laden
-                    custom_elems = load_elements(DATA_DIR / "custom_elements.yaml")
-                    elements.update(custom_elems)
-                    builder_service.elements = elements
+                    # Global service neu laden
+                    salsa_service.reload_elements()
+                    builder_service.elements = salsa_service.elements
                     
                     return redirect(url_for("element_editor", last_added=new_id))
                 else:
