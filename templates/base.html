@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,7 +18,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark app-navbar shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-semibold" href="{{ url_for('index') }}">
-                🎵 SalsaGeek
+                SalsaGeek
             </a>
 
             <button
@@ -33,30 +33,33 @@
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('index') }}">Start</a>
+                        <a class="nav-link" href="{{ url_for('index') }}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('elemente') }}">Elemente</a>
+                        <a class="nav-link" href="{{ url_for('elemente') }}">Elements</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('repertoire') }}">Repertoire</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('figuren_view') }}">Figuren</a>
+                        <a class="nav-link" href="{{ url_for('figuren_view') }}">Figures</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('empfehlungen') }}">Empfehlungen</a>
+                        <a class="nav-link" href="{{ url_for('empfehlungen') }}">Recommendations</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('builder') }}">Baukasten</a>
+                        <a class="nav-link" href="{{ url_for('builder') }}">Builder</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('element_editor') }}">Element Editor</a>
                     </li>
                 </ul>
                 <div class="ms-lg-3 dropdown">
                     <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        👤 {{ active_profile }}
+                        {{ active_profile }}
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow">
-                        <li><h6 class="dropdown-header">Profil wechseln</h6></li>
+                        <li><h6 class="dropdown-header">Switch Profile</h6></li>
                         {% for p in available_profiles %}
                         <li>
                             <form action="{{ url_for('switch_profile') }}" method="post" class="px-3 py-1">
@@ -69,7 +72,7 @@
                         <li>
                             <form action="{{ url_for('switch_profile') }}" method="post" class="px-3 py-1">
                                 <div class="input-group input-group-sm">
-                                    <input type="text" name="profile_name" class="form-control" placeholder="Neu..." required>
+                                    <input type="text" name="profile_name" class="form-control" placeholder="New..." required>
                                     <button class="btn btn-primary" type="submit">+</button>
                                 </div>
                             </form>
@@ -85,10 +88,10 @@
             <div class="row align-items-center g-4">
                 <div class="col-lg-8">
                     <p class="text-uppercase small mb-2 opacity-75">LA Style On1 · Leader</p>
-                    <h1 class="display-6 fw-bold mb-3">Salsa-Lernhilfe als Web-App</h1>
+                    <h1 class="display-6 fw-bold mb-3">Salsa Geek Learning Tool</h1>
                     <p class="lead mb-0">
-                        Figuren, Repertoire, Empfehlungen, Elemente und ein kleiner Baukasten –
-                        alles ohne Terminal-Akrobatik.
+                        Figures, repertoire, recommendations, elements, and a custom builder – 
+                        all organized and easy to use.
                     </p>
                 </div>
             </div>

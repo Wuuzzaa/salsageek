@@ -1,0 +1,27 @@
+elements:
+- id: custom_test__1774629448
+  name: testä
+  description: 'Newly created element: testä'
+  counts: 8
+  level: 3
+  tags:
+  - Custom
+  pre:
+    hand_hold:
+    - R_L
+    position:
+    - open
+    slot:
+    - left
+    leader_weight: R
+    follower_weight: L
+  post:
+    hand_hold: same
+    position: open
+    slot: left
+    leader_weight: R
+    follower_weight: L
+  leader_actions: []
+  follower_actions: []
+  signals: []
+  notes: ''

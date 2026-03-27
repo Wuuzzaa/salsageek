@@ -35,15 +35,38 @@ body {
 
 .repertoire-card,
 .element-card {
-    transition: all 0.18s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
 }
 
 .repertoire-card:hover,
-.element-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0.5rem 1rem rgba(20, 20, 20, 0.08);
-    border-color: rgba(180, 35, 47, 0.35);
+.element-card:hover,
+.figure-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1) !important;
+}
+
+.card {
+    border: 1px solid rgba(0,0,0,0.08);
+}
+
+.btn-primary {
+    background-color: var(--app-red);
+    border-color: var(--app-red);
+}
+
+.btn-primary:hover {
+    background-color: var(--app-red-dark);
+    border-color: var(--app-red-dark);
+}
+
+.badge {
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+.hero-band h1 {
+    letter-spacing: -0.02em;
 }
 
 .info-box {

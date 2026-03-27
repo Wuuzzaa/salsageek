@@ -7,7 +7,7 @@
         href="{{ url_for('figuren_view') }}"
         class="small link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
     >
-        ← Zurück zur Figurenübersicht
+        ← Back to Figures
     </a>
 </div>
 
@@ -29,11 +29,11 @@
                     </span>
                 </div>
                 <div>
-                    <span class="badge text-bg-light border">{{ figure.total_counts }} Takte</span>
+                    <span class="badge text-bg-light border">{{ figure.total_counts }} Counts</span>
                     {% if is_executable %}
-                        <span class="badge text-bg-success">Ausführbar</span>
+                        <span class="badge text-bg-success">Executable</span>
                     {% else %}
-                        <span class="badge text-bg-warning">Elemente fehlen</span>
+                        <span class="badge text-bg-warning">Missing Elements</span>
                     {% endif %}
                 </div>
             </div>
@@ -49,11 +49,11 @@
 
 {% if figure.notes %}
 <div class="alert alert-info shadow-sm mb-4">
-    <i class="bi bi-info-circle me-2"></i><strong>Hinweis:</strong> {{ figure.notes }}
+    <strong>Note:</strong> {{ figure.notes }}
 </div>
 {% endif %}
 
-<h3 class="h4 mb-4">Ablauf der Figur</h3>
+<h3 class="h4 mb-4">Figure Sequence</h3>
 
 <div class="accordion shadow-sm" id="figureAccordion">
     {% for elem in figure.elements %}
@@ -64,7 +64,7 @@
                     <div>
                         <span class="badge text-bg-light border me-2">{{ loop.index }}</span>
                         <strong>{{ elem.name }}</strong>
-                        <span class="ms-2 small text-secondary">({{ elem.counts }} Takte)</span>
+                        <span class="ms-2 small text-secondary">({{ elem.counts }} Counts)</span>
                     </div>
                     {% if elem.id in known_ids %}
                         <span class="badge text-bg-success rounded-pill"><i class="bi bi-check"></i></span>
@@ -80,7 +80,7 @@
                 
                 <div class="row g-4">
                     <div class="col-lg-6">
-                        <h4 class="h6 text-primary mb-3"><i class="bi bi-person-fill"></i> Leader</h4>
+                        <h4 class="h6 text-primary mb-3">Leader</h4>
                         {% if elem.leader_actions %}
                             <div class="small">
                                 {% for action in elem.leader_actions %}
@@ -91,11 +91,11 @@
                                 {% endfor %}
                             </div>
                         {% else %}
-                            <p class="small text-muted">Keine Details hinterlegt.</p>
+                            <p class="small text-muted">No details available.</p>
                         {% endif %}
                     </div>
                     <div class="col-lg-6">
-                        <h4 class="h6 text-danger mb-3"><i class="bi bi-person-fill"></i> Follower</h4>
+                        <h4 class="h6 text-danger mb-3">Follower</h4>
                         {% if elem.follower_actions %}
                             <div class="small">
                                 {% for action in elem.follower_actions %}
@@ -106,14 +106,14 @@
                                 {% endfor %}
                             </div>
                         {% else %}
-                            <p class="small text-muted">Keine Details hinterlegt.</p>
+                            <p class="small text-muted">No details available.</p>
                         {% endif %}
                     </div>
                 </div>
                 
                 <div class="mt-3 pt-3 border-top d-flex justify-content-between align-items-center">
                     <a href="{{ url_for('element_detail', element_id=elem.id) }}" class="btn btn-sm btn-outline-secondary">
-                        Zum Element-Detail
+                        View Element Details
                     </a>
                     <span class="small text-muted">ID: {{ elem.id }}</span>
                 </div>

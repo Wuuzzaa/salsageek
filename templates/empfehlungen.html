@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Empfehlungen · SalsaGeek{% endblock %}
+{% block title %}Recommendations · SalsaGeek{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
     <div>
-        <h2 class="h3 mb-1">Lernempfehlungen</h2>
+        <h2 class="h3 mb-1">Learning Recommendations</h2>
         <p class="text-secondary mb-0">
-            Welche Elemente dir als Nächstes den meisten Nutzen bringen.
+            Which elements provide the most benefit to learn next.
         </p>
     </div>
     <div>
@@ -18,14 +18,14 @@
 
 {% if not known_ids %}
     <div class="alert alert-warning shadow-sm p-4">
-        <h4 class="alert-heading">Noch kein Repertoire gespeichert</h4>
-        <p>Bitte zuerst dein Repertoire pflegen, damit wir berechnen können, welche Elemente dich am weitesten bringen.</p>
+        <h4 class="alert-heading">No repertoire saved</h4>
+        <p>Please manage your repertoire first so we can calculate which elements will help you progress the most.</p>
         <hr>
-        <a href="{{ url_for('repertoire') }}" class="btn btn-warning">Zum Repertoire</a>
+        <a href="{{ url_for('repertoire') }}" class="btn btn-warning">To Repertoire</a>
     </div>
 {% elif not recs %}
     <div class="alert alert-success shadow-sm">
-        Du kennst bereits alle aktuell relevanten Elemente. Stark. 🎉
+        You already know all currently relevant elements. Great job!
     </div>
 {% else %}
     <div class="row g-4">
@@ -34,12 +34,12 @@
                 <div class="card shadow-sm border-0 recommendation-card {% if loop.first %}border-start border-danger border-5{% endif %}">
                     <div class="card-body p-4">
                         {% if loop.first %}
-                            <div class="badge bg-danger mb-3 px-3 py-2 fs-6">🔥 TOP-EMPFEHLUNG</div>
+                            <div class="badge bg-danger mb-3 px-3 py-2 fs-6">TOP RECOMMENDATION</div>
                         {% endif %}
                         
                         <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
                             <div class="flex-grow-1">
-                                <div class="text-muted small mb-1">Empfehlung #{{ loop.index }}</div>
+                                <div class="text-muted small mb-1">Recommendation #{{ loop.index }}</div>
                                 <h3 class="h2 mb-2">{{ rec.element.name }}</h3>
                                 <p class="text-secondary fs-5 mb-0">
                                     {{ rec.element.description }}
@@ -50,22 +50,22 @@
                                 <div class="badge text-bg-{{ level_badge.get(rec.element.level, 'secondary') }} fs-6 mb-2">
                                     {{ level_label.get(rec.element.level, rec.element.level) }}
                                 </div>
-                                <div class="text-muted smaller">Relevanz: {{ rec.score }}</div>
+                                <div class="text-muted smaller">Score: {{ rec.score }}</div>
                             </div>
                         </div>
 
                         <div class="alert alert-info border-0 bg-light-subtle mb-4">
-                            <h5 class="h6 fw-bold mb-2">Warum dieses Element?</h5>
+                            <h5 class="h6 fw-bold mb-2">Why this element?</h5>
                             <p class="mb-0">
                                 {% if rec.new_figures|length > 0 %}
-                                    Dieses Element schaltet <strong>{{ rec.new_figures|length }} neue Figuren</strong> direkt frei.
+                                    This element unlocks <strong>{{ rec.new_figures|length }} new figures</strong> directly.
                                 {% elif rec.almost_unlocked|length > 0 %}
-                                    Dieses Element bringt dich bei <strong>{{ rec.almost_unlocked|length }} Figuren</strong> entscheidend weiter.
+                                    This element brings you closer to <strong>{{ rec.almost_unlocked|length }} figures</strong>.
                                 {% endif %}
                                 {% if rec.element.level <= current_level %}
-                                    Es passt perfekt zu deinem aktuellen Level ({{ level_label.get(rec.element.level) }}).
+                                    It fits perfectly with your current level ({{ level_label.get(rec.element.level) }}).
                                 {% else %}
-                                    Es ist der ideale nächste Schritt für dein nächstes Level.
+                                    It is the ideal next step for your progress.
                                 {% endif %}
                             </p>
                         </div>
@@ -74,8 +74,7 @@
                             <div class="col-md-6">
                                 <div class="p-3 bg-white border rounded h-100">
                                     <div class="d-flex align-items-center mb-3">
-                                        <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">✓</div>
-                                        <div class="fw-bold">Neu freigeschaltet ({{ rec.new_figures|length }})</div>
+                                        <div class="fw-bold">Newly Unlocked ({{ rec.new_figures|length }})</div>
                                     </div>
 
                                     {% if rec.new_figures %}
@@ -87,7 +86,7 @@
                                             {% endfor %}
                                         </div>
                                     {% else %}
-                                        <div class="text-muted small">Keine direkten Freischaltungen.</div>
+                                        <div class="text-muted small">No direct unlocks.</div>
                                     {% endif %}
                                 </div>
                             </div>
@@ -95,8 +94,7 @@
                             <div class="col-md-6">
                                 <div class="p-3 bg-white border rounded h-100">
                                     <div class="d-flex align-items-center mb-3">
-                                        <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">!</div>
-                                        <div class="fw-bold">Fast freigeschaltet ({{ rec.almost_unlocked|length }})</div>
+                                        <div class="fw-bold">Almost Unlocked ({{ rec.almost_unlocked|length }})</div>
                                     </div>
 
                                     {% if rec.almost_unlocked %}
@@ -108,7 +106,7 @@
                                             {% endfor %}
                                         </div>
                                     {% else %}
-                                        <div class="text-muted small">Keine Fast-Fertig-Figuren.</div>
+                                        <div class="text-muted small">No almost-reachable figures.</div>
                                     {% endif %}
                                 </div>
                             </div>
@@ -120,7 +118,7 @@
                                     <span class="badge rounded-pill bg-light text-secondary border">{{ tag }}</span>
                                 {% endfor %}
                             </div>
-                            <a href="{{ url_for('element_detail', element_id=rec.element.id) }}" class="btn btn-outline-danger btn-sm">Details ansehen</a>
+                            <a href="{{ url_for('element_detail', element_id=rec.element.id) }}" class="btn btn-outline-danger btn-sm">View Details</a>
                         </div>
                     </div>
                 </div>

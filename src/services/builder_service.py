@@ -44,7 +44,7 @@ class BuilderService:
 
         unknown = [eid for eid in sequence if eid not in self.elements]
         if unknown:
-            return {"valid": False, "error": f"Unbekannte Elemente: {', '.join(unknown)}"}
+            return {"valid": False, "error": f"Unknown elements: {', '.join(unknown)}"}
 
         elem_list = [self.elements[eid] for eid in sequence]
         errors = []
@@ -77,7 +77,7 @@ class BuilderService:
 
     def get_recommendations(self, sequence: List[str]) -> List[Element]:
         if not sequence:
-            # Wenn leer, alle Level 1 Elemente vorschlagen? Oder einfach leer lassen.
+            # If empty, maybe suggest level 1 elements? Or just leave empty.
             return []
         
         last_id = sequence[-1]
@@ -106,17 +106,17 @@ class BuilderService:
         if not elem_list:
             return None
 
-        # Max Level ermitteln
+        # Determine max level
         max_level = max(e.level for e in elem_list) if elem_list else 1
 
         return Figure(
             id="custom_builder_figure",
-            name="Eigene Figur",
-            description="Im Baukasten zusammengestellte Sequenz.",
+            name="Custom Figure",
+            description="Sequence assembled in the builder.",
             level=max_level,
             sequence=[e.id for e in elem_list],
             total_counts=validation_result.get("total_counts", 0),
-            tags=["Baukasten", "Custom"],
+            tags=["Builder", "Custom"],
             notes="",
             elements=elem_list,
             valid=True

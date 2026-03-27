@@ -7,7 +7,7 @@
         href="{{ url_for('elemente') }}"
         class="small link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
     >
-        ← Zurück zur Elementübersicht
+        ← Back to Elements
     </a>
 </div>
 
@@ -29,9 +29,9 @@
                     </span>
                 </div>
                 <div>
-                    <span class="badge text-bg-light border">{{ element.counts }} Takte</span>
+                    <span class="badge text-bg-light border">{{ element.counts }} Counts</span>
                     {% if is_known %}
-                        <span class="badge text-bg-success">im Repertoire</span>
+                        <span class="badge text-bg-success">In Repertoire</span>
                     {% endif %}
                 </div>
             </div>
@@ -50,31 +50,31 @@
     <div class="card-body p-4">
         <h3 class="h5 mb-3 border-bottom pb-2">{{ title }}</h3>
         <div class="row g-2">
-            <div class="col-6 text-muted small">Handverbindung:</div>
+            <div class="col-6 text-muted small">Hand Hold:</div>
             <div class="col-6 fw-semibold">
-                {% for h in state.hand_hold|sort %}
+                {% for h in state.hand_hold|list|sort %}
                     <span class="badge bg-light text-dark border">{{ h }}</span>
                 {% endfor %}
             </div>
 
             <div class="col-6 text-muted small">Position:</div>
             <div class="col-6 fw-semibold text-danger">
-                {{ state.position|sort|join(", ") }}
+                {{ state.position|list|sort|join(", ") }}
             </div>
 
             <div class="col-6 text-muted small">Slot:</div>
             <div class="col-6 fw-semibold text-primary">
-                {{ state.slot|sort|join(", ") }}
+                {{ state.slot|list|sort|join(", ") }}
             </div>
 
-            <div class="col-6 text-muted small">Leader-Gewicht:</div>
+            <div class="col-6 text-muted small">Leader Weight:</div>
             <div class="col-6 fw-semibold">
-                {{ state.leader_weight|sort|join(", ") }}
+                {{ state.leader_weight|list|sort|join(", ") }}
             </div>
 
-            <div class="col-6 text-muted small">Follower-Gewicht:</div>
+            <div class="col-6 text-muted small">Follower Weight:</div>
             <div class="col-6 fw-semibold">
-                {{ state.follower_weight|sort|join(", ") }}
+                {{ state.follower_weight|list|sort|join(", ") }}
             </div>
         </div>
     </div>
@@ -83,11 +83,11 @@
 
 <div class="row g-4">
     <div class="col-lg-6">
-        {{ state_display(pre_state, "Vor dem Element (Startbedingung)") }}
+        {{ state_display(pre_state, "Pre-condition (Start)") }}
     </div>
 
     <div class="col-lg-6">
-        {{ state_display(post_state, "Nach dem Element (Endzustand)") }}
+        {{ state_display(post_state, "Post-condition (End)") }}
     </div>
 </div>
 
@@ -96,7 +96,7 @@
         <div class="card shadow-sm border-0 h-100">
             <div class="card-body p-4">
                 <h3 class="h5 mb-3 text-primary">
-                    <i class="bi bi-person-fill"></i> Leader-Schritte
+                    Leader Actions
                 </h3>
 
                 {% if element.leader_actions %}
@@ -106,21 +106,21 @@
                                 <div class="timeline-beat">Beat {{ action.beat }}</div>
                                 <div class="timeline-content">
                                     <div class="fw-semibold">
-                                        {{ action.description if action.description else "Aktion" }}
+                                        {{ action.description if action.description else "Action" }}
                                     </div>
 
                                     <div class="small text-secondary mt-1">
-                                        {% if action.foot %}<span>Fuß: {{ action.foot }}</span>{% endif %}
-                                        {% if action.direction %}<span class="me-2"> · Richtung: {{ action.direction }}</span>{% endif %}
+                                        {% if action.foot %}<span>Foot: {{ action.foot }}</span>{% endif %}
+                                        {% if action.direction %}<span class="me-2"> · Direction: {{ action.direction }}</span>{% endif %}
                                         {% if action.hand %}<span class="me-2"> · Hand: {{ action.hand }}</span>{% endif %}
-                                        {% if action.action %}<span> · Aktion: {{ action.action }}</span>{% endif %}
+                                        {% if action.action %}<span> · Action: {{ action.action }}</span>{% endif %}
                                     </div>
                                 </div>
                             </div>
                         {% endfor %}
                     </div>
                 {% else %}
-                    <p class="text-secondary mb-0">Für dieses Element sind aktuell keine Leader-Aktionen hinterlegt.</p>
+                    <p class="text-secondary mb-0">No leader actions defined for this element.</p>
                 {% endif %}
             </div>
         </div>
@@ -130,7 +130,7 @@
         <div class="card shadow-sm border-0 h-100">
             <div class="card-body p-4">
                 <h3 class="h5 mb-3 text-danger">
-                    <i class="bi bi-person-fill"></i> Follower-Schritte
+                    Follower Actions
                 </h3>
 
                 {% if element.follower_actions %}
@@ -140,20 +140,20 @@
                                 <div class="timeline-beat">Beat {{ action.beat }}</div>
                                 <div class="timeline-content">
                                     <div class="fw-semibold">
-                                        {{ action.description if action.description else "Aktion" }}
+                                        {{ action.description if action.description else "Action" }}
                                     </div>
 
                                     <div class="small text-secondary mt-1">
-                                        {% if action.foot %}<span>Fuß: {{ action.foot }}</span>{% endif %}
-                                        {% if action.direction %}<span class="me-2"> · Richtung: {{ action.direction }}</span>{% endif %}
-                                        {% if action.action %}<span> · Aktion: {{ action.action }}</span>{% endif %}
+                                        {% if action.foot %}<span>Foot: {{ action.foot }}</span>{% endif %}
+                                        {% if action.direction %}<span class="me-2"> · Direction: {{ action.direction }}</span>{% endif %}
+                                        {% if action.action %}<span> · Action: {{ action.action }}</span>{% endif %}
                                     </div>
                                 </div>
                             </div>
                         {% endfor %}
                     </div>
                 {% else %}
-                    <p class="text-secondary mb-0">Für dieses Element sind aktuell keine Follower-Aktionen hinterlegt.</p>
+                    <p class="text-secondary mb-0">No follower actions defined for this element.</p>
                 {% endif %}
             </div>
         </div>
@@ -164,7 +164,7 @@
     <div class="col-12">
         <div class="card shadow-sm border-0">
             <div class="card-body p-4">
-                <h3 class="h5 mb-3">Führungssignale</h3>
+                <h3 class="h5 mb-3">Leading Signals</h3>
 
                 {% if element.signals %}
                     <div class="timeline-list">
@@ -179,16 +179,16 @@
                                     </div>
 
                                     <div class="small text-secondary mt-1">
-                                        <span>Typ: {{ signal.type }}</span>
+                                        <span>Type: {{ signal.type }}</span>
                                         {% if signal.hand %}<span class="me-2"> · Hand: {{ signal.hand }}</span>{% endif %}
-                                        {% if signal.direction %}<span> · Richtung: {{ signal.direction }}</span>{% endif %}
+                                        {% if signal.direction %}<span> · Direction: {{ signal.direction }}</span>{% endif %}
                                     </div>
                                 </div>
                             </div>
                         {% endfor %}
                     </div>
                 {% else %}
-                    <p class="text-secondary mb-0">Für dieses Element sind aktuell keine Führungssignale hinterlegt.</p>
+                    <p class="text-secondary mb-0">No leading signals defined for this element.</p>
                 {% endif %}
             </div>
         </div>
@@ -198,7 +198,7 @@
 {% if element.notes %}
 <div class="card shadow-sm border-0 mt-4">
     <div class="card-body p-4">
-        <h3 class="h5 mb-3">Hinweise</h3>
+        <h3 class="h5 mb-3">Notes</h3>
         <p class="mb-0">{{ element.notes }}</p>
     </div>
 </div>
@@ -206,7 +206,7 @@
 
 <div class="card shadow-sm border-0 mt-4">
     <div class="card-body p-4">
-        <h3 class="h5 mb-3">Verwendet in Figuren</h3>
+        <h3 class="h5 mb-3">Used in Figures</h3>
 
         {% if used_in_figures %}
             <div class="row g-3">
@@ -230,7 +230,7 @@
             </div>
         {% else %}
             <p class="text-secondary mb-0">
-                Dieses Element ist aktuell in keiner gültigen Figur referenziert.
+                This element is currently not referenced in any valid figure.
             </p>
         {% endif %}
     </div>

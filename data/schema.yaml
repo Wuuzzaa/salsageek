@@ -1,0 +1,100 @@
+# Salsa Data Schema
+# Single point of truth for valid attributes and their values
+
+hand_holds:
+  - id: R_L
+    name: Rechts an Links (Standard)
+  - id: L_R
+    name: Links an Rechts
+  - id: two_hand
+    name: Beidhändig
+  - id: crossed
+    name: Gekreuzt
+  - id: free
+    name: Offen/Frei
+  - id: shadow
+    name: Shadow-Haltung
+  - id: cuddle
+    name: Cuddle-Position (Kuschel)
+  - id: hammerlock
+    name: Hammerlock
+
+positions:
+  - id: open
+    name: Offen (Open)
+  - id: closed
+    name: Geschlossen (Closed)
+  - id: shadow
+    name: Shadow
+  - id: cuddle
+    name: Cuddle
+  - id: side_by_side
+    name: Nebeneinander
+  - id: back_to_back
+    name: Rücken an Rücken
+
+slots:
+  - id: left
+    name: Links (Left)
+  - id: center
+    name: Mitte (Center)
+  - id: right
+    name: Rechts (Right)
+
+weights:
+  - id: L
+    name: Links (L)
+  - id: R
+    name: Rechts (R)
+  - id: both
+    name: Beide
+
+directions:
+  - id: forward
+    name: vor
+  - id: back
+    name: rück
+  - id: in_place
+    name: Platz
+  - id: back_to_center
+    name: Mitte
+  - id: side
+    name: Seite
+  - id: turn
+    name: Drehung
+  - id: pause
+    name: Pause
+  - id: cross_over
+    name: Überkreuzen
+  - id: side_step
+    name: Seitenschritt
+
+feet:
+  - id: L
+    name: Links
+  - id: R
+    name: Rechts
+  - id: "-"
+    name: Pause/Keiner
+
+levels:
+  - id: 1
+    name: Anfänger
+  - id: 2
+    name: Einsteiger
+  - id: 3
+    name: Mittelstufe
+  - id: 4
+    name: Fortgeschritten
+  - id: 5
+    name: Experte
+
+signal_types:
+  - id: none
+    name: Keins
+  - id: visual
+    name: Visuell
+  - id: physical
+    name: Physisch (Zug/Druck)
+  - id: verbal
+    name: Verbal

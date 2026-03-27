@@ -1,31 +1,31 @@
 {% extends "base.html" %}
-{% block title %}Figuren · SalsaGeek{% endblock %}
+{% block title %}Figures · SalsaGeek{% endblock %}
 
 {% block content %}
 <div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
     <div>
-        <h2 class="h3 mb-1">Meine Figuren</h2>
+        <h2 class="h3 mb-1">My Figures</h2>
         <p class="text-secondary mb-0">
-            Alle Figuren, die mit deinem aktuellen Repertoire ausführbar sind.
+            All figures that can be performed with your current repertoire.
         </p>
     </div>
     {% if known_ids %}
     <div class="col-12 col-md-4">
-        <input type="text" id="figureFilter" class="form-control" placeholder="Figuren suchen...">
+        <input type="text" id="figureFilter" class="form-control" placeholder="Search figures...">
     </div>
     {% endif %}
 </div>
 
 {% if not known_ids %}
     <div class="alert alert-warning shadow-sm p-4">
-        <h4 class="alert-heading">Noch kein Repertoire gespeichert</h4>
-        <p>Du hast noch keine Elemente ausgewählt. Bitte gehe zuerst zur Repertoire-Seite, um dein Können zu pflegen.</p>
+        <h4 class="alert-heading">No repertoire saved</h4>
+        <p>You haven't selected any elements yet. Please go to the repertoire page first to manage your skills.</p>
         <hr>
-        <a href="{{ url_for('repertoire') }}" class="btn btn-warning">Zum Repertoire</a>
+        <a href="{{ url_for('repertoire') }}" class="btn btn-warning">To Repertoire</a>
     </div>
 {% else %}
     {% if executable %}
-        <h3 class="h4 mb-4">Ausführbare Figuren</h3>
+        <h3 class="h4 mb-4">Executable Figures</h3>
         <div class="row g-4 mb-5" id="executableList">
             {% for fig in executable %}
                 <div class="col-12 col-xl-6 figure-item" data-name="{{ fig.name|lower }}" data-tags="{{ fig.tags|join(' ')|lower }}">
@@ -45,7 +45,7 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <div class="small text-uppercase text-muted mb-1">Sequenz</div>
+                                    <div class="small text-uppercase text-muted mb-1">Sequence</div>
                                     <div class="fw-semibold">
                                         {% for elem in fig.elements %}
                                             {{ elem.name }}{% if not loop.last %} → {% endif %}
@@ -56,7 +56,7 @@
                                 <div class="row g-3 small">
                                     <div class="col-sm-6">
                                         <div class="info-box">
-                                            <div class="text-muted">Takte</div>
+                                            <div class="text-muted">Counts</div>
                                             <div class="fw-semibold">{{ fig.total_counts }}</div>
                                         </div>
                                     </div>
@@ -66,7 +66,7 @@
                                             <div class="fw-semibold">
                                                 {{ fig.tags|join(", ") }}
                                                 {% if fig.id.startswith('custom_') %}
-                                                    <span class="badge text-bg-primary smaller ms-1">Eigene Figur</span>
+                                                    <span class="badge text-bg-primary smaller ms-1">Custom Figure</span>
                                                 {% endif %}
                                             </div>
                                         </div>
@@ -80,14 +80,14 @@
         </div>
     {% else %}
         <div class="alert alert-light border shadow-sm mb-5">
-            Keine vollständig ausführbaren Figuren gefunden. Lerne neue Elemente, um mehr Figuren freizuschalten!
+            No fully executable figures found. Learn new elements to unlock more figures!
         </div>
     {% endif %}
 
     {% if almost_executable %}
         <hr class="my-5">
-        <h3 class="h4 mb-2">Fast möglich</h3>
-        <p class="text-secondary mb-4">Für diese Figuren fehlt dir nur noch genau ein Element:</p>
+        <h3 class="h4 mb-2">Almost Reachable</h3>
+        <p class="text-secondary mb-4">For these figures, you're missing exactly one element:</p>
         
         <div class="row g-4" id="almostList">
             {% for fig in almost_executable %}
@@ -99,7 +99,7 @@
                                     <div>
                                         <h3 class="h5 mb-1">{{ fig.name }}</h3>
                                         <div class="badge bg-warning text-dark mb-2">
-                                            Fehlt nur noch: 
+                                            Missing: 
                                             {% set missing = fig.missing_elements(known_ids) %}
                                             {% for mid in missing %}
                                                 {{ elements[mid].name if mid in elements else mid }}{% if not loop.last %}, {% endif %}
@@ -115,7 +115,7 @@
                                 </div>
 
                                 <div class="mb-0 small">
-                                    <div class="text-muted mb-1">Sequenz:</div>
+                                    <div class="text-muted mb-1">Sequence:</div>
                                     <div class="text-secondary">
                                         {% for eid in fig.sequence %}
                                             <span class="{% if eid not in known_ids %}text-warning fw-bold{% endif %}">

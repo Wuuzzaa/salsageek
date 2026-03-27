@@ -11,13 +11,13 @@ elements:
     pre:
       hand_hold: [R_L, two_hand, free]
       position: [open]
-      slot: [leader_slot, neutral]
+      slot: [left, center]
       leader_weight: [R]
       follower_weight: [L]
     post:
       hand_hold: same
       position: open
-      slot: leader_slot
+      slot: left
       leader_weight: R
       follower_weight: L
     leader_actions:
@@ -95,13 +95,13 @@ elements:
     pre:
       hand_hold: [two_hand]
       position: [closed]
-      slot: [leader_slot]
+      slot: [left]
       leader_weight: [R]
       follower_weight: [L]
     post:
       hand_hold: two_hand
       position: closed
-      slot: leader_slot
+      slot: left
       leader_weight: R
       follower_weight: L
     leader_actions:
@@ -179,13 +179,13 @@ elements:
     pre:
       hand_hold: [R_L, two_hand]
       position: [open]
-      slot: [leader_slot]
+      slot: [left]
       leader_weight: [R]
       follower_weight: [L]
     post:
       hand_hold: two_hand
       position: closed
-      slot: leader_slot
+      slot: left
       leader_weight: R
       follower_weight: L
     leader_actions:
@@ -263,13 +263,13 @@ elements:
     pre:
       hand_hold: [two_hand]
       position: [closed]
-      slot: [leader_slot]
+      slot: [left]
       leader_weight: [R]
       follower_weight: [L]
     post:
       hand_hold: R_L
       position: open
-      slot: leader_slot
+      slot: left
       leader_weight: R
       follower_weight: L
     leader_actions:
@@ -347,13 +347,13 @@ elements:
     pre:
       hand_hold: [R_L, free]
       position: [open]
-      slot: [leader_slot, neutral]
+      slot: [left, center]
       leader_weight: [R]
       follower_weight: [L]
     post:
       hand_hold: two_hand
       position: open
-      slot: leader_slot
+      slot: left
       leader_weight: R
       follower_weight: L
     leader_actions:
@@ -431,13 +431,13 @@ elements:
     pre:
       hand_hold: [R_L, two_hand]
       position: [open]
-      slot: [leader_slot]
+      slot: [left]
       leader_weight: [R]
       follower_weight: [L]
     post:
       hand_hold: R_L
       position: open
-      slot: leader_slot
+      slot: left
       leader_weight: R
       follower_weight: L
     leader_actions:
@@ -531,13 +531,13 @@ elements:
     pre:
       hand_hold: [L_R]
       position: [open]
-      slot: [leader_slot]
+      slot: [left]
       leader_weight: [R]
       follower_weight: [L]
     post:
       hand_hold: L_R
       position: open
-      slot: leader_slot
+      slot: left
       leader_weight: R
       follower_weight: L
     leader_actions:
@@ -631,13 +631,13 @@ elements:
     pre:
       hand_hold: [R_L]
       position: [open]
-      slot: [leader_slot]
+      slot: [left]
       leader_weight: [R]
       follower_weight: [L]
     post:
       hand_hold: L_R
       position: open
-      slot: leader_slot
+      slot: left
       leader_weight: R
       follower_weight: L
     leader_actions:
@@ -715,13 +715,13 @@ elements:
     pre:
       hand_hold: [R_L, two_hand]
       position: [open]
-      slot: [leader_slot]
+      slot: [left]
       leader_weight: [R]
       follower_weight: [L]
     post:
       hand_hold: R_L
       position: open
-      slot: leader_slot
+      slot: left
       leader_weight: R
       follower_weight: L
     leader_actions:
@@ -804,13 +804,13 @@ elements:
     pre:
       hand_hold: [R_L, two_hand]
       position: [open]
-      slot: [leader_slot]
+      slot: [left]
       leader_weight: [R]
       follower_weight: [L]
     post:
       hand_hold: R_L
       position: open
-      slot: leader_slot
+      slot: left
       leader_weight: R
       follower_weight: L
     leader_actions:
@@ -900,13 +900,13 @@ elements:
     pre:
       hand_hold: [L_R]
       position: [open]
-      slot: [leader_slot]
+      slot: [left]
       leader_weight: [R]
       follower_weight: [L]
     post:
       hand_hold: L_R
       position: open
-      slot: leader_slot
+      slot: left
       leader_weight: R
       follower_weight: L
     leader_actions:
@@ -996,13 +996,13 @@ elements:
     pre:
       hand_hold: [R_L, two_hand, free]
       position: [open]
-      slot: [leader_slot, neutral]
+      slot: [left, center]
       leader_weight: [R]
       follower_weight: [L]
     post:
       hand_hold: free
       position: open
-      slot: neutral
+      slot: center
       leader_weight: R
       follower_weight: L
     leader_actions:

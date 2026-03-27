@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """
-Web-App für die Salsa-Lernhilfe auf Basis von Flask.
+Flask-based web application for Salsa learning aid.
 """
 from __future__ import annotations
 
 from pathlib import Path
 from typing import Dict, List, Set
 
-import yaml
 from flask import Flask, abort, redirect, render_template, request, url_for, session
 
 from src.salsa_notation import (
@@ -20,26 +19,41 @@ from src.salsa_notation import (
 )
 from src.services.profile_service import ProfileService
 from src.services.builder_service import BuilderService
+from src.services.element_editor_service import ElementEditorService
 
 BASE_DIR = Path(__file__).parent
 DATA_DIR = BASE_DIR / "data"
 
 app = Flask(__name__)
-app.secret_key = "salsa-geek-secret-key" # In Produktion ändern
+app.secret_key = "salsa-geek-secret-key" # Change in production
 
 elements: Dict[str, Element] = load_elements(DATA_DIR / "elements.yaml")
+custom_elements = load_elements(DATA_DIR / "custom_elements.yaml")
+elements.update(custom_elements)
+
 figures: Dict[str, Figure] = load_figures(DATA_DIR / "figures.yaml", elements)
+
+def load_schema() -> Dict:
+    schema_path = DATA_DIR / "schema.yaml"
+    if schema_path.exists():
+        import yaml as yaml_lib
+        with open(schema_path, "r", encoding="utf-8") as f:
+            return yaml_lib.safe_load(f)
+    return {}
+
+schema = load_schema()
 
 profile_service = ProfileService()
 builder_service = BuilderService(elements)
+element_editor_service = ElementEditorService(DATA_DIR / "custom_elements.yaml", schema=schema)
 
 LEVEL_LABEL = {
-    0: "Noch offen",
-    1: "Anfänger",
-    2: "Einsteiger",
-    3: "Mittelstufe",
-    4: "Fortgeschritten",
-    5: "Experte",
+    0: "TBD",
+    1: "Novice",
+    2: "Beginner",
+    3: "Intermediate",
+    4: "Advanced",
+    5: "Expert",
 }
 LEVEL_BADGE = {
     1: "success",
@@ -54,7 +68,7 @@ def get_active_profile() -> str:
     return session.get("profile_name", "default")
 
 def get_all_figures(profile_name: str = None) -> Dict[str, Figure]:
-    """Kombiniert globale Figuren mit benutzerdefinierten Figuren aus dem Profil."""
+    """Combines global figures with custom figures from the profile."""
     if profile_name is None:
         profile_name = get_active_profile()
     
@@ -74,14 +88,14 @@ def get_all_figures(profile_name: str = None) -> Dict[str, Figure]:
             notes=raw.get("notes", "").strip(),
         )
         
-        # Elemente auflösen
+        # Resolve elements
         elem_list = []
         for eid in fig.sequence:
             if eid in elements:
                 elem_list.append(elements[eid])
         
         fig.elements = elem_list
-        # Da sie im Builder validiert wurden, setzen wir sie als valide (oder re-validieren hier)
+        # Since they were validated in the builder, we set them as valid
         if fig.total_counts == 0 and elem_list:
             fig.total_counts = sum(e.counts for e in elem_list)
         
@@ -109,6 +123,7 @@ def inject_globals():
         "elements": elements,
         "active_profile": get_active_profile(),
         "available_profiles": profile_service.list_profiles(),
+        "schema": schema,
     }
 
 
@@ -121,7 +136,7 @@ def index():
     invalid = [fig for fig in all_figs.values() if not fig.valid]
     current_level = current_level_for(known_ids)
     
-    # Nächste Empfehlung für Zusammenfassung
+    # Next recommendation for summary
     recs = recommend_elements_to_learn(known_ids, all_figs, elements, current_level, top_n=1)
     top_rec = recs[0] if recs else None
 
@@ -191,7 +206,7 @@ def find_figures_using_element(element_id: str, figs: Dict[str, Figure] = None) 
 
 
 def get_almost_executable_figures(known_ids: Set[str], figs: Dict[str, Figure] = None) -> List[Figure]:
-    """Figuren, bei denen genau ein Element fehlt."""
+    """Figures where exactly one element is missing."""
     if figs is None:
         figs = get_all_figures()
     result = [
@@ -232,7 +247,7 @@ def switch_profile():
     slug = profile_service.slugify(name)
     session["profile_name"] = slug
     
-    # Sicherstellen, dass das Profil existiert (ggf. leer anlegen)
+    # Ensure profile exists (create empty if necessary)
     if slug not in profile_service.list_profiles():
         profile_service.save_profile(slug, set())
         
@@ -272,11 +287,10 @@ def figure_detail(figure_id: str):
     fig = all_figs[figure_id]
     known_ids = load_profile()
 
-    # Prüfung ob ausführbar
+    # Check if executable
     is_executable = fig.is_executable_with(known_ids)
 
-    # Details für die Sequenz-Elemente
-    # fig.elements ist bereits beim Laden befüllt worden
+    # figure.elements is already populated during loading
     
     return render_template(
         "figure_detail.html",
@@ -335,32 +349,32 @@ def builder():
         
         raw = builder_service.raw_from_sequence(sequence)
         
-        # Falls wir nur modifizieren, Redirect um POST-Wiederholung zu vermeiden (optional, aber sauberer)
+        # Redirect after modification to avoid POST repetition
         if action in ["reset", "add", "remove", "move"]:
              return redirect(url_for("builder", sequence=raw))
 
-    # Validierung durchführen
+    # Perform validation
     validation = builder_service.validate_sequence(sequence)
     custom_figure = None
     if not validation.get("valid"):
         if validation.get("error"):
             error = validation.get("error")
         else:
-            result = validation # Enthält "errors" Liste
+            result = validation # Contains "errors" list
     else:
         if not validation.get("empty"):
             result = validation
             custom_figure = builder_service.create_custom_figure(validation)
 
-    # Speichern-Logik
+    # Save logic
     if request.method == "POST" and request.form.get("action") == "save" and custom_figure:
-        name = request.form.get("figure_name", "Eigene Figur").strip() or "Eigene Figur"
+        name = request.form.get("figure_name", "Custom Figure").strip() or "Custom Figure"
         description = request.form.get("figure_description", "").strip()
         
         profile_data = profile_service.load_profile(get_active_profile())
         custom_figs = profile_data.get("custom_figures", [])
         
-        # Neue ID generieren
+        # Generate new ID
         import time
         fig_id = f"custom_{int(time.time())}"
         
@@ -371,7 +385,7 @@ def builder():
             "level": custom_figure.level,
             "sequence": custom_figure.sequence,
             "total_counts": custom_figure.total_counts,
-            "tags": ["Baukasten", "Custom"],
+            "tags": ["Builder", "Custom"],
             "notes": ""
         }
         
@@ -392,6 +406,112 @@ def builder():
         all_elements=sorted(elements.values(), key=lambda e: (e.level, e.name)),
         figure=custom_figure,
         known_ids=load_profile()
+    )
+
+
+@app.route("/element-editor", methods=["GET", "POST"])
+def element_editor():
+    global elements # Update global variable when new element is added
+    
+    # Last 5 created custom_elements for quick access
+    recent_custom = sorted(
+        [e for e in elements.values() if "Custom" in e.tags],
+        key=lambda e: e.id,
+        reverse=True
+    )[:5]
+    
+    if request.method == "POST":
+        action = request.form.get("action")
+        if action == "add_element":
+            name = request.form.get("name", "").strip()
+            level = int(request.form.get("level", 3))
+            counts = int(request.form.get("counts", 8))
+            desc = request.form.get("description", "").strip()
+            
+            # New attributes from extended form
+            pre = {
+                "hand_hold": request.form.getlist("pre_hand"),
+                "position": request.form.getlist("pre_pos"),
+                "slot": request.form.getlist("pre_slot"),
+                "leader_weight": request.form.get("pre_leader_weight"),
+                "follower_weight": request.form.get("pre_follower_weight")
+            }
+            post = {
+                "hand_hold": request.form.get("post_hand", "same"),
+                "position": request.form.get("post_pos", "open"),
+                "slot": request.form.get("post_slot", "left"),
+                "leader_weight": request.form.get("post_leader_weight"),
+                "follower_weight": request.form.get("post_follower_weight")
+            }
+            
+            # Process tags
+            raw_tags = request.form.get("tags", "")
+            tags = [t.strip() for t in raw_tags.split(",") if t.strip()]
+            if "Custom" not in tags: tags.append("Custom")
+            
+            # Signals (simple implementation)
+            signal_type = request.form.get("signal_type", "none")
+            signal_desc = request.form.get("signal_description", "").strip()
+            signals = [{"type": signal_type, "description": signal_desc}] if signal_type != "none" else []
+            
+            # Notes
+            notes = request.form.get("notes", "").strip()
+
+            # Parse actions (simple: "beat: foot direction")
+            def parse_actions(raw_text):
+                actions = []
+                for line in raw_text.splitlines():
+                    if ":" in line:
+                        parts = line.split(":", 1)
+                        beat = parts[0].strip()
+                        rest = parts[1].strip().split()
+                        
+                        # Special case: "-" or "pause" means no foot action
+                        foot = rest[0] if len(rest) > 0 else ""
+                        direction = rest[1] if len(rest) > 1 else ""
+                        
+                        if foot in ["-", "pause"]:
+                            foot = ""
+                            if not direction: direction = "pause"
+
+                        actions.append({
+                            "beat": beat,
+                            "foot": foot,
+                            "direction": direction,
+                            "description": line.strip()
+                        })
+                return actions
+
+            leader_actions = parse_actions(request.form.get("leader_actions_raw", ""))
+            follower_actions = parse_actions(request.form.get("follower_actions_raw", ""))
+            
+            if name:
+                new_id, errors = element_editor_service.add_custom_element(
+                    name=name, level=level, counts=counts, 
+                    pre=pre, post=post, description=desc, 
+                    tags=tags, signals=signals, notes=notes,
+                    leader_actions=leader_actions,
+                    follower_actions=follower_actions
+                )
+                
+                if new_id:
+                    # Globales Dict neu laden
+                    custom_elems = load_elements(DATA_DIR / "custom_elements.yaml")
+                    elements.update(custom_elems)
+                    builder_service.elements = elements
+                    
+                    return redirect(url_for("element_editor", last_added=new_id))
+                else:
+                    return render_template(
+                        "element_editor.html",
+                        recent_custom=recent_custom,
+                        error=f"Validierungsfehler: {', '.join(errors)}"
+                    )
+    
+    return render_template(
+        "element_editor.html",
+        recent_custom=recent_custom,
+        last_added_id=request.args.get("last_added")
     )
 
 

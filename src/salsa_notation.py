@@ -1,5 +1,5 @@
 """
-salsa_notation.py – Datenmodelle und Kern-Logik für die Salsa-Notation
+salsa_notation.py – Data models and core logic for Salsa notation.
 """
 from __future__ import annotations
 
@@ -10,13 +10,13 @@ import yaml
 
 
 # ---------------------------------------------------------------------------
-# Datenmodelle
+# Data Models
 # ---------------------------------------------------------------------------
 
 @dataclass
 class SalsaState:
-    """Vollständiger Übergabezustand zwischen zwei Elementen."""
-    hand_hold: Set[str]   # mögliche Werte (mehrere = kompatibel mit mehreren)
+    """Represents the complete state passed between two elements."""
+    hand_hold: Set[str]   # possible values (multiple = compatible with multiple)
     position: Set[str]
     slot: Set[str]
     leader_weight: Set[str]
@@ -25,19 +25,19 @@ class SalsaState:
     def state_str(self) -> str:
         parts: List[str] = []
         if self.hand_hold:
-            parts.append(f"Handverbindung: {', '.join(sorted(self.hand_hold))}")
+            parts.append(f"Hand Hold: {', '.join(sorted(self.hand_hold))}")
         if self.position:
             parts.append(f"Position: {', '.join(sorted(self.position))}")
         if self.slot:
             parts.append(f"Slot: {', '.join(sorted(self.slot))}")
         if self.leader_weight:
-            parts.append(f"Leader-Gewicht: {', '.join(sorted(self.leader_weight))}")
+            parts.append(f"Leader Weight: {', '.join(sorted(self.leader_weight))}")
         if self.follower_weight:
-            parts.append(f"Follower-Gewicht: {', '.join(sorted(self.follower_weight))}")
+            parts.append(f"Follower Weight: {', '.join(sorted(self.follower_weight))}")
         return " · ".join(parts)
 
     def compatible_with(self, other: "SalsaState") -> bool:
-        """Prüft ob dieser Zustand als Post mit 'other' als Pre kompatibel ist."""
+        """Checks if this state (as post) is compatible with 'other' (as pre)."""
         return bool(
             self.hand_hold & other.hand_hold and
             self.position & other.position and
@@ -47,7 +47,7 @@ class SalsaState:
         )
 
     def resolve_same(self, pre: "SalsaState") -> "SalsaState":
-        """'same' in hand_hold bedeutet: Wert aus Pre übernehmen."""
+        """'same' in hand_hold means: take value from pre-state."""
         hh = pre.hand_hold if "same" in self.hand_hold else self.hand_hold
         return SalsaState(
             hand_hold=hh,
@@ -95,36 +95,36 @@ class Element:
     level: int
     tags: List[str]
     pre: SalsaState
-    post: SalsaState  # bereits resolved (kein 'same' mehr)
+    post: SalsaState  # already resolved (no 'same' anymore)
     leader_actions: List[LeaderAction]
     follower_actions: List[FollowerAction]
     signals: List[Signal]
     notes: str = ""
 
     def can_follow(self, other: "Element") -> bool:
-        """Kann self direkt nach 'other' kommen?"""
+        """Can self follow directly after 'other'?"""
         return other.post.compatible_with(self.pre)
 
     def explain_compatibility_error(self, other: "Element") -> str:
-        """Erklärt benutzerfreundlich, warum dieses Element nicht auf 'other' folgen kann."""
+        """User-friendly explanation why this element cannot follow 'other'."""
         post = other.post
         pre = self.pre
         
         reasons = []
         if not (post.hand_hold & pre.hand_hold):
-            reasons.append(f"die Handverbindung nicht passt (Ende: {', '.join(sorted(post.hand_hold))} vs. Start: {', '.join(sorted(pre.hand_hold))})")
+            reasons.append(f"hand hold doesn't match (End: {', '.join(sorted(post.hand_hold))} vs. Start: {', '.join(sorted(pre.hand_hold))})")
         if not (post.position & pre.position):
-            reasons.append(f"die Position im Raum unterschiedlich ist")
+            reasons.append(f"position in space differs")
         if not (post.slot & pre.slot):
-            reasons.append(f"die Ausrichtung im Slot nicht übereinstimmt")
+            reasons.append(f"alignment in slot doesn't match")
         if not (post.leader_weight & pre.leader_weight):
-            reasons.append(f"das Gewicht des Leaders auf dem falschen Fuß ist")
+            reasons.append(f"leader's weight is on the wrong foot")
         if not (post.follower_weight & pre.follower_weight):
-            reasons.append(f"das Gewicht des Followers auf dem falschen Fuß ist")
+            reasons.append(f"follower's weight is on the wrong foot")
             
         if not reasons:
-            return "Unbekannter Grund"
-        return f"weil " + " und ".join(reasons)
+            return "Unknown reason"
+        return f"because " + " and ".join(reasons)
 
 
 @dataclass
@@ -133,34 +133,34 @@ class Figure:
     name: str
     description: str
     level: int
-    sequence: List[str]   # Element-IDs
+    sequence: List[str]   # Element IDs
     total_counts: int
     tags: List[str]
     notes: str = ""
-    # Nach Laden befüllt:
+    # Populated after loading:
     elements: List[Element] = field(default_factory=list)
     valid: bool = True
     validation_errors: List[str] = field(default_factory=list)
 
     def is_executable_with(self, known_ids: Set[str]) -> bool:
-        """Kann diese Figur mit dem bekannten Repertoire ausgeführt werden?"""
+        """Can this figure be performed with the known repertoire?"""
         return all(eid in known_ids for eid in self.sequence)
 
     def missing_elements(self, known_ids: Set[str]) -> List[str]:
         return [eid for eid in self.sequence if eid not in known_ids]
 
     def is_almost_executable(self, known_ids: Set[str]) -> bool:
-        """Fehlt genau ein Element aus dem Repertoire?"""
+        """Is exactly one element missing from the repertoire?"""
         missing = self.missing_elements(known_ids)
         return len(missing) == 1
 
 
 # ---------------------------------------------------------------------------
-# Laden & Validieren
+# Loading & Validation
 # ---------------------------------------------------------------------------
 
 def _parse_state(raw: dict, key: str = None) -> SalsaState:
-    """Wandelt ein YAML-Dict in ein SalsaState-Objekt um."""
+    """Converts a YAML dict into a SalsaState object."""
     def as_set(val) -> Set[str]:
         if val is None:
             return {"any"}
@@ -224,8 +224,13 @@ def _parse_signals(raw_list: list) -> List[Signal]:
 
 
 def load_elements(path: Path) -> Dict[str, Element]:
+    if not path.exists():
+        return {}
     with open(path, encoding="utf-8") as f:
         data = yaml.safe_load(f)
+
+    if not data or "elements" not in data:
+        return {}
 
     elements: Dict[str, Element] = {}
     for raw in data["elements"]:
@@ -269,12 +274,12 @@ def load_figures(path: Path, elements: Dict[str, Element]) -> Dict[str, Figure]:
             notes=raw.get("notes", "").strip(),
         )
 
-        # Elemente auflösen und Kompatibilität prüfen
+        # Resolve elements and check compatibility
         errors = []
         elem_list = []
         for eid in fig.sequence:
             if eid not in elements:
-                errors.append(f"Element '{eid}' nicht gefunden")
+                errors.append(f"Element '{eid}' not found")
             else:
                 elem_list.append(elements[eid])
 
@@ -283,7 +288,7 @@ def load_figures(path: Path, elements: Dict[str, Element]) -> Dict[str, Figure]:
                 a, b = elem_list[i], elem_list[i + 1]
                 if not b.can_follow(a):
                     errors.append(
-                        f"Zustandskonflikt: '{a.id}' → '{b.id}' "
+                        f"State conflict: '{a.id}' → '{b.id}' "
                         f"(post={a.post} / pre={b.pre})"
                     )
 
@@ -291,7 +296,7 @@ def load_figures(path: Path, elements: Dict[str, Element]) -> Dict[str, Figure]:
         fig.valid = len(errors) == 0
         fig.validation_errors = errors
 
-        # total_counts berechnen wenn nicht angegeben
+        # Calculate total_counts if not provided
         if fig.total_counts == 0 and elem_list:
             fig.total_counts = sum(e.counts for e in elem_list)
 
@@ -301,7 +306,7 @@ def load_figures(path: Path, elements: Dict[str, Element]) -> Dict[str, Figure]:
 
 
 # ---------------------------------------------------------------------------
-# Empfehlungs-Logik
+# Recommendation Logic
 # ---------------------------------------------------------------------------
 
 def get_executable_figures(
@@ -309,7 +314,7 @@ def get_executable_figures(
     figures: Dict[str, Figure],
     only_valid: bool = True,
 ) -> List[Figure]:
-    """Alle Figuren, die mit dem aktuellen Repertoire ausgeführt werden können."""
+    """All figures that can be performed with the current repertoire."""
     result = []
     for fig in figures.values():
         if only_valid and not fig.valid:
@@ -326,11 +331,11 @@ def score_element_to_learn(
     elements: Dict[str, Element],
 ) -> Dict:
     """
-    Berechnet einen Lernwert für ein Element.
-    Kriterien:
-      - Wie viele neue Figuren werden freigeschaltet?
-      - Wie viele dieser Figuren fehlen danach nur noch 0 Elemente?
-      - Level-Angemessenheit (nahe am aktuellen Level)
+    Calculates a learning score for an element.
+    Criteria:
+      - How many new figures are unlocked?
+      - How many of these figures only need 0 elements afterwards?
+      - Level appropriateness (near current level)
     """
     if candidate_id not in elements:
         return {"score": 0, "new_figures": [], "partially_unlocked": []}
@@ -346,7 +351,7 @@ def score_element_to_learn(
         if fig.id not in currently_executable
     ]
 
-    # Figuren die noch 1 Element fehlen (fast fertig)
+    # Figures missing exactly 1 element (almost done)
     almost_done = []
     for fig in figures.values():
         if not fig.valid:
@@ -373,8 +378,8 @@ def recommend_elements_to_learn(
     top_n: int = 5,
 ) -> List[Dict]:
     """
-    Empfiehlt die nächsten zu lernenden Elemente.
-    Filtert auf Level current_level und current_level+1.
+    Recommends the next elements to learn.
+    Filters for level current_level and current_level+1.
     """
     candidates = [
         eid for eid, e in elements.items()

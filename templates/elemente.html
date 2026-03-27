@@ -1,16 +1,16 @@
 {% extends "base.html" %}
-{% block title %}Elemente · SalsaGeek{% endblock %}
+{% block title %}Elements · SalsaGeek{% endblock %}
 
 {% block content %}
 <div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
     <div>
-        <h2 class="h3 mb-1">Elemente</h2>
+        <h2 class="h3 mb-1">Elements</h2>
         <p class="text-secondary mb-0">
-            Schneller Zugriff auf alle Tanzbausteine. Ideal zum Nachsehen beim Üben.
+            Quick access to all dance components. Ideal for reference during practice.
         </p>
     </div>
     <div class="col-12 col-md-4">
-        <input type="text" id="elementFilter" class="form-control" placeholder="Elemente suchen...">
+        <input type="text" id="elementFilter" class="form-control" placeholder="Search elements...">
     </div>
 </div>
 
@@ -39,7 +39,7 @@
                                     </div>
 
                                     {% if elem.id in known_ids %}
-                                        <span class="badge text-bg-success">bekannt</span>
+                                        <span class="badge text-bg-success">known</span>
                                     {% endif %}
                                 </div>
 
@@ -48,13 +48,13 @@
                                 </p>
 
                                 <div class="d-flex flex-wrap gap-2 mb-3">
-                                    <span class="badge text-bg-light border">{{ elem.counts }} Takte</span>
+                                    <span class="badge text-bg-light border">{{ elem.counts }} Counts</span>
                                     {% for tag in elem.tags[:3] %}
                                         <span class="badge rounded-pill text-bg-light border">{{ tag }}</span>
                                     {% endfor %}
                                 </div>
 
-                                <span class="small link-danger">Zum Element →</span>
+                                <span class="small link-danger">View Element →</span>
                             </div>
                         </a>
                     </div>

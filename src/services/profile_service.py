@@ -10,7 +10,7 @@ class ProfileService:
         self.profiles_dir.mkdir(exist_ok=True)
 
     def slugify(self, name: str) -> str:
-        """Normalisiert den Profilnamen für die Verwendung als Dateiname."""
+        """Normalizes the profile name for use as a filename."""
         name = name.lower().strip()
         name = re.sub(r"[^a-z0-9_\-]", "_", name)
         return name if name else "unnamed"
@@ -19,14 +19,14 @@ class ProfileService:
         return self.profiles_dir / f"{self.slugify(profile_name)}.yaml"
 
     def list_profiles(self) -> List[str]:
-        """Listet alle verfügbaren Profilnamen auf (basierend auf Dateinamen)."""
+        """Lists all available profile names (based on filenames)."""
         profiles = []
         for f in self.profiles_dir.glob("*.yaml"):
             profiles.append(f.stem)
         return sorted(profiles)
 
     def load_profile(self, profile_name: str) -> Dict:
-        """Lädt die Profildaten (bekannte Elemente und eigene Figuren)."""
+        """Loads profile data (known elements and custom figures)."""
         path = self.get_profile_path(profile_name)
         if not path.exists():
             return {"known_elements": [], "custom_figures": []}
@@ -43,10 +43,10 @@ class ProfileService:
             return {"known_elements": [], "custom_figures": []}
 
     def save_profile(self, profile_name: str, known_ids: Set[str], custom_figures: List[Dict] = None):
-        """Speichert die Profildaten."""
+        """Saves profile data."""
         path = self.get_profile_path(profile_name)
         
-        # Falls wir nur known_ids aktualisieren, laden wir den Rest
+        # If only updating known_ids, load the rest
         if custom_figures is None:
             existing = self.load_profile(profile_name)
             custom_figures = existing.get("custom_figures", [])
