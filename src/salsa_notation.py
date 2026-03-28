@@ -25,19 +25,48 @@ class SalsaState:
 
     def state_str(self) -> str:
         parts: List[str] = []
+        def fmt(s):
+            if isinstance(s, (set, list)):
+                # Filter out 'neutral' if there are other meaningful values
+                cleaned = [str(v) for v in s if str(v) != "neutral"]
+                if not cleaned and "neutral" in [str(x) for x in s]:
+                    cleaned = ["neutral"]
+                return ", ".join(sorted(cleaned))
+            return str(s)
+
         if self.hand_hold:
-            parts.append(f"Hand Hold: {', '.join(sorted(self.hand_hold))}")
+            parts.append(f"Hand: {fmt(self.hand_hold)}")
         if self.position:
-            parts.append(f"Position: {', '.join(sorted(self.position))}")
+            parts.append(f"Pos: {fmt(self.position)}")
         if self.slot:
-            parts.append(f"Slot: {', '.join(sorted(self.slot))}")
-        if self.connection and "neutral" not in self.connection:
-            parts.append(f"Connection: {', '.join(sorted(self.connection))}")
+            parts.append(f"Slot: {fmt(self.slot)}")
+        if self.connection and "neutral" not in [str(x) for x in self.connection]:
+            parts.append(f"Conn: {fmt(self.connection)}")
         if self.leader_weight:
-            parts.append(f"Leader Weight: {', '.join(sorted(self.leader_weight))}")
+            parts.append(f"L-Weight: {fmt(self.leader_weight)}")
         if self.follower_weight:
-            parts.append(f"Follower Weight: {', '.join(sorted(self.follower_weight))}")
+            parts.append(f"F-Weight: {fmt(self.follower_weight)}")
         return " · ".join(parts)
+
+    def resolve_same(self, pre: "SalsaState") -> "SalsaState":
+        """'same' in any field means: take value from pre-state."""
+        def resolve(post_val, pre_val):
+            # Check for 'same' in string, set or list
+            if isinstance(post_val, (set, list)):
+                if "same" in post_val:
+                    return pre_val
+            elif str(post_val).lower() == "same":
+                return pre_val
+            return post_val
+
+        return SalsaState(
+            hand_hold=resolve(self.hand_hold, pre.hand_hold),
+            position=resolve(self.position, pre.position),
+            slot=resolve(self.slot, pre.slot),
+            leader_weight=resolve(self.leader_weight, pre.leader_weight),
+            follower_weight=resolve(self.follower_weight, pre.follower_weight),
+            connection=resolve(self.connection, pre.connection),
+        )
 
     def compatible_with(self, other: "SalsaState") -> bool:
         """Checks if this state (as post) is compatible with 'other' (as pre)."""
@@ -48,19 +77,6 @@ class SalsaState:
             self.leader_weight & other.leader_weight and
             self.follower_weight & other.follower_weight and
             (not self.connection or not other.connection or self.connection & other.connection)
-        )
-
-    def resolve_same(self, pre: "SalsaState") -> "SalsaState":
-        """'same' in hand_hold means: take value from pre-state."""
-        hh = pre.hand_hold if "same" in self.hand_hold else self.hand_hold
-        conn = pre.connection if "same" in self.connection else self.connection
-        return SalsaState(
-            hand_hold=hh,
-            position=self.position,
-            slot=self.slot,
-            leader_weight=self.leader_weight,
-            follower_weight=self.follower_weight,
-            connection=conn,
         )
 
 

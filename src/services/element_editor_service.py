@@ -10,15 +10,46 @@ class ElementEditorService:
 
     def to_dict(self, obj):
         """Converts complex types (Sets, Dataclasses) into simple dicts/lists for Jinja2."""
-        if isinstance(obj, set):
-            return sorted(list(obj))
-        if isinstance(obj, (list, tuple)):
-            return [self.to_dict(i) for i in obj]
+        if obj is None:
+            return None
+        if isinstance(obj, (str, int, float, bool)):
+            return obj
+        if isinstance(obj, (list, tuple, set)):
+            return [self.to_dict(i) for i in sorted(list(obj), key=lambda x: str(x))]
         if isinstance(obj, dict):
-            return {k: self.to_dict(v) for k, v in obj.items()}
+            return {str(k): self.to_dict(v) for k, v in obj.items()}
+        
+        # Dataclasses and other objects
         if hasattr(obj, "__dict__"):
-            return {k: self.to_dict(v) for k, v in obj.__dict__.items() if not k.startswith("_")}
-        return obj
+            data = {}
+            for k, v in vars(obj).items():
+                if k.startswith("_"):
+                    continue
+                data[k] = self.to_dict(v)
+            return data
+        
+        # Dataclasses (some might not have __dict__ or behave differently)
+        try:
+            from dataclasses import asdict, is_dataclass
+            if is_dataclass(obj):
+                # Using standard asdict and then converting its result recursively
+                # to handle Sets within the dataclass
+                return self.to_dict(asdict(obj))
+        except ImportError:
+            pass
+
+        # SalsaState specialized handling if it's not caught by __dict__
+        if obj.__class__.__name__ == 'SalsaState':
+             return {
+                 "hand_hold": self.to_dict(obj.hand_hold),
+                 "position": self.to_dict(obj.position),
+                 "slot": self.to_dict(obj.slot),
+                 "leader_weight": self.to_dict(obj.leader_weight),
+                 "follower_weight": self.to_dict(obj.follower_weight),
+                 "connection": self.to_dict(obj.connection)
+             }
+
+        return str(obj)
 
     def fill_missing_steps(self, actions: List[Dict], target_counts: int) -> List[Dict]:
         """Ensures the actions list has exactly target_counts entries."""
@@ -75,6 +106,7 @@ class ElementEditorService:
 
         # Position
         valid_pos = {p["id"] for p in self.schema.get("positions", [])}
+        valid_pos.add("same")
         valid_pos.add("any")
         for p in data.get("pre", {}).get("position", []):
             if p not in valid_pos:
@@ -84,6 +116,42 @@ class ElementEditorService:
         for p in post_pos:
             if p not in valid_pos:
                 errors.append(f"Invalid post-position: {p}")
+
+        # Slot
+        valid_slots = {s["id"] for s in self.schema.get("slots", [])}
+        valid_slots.add("same")
+        valid_slots.add("any")
+        for s in data.get("pre", {}).get("slot", []):
+            if s not in valid_slots:
+                errors.append(f"Invalid pre-slot: {s}")
+        post_slot = data.get("post", {}).get("slot", [])
+        if isinstance(post_slot, str): post_slot = [post_slot]
+        for s in post_slot:
+            if s not in valid_slots:
+                errors.append(f"Invalid post-slot: {s}")
+
+        # Weight
+        valid_weights = {w["id"] for w in self.schema.get("weights", [])}
+        valid_weights.add("same")
+        valid_weights.add("any")
+        for w in data.get("pre", {}).get("leader_weight", []):
+            if w not in valid_weights:
+                errors.append(f"Invalid pre-leader-weight: {w}")
+        for w in data.get("pre", {}).get("follower_weight", []):
+            if w not in valid_weights:
+                errors.append(f"Invalid pre-follower-weight: {w}")
+        
+        post_l_weight = data.get("post", {}).get("leader_weight", [])
+        if isinstance(post_l_weight, str): post_l_weight = [post_l_weight]
+        for w in post_l_weight:
+            if w not in valid_weights:
+                errors.append(f"Invalid post-leader-weight: {w}")
+        
+        post_f_weight = data.get("post", {}).get("follower_weight", [])
+        if isinstance(post_f_weight, str): post_f_weight = [post_f_weight]
+        for w in post_f_weight:
+            if w not in valid_weights:
+                errors.append(f"Invalid post-follower-weight: {w}")
 
         # Actions
         valid_dirs = {d["id"] for d in self.schema.get("directions", [])}

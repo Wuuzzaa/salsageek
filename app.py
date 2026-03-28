@@ -75,9 +75,17 @@ def elemente():
     known_ids = salsa_service.get_known_elements(profile_name)
     grouped = salsa_service.group_elements_by_level()
 
+    # Convert elements to dict for easier template access if needed, 
+    # but SalsaService.group_elements_by_level returns Element objects.
+    # The template uses elem.description, elem.tags etc.
+    # To be safe, we can convert the grouped items to dicts
+    grouped_dicts = {}
+    for level, items in grouped.items():
+        grouped_dicts[level] = [element_editor_service.to_dict(item) for item in items]
+
     return render_template(
         "elemente.html",
-        grouped=grouped,
+        grouped=grouped_dicts,
         known_ids=known_ids,
     )
 
@@ -93,13 +101,16 @@ def element_detail(element_id: str):
     all_figs = salsa_service.get_all_figures_with_custom(profile_name)
     used_in_figures = salsa_service.find_figures_using_element(element_id, all_figs)
 
+    # Convert element and states to dict for template consistency
+    element_dict = element_editor_service.to_dict(element)
+
     return render_template(
         "element_detail.html",
-        element=element,
+        element=element_dict,
         is_known=element_id in known_ids,
         used_in_figures=used_in_figures,
-        pre_state=element.pre,
-        post_state=element.post,
+        pre_state=element_dict.get("pre"),
+        post_state=element_dict.get("post"),
     )
 
 
@@ -113,10 +124,16 @@ def repertoire():
         return redirect(url_for("repertoire", saved="1"))
 
     known_ids = salsa_service.get_known_elements(active_profile)
+    grouped = salsa_service.group_elements_by_level()
+    
+    # Convert elements to dict for easier template access
+    grouped_dicts = {}
+    for level, items in grouped.items():
+        grouped_dicts[level] = [element_editor_service.to_dict(item) for item in items]
 
     return render_template(
         "repertoire.html",
-        grouped=salsa_service.group_elements_by_level(),
+        grouped=grouped_dicts,
         known_ids=known_ids,
         current_level=salsa_service.get_current_level(known_ids),
         saved=request.args.get("saved") == "1",
@@ -360,8 +377,8 @@ def element_editor(element_id: str = None):
                 "position": request.form.getlist("post_pos"),
                 "slot": request.form.getlist("post_slot"),
                 "connection": request.form.getlist("post_conn"),
-                "leader_weight": request.form.get("post_leader_weight"),
-                "follower_weight": request.form.get("post_follower_weight")
+                "leader_weight": request.form.getlist("post_leader_weight"),
+                "follower_weight": request.form.getlist("post_follower_weight")
             }
             
             # Process tags

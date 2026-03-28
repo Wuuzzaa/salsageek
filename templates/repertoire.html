@@ -4,10 +4,8 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
     <div>
-        <h2 class="h3 mb-1">Edit Repertoire (Profile: {{ active_profile }})</h2>
-        <p class="text-secondary mb-0">
-            Select all elements that you can dance confidently.
-        </p>
+        <h2 class="h3 mb-1 fw-bold">Edit Repertoire</h2>
+        <p class="text-secondary mb-0 small">Profile: <span class="fw-bold">{{ active_profile }}</span> · Select all elements that you can dance confidently.</p>
     </div>
     <div class="d-flex gap-2">
         {% if active_profile != 'default' %}
@@ -15,38 +13,38 @@
             <button type="submit" class="btn btn-sm btn-outline-danger">Delete Profile</button>
         </form>
         {% endif %}
-        <span class="badge text-bg-{{ level_badge.get(current_level, 'secondary') }} fs-6">
-            {{ level_label.get(current_level, current_level) }}
+        <span class="badge text-bg-{{ level_badge[current_level|int] if level_badge and current_level|int in level_badge else 'secondary' }} fs-6 shadow-sm">
+            {{ level_label[current_level|int] if level_label and current_level|int in level_label else current_level }}
         </span>
     </div>
 </div>
 
 {% if saved %}
-<div class="alert alert-success shadow-sm">
-    Profile saved. Great job, your repertoire is up to date!
+<div class="alert alert-success shadow-sm border-0 mb-4">
+    <i class="bi bi-check-circle-fill me-2"></i> Profile saved successfully!
 </div>
 {% endif %}
 
 <div class="card shadow-sm border-0 mb-4">
-    <div class="card-body p-4">
+    <div class="card-body p-3">
         <div class="row g-3 align-items-center">
-            <div class="col-md-6">
-                <label for="elementFilter" class="form-label fw-bold small text-uppercase text-muted">Filter Elements</label>
-                <input type="text" id="elementFilter" class="form-control" placeholder="Search by name or tags...">
+            <div class="col-md-5">
+                <input type="text" id="elementFilter" class="form-control shadow-sm" placeholder="Search by name or tags...">
             </div>
-            <div class="col-md-6">
-                <div class="fw-bold small text-uppercase text-muted mb-2 text-md-end">Overall Progress</div>
-                <div class="progress" style="height: 25px;">
-                    {% set total_count = elements|length %}
-                    {% set known_count = known_ids|length %}
-                    {% if total_count > 0 %}
-                        {% set percent = (known_count / total_count * 100)|round|int %}
-                    {% else %}
-                        {% set percent = 0 %}
-                    {% endif %}
-                    <div class="progress-bar bg-danger" role="progressbar" id="mainProgressBar">
-                        {{ known_count }} / {{ total_count }} Elements ({{ percent }}%)
+            <div class="col-md-7">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="progress flex-grow-1 shadow-sm" style="height: 12px; border-radius: 6px;">
+                        {% set total_count = elements|length %}
+                        {% set known_count = known_ids|length %}
+                        {% if total_count > 0 %}
+                            {% set percent = (known_count / total_count * 100)|round|int %}
+                        {% else %}
+                            {% set percent = 0 %}
+                        {% endif %}
+                        <div class="progress-bar bg-danger" role="progressbar" id="mainProgressBar" style="width: 0%;"></div>
+                        <script>document.getElementById('mainProgressBar').style.width = '{{ percent }}%';</script>
                     </div>
+                    <span class="small fw-bold text-nowrap">{{ known_count }} / {{ total_count }} ({{ percent }}%)</span>
                 </div>
             </div>
         </div>
@@ -56,33 +54,31 @@
 <form method="post">
     {% for level, items in grouped.items() %}
         <div class="card shadow-sm border-0 mb-4 level-section">
-            <div class="card-header bg-white py-3 border-bottom-0">
-                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                    <div class="d-flex align-items-center">
-                        <h3 class="h5 mb-0 me-3">Level {{ level }}</h3>
-                        <span class="badge text-bg-{{ level_badge.get(level, 'secondary') }}">
-                            {{ level_label.get(level, level) }}
-                        </span>
-                        {% set level_total = items|length %}
-                        {% set level_known = items|selectattr('id', 'in', known_ids)|list|length %}
-                        <span class="ms-3 text-muted small fw-bold">
-                            {{ level_known }} of {{ level_total }} selected
-                        </span>
-                    </div>
-                    <div class="btn-group btn-group-sm">
-                        <button type="button" class="btn btn-outline-secondary" onclick="toggleLevel('{{ level }}', true)">Select All</button>
-                        <button type="button" class="btn btn-outline-secondary" onclick="toggleLevel('{{ level }}', false)">Deselect All</button>
-                    </div>
+            <div class="card-header py-2 bg-light d-flex justify-content-between align-items-center border-bottom-0">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle">Level {{ level }}</span>
+                    <h3 class="h6 mb-0 fw-bold">
+                        {{ level_label[level|int] if level_label and level|int in level_label else level }}
+                    </h3>
+                    {% set level_total = items|length %}
+                    {% set level_known = items|selectattr('id', 'in', known_ids)|list|length %}
+                    <span class="text-muted smaller fw-bold ms-2">({{ level_known }}/{{ level_total }})</span>
+                </div>
+                <div class="btn-group btn-group-sm shadow-sm rounded overflow-hidden">
+                    <button type="button" class="btn btn-sm btn-light border" onclick="toggleLevel('{{ level }}', true)">All</button>
+                    <button type="button" class="btn btn-sm btn-light border" onclick="toggleLevel('{{ level }}', false)">None</button>
                 </div>
             </div>
 
-            <div class="card-body">
-                <div class="row g-3">
+            <div class="card-body p-3">
+                <div class="row row-cols-1 row-cols-md-2 g-2">
                     {% for elem in items %}
-                        <div class="col-12 col-lg-6 element-item" data-name="{{ elem.name|lower }}" data-tags="{{ elem.tags|join(' ')|lower }}">
-                            <label class="card h-100 border repertoire-card cursor-pointer">
-                                <div class="card-body">
-                                    <div class="form-check">
+                        <div class="col element-item" 
+                             data-name="{{ (elem.name|lower) if elem.name else 'unnamed' }}" 
+                             data-tags="{{ (elem.tags|join(' ')|lower) if elem.tags else '' }}">
+                            <div class="card h-100 border-0 bg-light-subtle shadow-sm repertoire-card p-2" onclick="document.getElementById('elem_{{ elem.id }}').click(); event.stopPropagation();">
+                                <div class="card-body p-2 d-flex align-items-center gap-3">
+                                    <div class="form-check mb-0">
                                         <input
                                             class="form-check-input level-{{ level }}-check"
                                             type="checkbox"
@@ -90,31 +86,29 @@
                                             value="{{ elem.id }}"
                                             id="elem_{{ elem.id }}"
                                             {% if elem.id in known_ids %}checked{% endif %}
+                                            onclick="event.stopPropagation()"
                                         >
-                                        <label class="form-check-label w-100" for="elem_{{ elem.id }}">
-                                            <div class="d-flex justify-content-between align-items-start gap-3">
-                                                <div>
-                                                    <div class="fw-semibold fs-5">{{ elem.name }}</div>
-                                                    <div class="small text-secondary mt-1">
-                                                        {{ elem.description[:150] }}{% if elem.description|length > 150 %}…{% endif %}
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="mt-3 d-flex flex-wrap gap-2">
-                                                {% for tag in elem.tags %}
-                                                    <span class="badge rounded-pill bg-light text-secondary border small">{{ tag }}</span>
-                                                {% endfor %}
-                                            </div>
-                                        </label>
                                     </div>
-                                    <div class="mt-3 pt-2 border-top">
-                                        <a href="{{ url_for('element_detail', element_id=elem.id) }}" class="small link-danger text-decoration-none fw-bold">
-                                            View Details →
-                                        </a>
+                                    <div class="flex-grow-1 overflow-hidden">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <label class="form-check-label fw-bold text-truncate cursor-pointer" for="elem_{{ elem.id }}">
+                                                {{ elem.name if elem.name else 'Unnamed' }}
+                                            </label>
+                                            <a href="{{ url_for('element_detail', element_id=elem.id) }}" class="small link-primary text-decoration-none" onclick="event.stopPropagation()">
+                                                <i class="bi bi-info-circle"></i>
+                                            </a>
+                                        </div>
+                                        <div class="d-flex flex-wrap gap-1 mt-1">
+                                            <code class="smaller opacity-75 bg-transparent p-0">{{ elem.id }}</code>
+                                            {% if elem.tags %}
+                                                {% for tag in elem.tags[:2] %}
+                                                    <span class="badge bg-secondary-subtle text-secondary-emphasis border-0 smaller fw-normal">{{ tag }}</span>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </div>
-                            </label>
+                            </div>
                         </div>
                     {% endfor %}
                 </div>
@@ -122,25 +116,21 @@
         </div>
     {% endfor %}
 
-    <div class="sticky-actions py-3 bg-white border-top text-center shadow">
-        <button type="submit" class="btn btn-danger btn-lg px-5 shadow">
-            Save Profile
+    <div class="sticky-bottom-actions py-3 bg-body-tertiary border-top text-center shadow">
+        <button type="submit" class="btn btn-primary btn-lg px-5 shadow rounded-pill">
+            Save Repertoire
         </button>
     </div>
 </form>
 
 <script>
-window.addEventListener('DOMContentLoaded', (event) => {
-    document.getElementById('mainProgressBar').style.width = '{{ percent }}%';
-});
-
 function toggleLevel(level, checked) {
     const checks = document.querySelectorAll('.level-' + level + '-check');
     checks.forEach(c => c.checked = checked);
 }
 
 document.getElementById('elementFilter').addEventListener('input', function(e) {
-    const term = e.target.value.toLowerCase();
+    const term = e.target.value.toLowerCase().trim();
     const items = document.querySelectorAll('.element-item');
     
     items.forEach(item => {
@@ -153,7 +143,6 @@ document.getElementById('elementFilter').addEventListener('input', function(e) {
         }
     });
     
-    // Verstecke Level-Sektionen wenn leer
     document.querySelectorAll('.level-section').forEach(section => {
         const visibleItems = section.querySelectorAll('.element-item:not(.d-none)');
         if (visibleItems.length === 0) {
@@ -167,12 +156,19 @@ document.getElementById('elementFilter').addEventListener('input', function(e) {
 
 <style>
 .cursor-pointer { cursor: pointer; }
-.sticky-actions {
+.repertoire-card {
+    transition: all 0.15s ease-in-out;
+}
+.repertoire-card:hover {
+    background-color: var(--bs-light) !important;
+    transform: translateY(-2px);
+}
+.sticky-bottom-actions {
     position: sticky;
     bottom: 0;
     z-index: 1000;
-    margin-left: -1rem;
-    margin-right: -1rem;
+    margin: 0 -1rem;
 }
+.smaller { font-size: 0.75rem; }
 </style>
 {% endblock %}

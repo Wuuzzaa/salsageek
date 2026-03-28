@@ -34,8 +34,8 @@
                     {% endif %}
                 </div>
                 <div class="mb-2">
-                    <span class="badge text-bg-{{ level_badge.get(element.level, 'secondary') }}">
-                        {{ level_label.get(element.level, element.level) }}
+                    <span class="badge text-bg-{{ level_badge[element.level|int] if level_badge and element.level|int in level_badge else 'secondary' }}">
+                        {{ level_label[element.level|int] if level_label and element.level|int in level_label else element.level }}
                     </span>
                 </div>
                 <div>
@@ -62,34 +62,34 @@
         <div class="row g-2">
             <div class="col-6 text-muted small">Hand Hold:</div>
             <div class="col-6 fw-semibold">
-                {% for h in state.hand_hold|list|sort %}
-                    <span class="badge bg-light text-dark border">{{ h }}</span>
+                {% for h in state.hand_hold %}
+                    <span class="badge bg-light border">{{ h }}</span>
                 {% endfor %}
             </div>
 
             <div class="col-6 text-muted small">Connection:</div>
             <div class="col-6 fw-semibold text-success">
-                {{ state.connection|list|sort|join(", ") if state.connection else "neutral" }}
+                {{ state.connection|join(", ") if state.connection else "neutral" }}
             </div>
 
             <div class="col-6 text-muted small">Position:</div>
             <div class="col-6 fw-semibold text-danger">
-                {{ state.position|list|sort|join(", ") }}
+                {{ state.position|join(", ") }}
             </div>
 
             <div class="col-6 text-muted small">Slot:</div>
             <div class="col-6 fw-semibold text-primary">
-                {{ state.slot|list|sort|join(", ") }}
+                {{ state.slot|join(", ") }}
             </div>
 
             <div class="col-6 text-muted small">Leader Weight:</div>
             <div class="col-6 fw-semibold">
-                {{ state.leader_weight|list|sort|join(", ") }}
+                {{ state.leader_weight|join(", ") }}
             </div>
 
             <div class="col-6 text-muted small">Follower Weight:</div>
             <div class="col-6 fw-semibold">
-                {{ state.follower_weight|list|sort|join(", ") }}
+                {{ state.follower_weight|join(", ") }}
             </div>
         </div>
     </div>
@@ -237,8 +237,8 @@
                                         {{ fig.description[:120] }}{% if fig.description|length > 120 %}…{% endif %}
                                     </div>
                                 </div>
-                                <span class="badge text-bg-{{ level_badge.get(fig.level, 'secondary') }}">
-                                    {{ level_label.get(fig.level, fig.level) }}
+                                <span class="badge text-bg-{{ level_badge[fig.level|int] if level_badge and fig.level|int in level_badge else 'secondary' }}">
+                                    {{ level_label[fig.level|int] if level_label and fig.level|int in level_label else fig.level }}
                                 </span>
                             </div>
                         </div>

@@ -126,3 +126,10 @@ connections:
     name: Compression (Druck)
   - id: neutral
     name: Neutral
+
+# Generelle Optionen (nicht in UI-Listen, aber intern genutzt)
+special_options:
+  - id: same
+    name: Gleichbleibend (Same)
+  - id: any
+    name: Beliebig (Any)

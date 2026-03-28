@@ -134,6 +134,13 @@
                             <div class="mb-3">
                                 <label class="form-label small fw-bold mb-1">Hand Hold</label>
                                 <div class="row g-1">
+                                    <div class="col-12 mb-1">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="post_hand" value="same" id="post_same_hand" 
+                                                {% if element and 'same' in element.post.hand_hold %}checked{% endif %}>
+                                            <label class="form-check-label smaller fw-bold" for="post_same_hand">Gleichbleibend (Same)</label>
+                                        </div>
+                                    </div>
                                     {% for hh in schema.hand_holds %}
                                     <div class="col-6">
                                         <div class="form-check">
@@ -150,14 +157,16 @@
                                 <label class="form-label small fw-bold mb-1">Position & Slot</label>
                                 <div class="row g-2">
                                     <div class="col-6">
-                                        <select name="post_pos" class="form-select form-select-sm" multiple size="4">
+                                        <select name="post_pos" class="form-select form-select-sm" multiple size="5">
+                                            <option value="same" {% if element and 'same' in element.post.position %}selected{% endif %} class="fw-bold">-- Gleichbleibend --</option>
                                             {% for pos in schema.positions %}
                                             <option value="{{ pos.id }}" {% if element and pos.id in element.post.position %}selected{% endif %}>{{ pos.name }}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
                                     <div class="col-6">
-                                        <select name="post_slot" class="form-select form-select-sm" multiple size="4">
+                                        <select name="post_slot" class="form-select form-select-sm" multiple size="5">
+                                            <option value="same" {% if element and 'same' in element.post.slot %}selected{% endif %} class="fw-bold">-- Gleichbleibend --</option>
                                             {% for slot in schema.slots %}
                                             <option value="{{ slot.id }}" {% if element and slot.id in element.post.slot %}selected{% endif %}>{{ slot.name }}</option>
                                             {% endfor %}
@@ -171,6 +180,7 @@
                                     <div class="col-6">
                                         <label class="form-label smaller fw-bold mb-1">Gewicht L</label>
                                         <select name="post_leader_weight" class="form-select form-select-sm">
+                                            <option value="same" {% if element and 'same' in element.post.leader_weight %}selected{% endif %}>Gleichbleibend</option>
                                             {% for w in schema.weights %}
                                             <option value="{{ w.id }}" {% if element and w.id in element.post.leader_weight %}selected{% endif %}>{{ w.name }}</option>
                                             {% endfor %}
@@ -179,6 +189,7 @@
                                     <div class="col-6">
                                         <label class="form-label smaller fw-bold mb-1">Gewicht F</label>
                                         <select name="post_follower_weight" class="form-select form-select-sm">
+                                            <option value="same" {% if element and 'same' in element.post.follower_weight %}selected{% endif %}>Gleichbleibend</option>
                                             {% for w in schema.weights %}
                                             <option value="{{ w.id }}" {% if element and w.id in element.post.follower_weight %}selected{% endif %}>{{ w.name }}</option>
                                             {% endfor %}
@@ -188,6 +199,11 @@
                                 <div class="mt-2">
                                     <label class="form-label smaller fw-bold mb-1">Verbindung</label>
                                     <div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="post_conn" value="same" id="post_conn_same" 
+                                                {% if element and 'same' in element.post.connection %}checked{% endif %}>
+                                            <label class="form-check-label smaller fw-bold" for="post_conn_same">Same</label>
+                                        </div>
                                         {% for conn in schema.connections %}
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="checkbox" name="post_conn" value="{{ conn.id }}" id="post_conn_{{ conn.id }}" 
