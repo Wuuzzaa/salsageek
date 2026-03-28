@@ -54,7 +54,19 @@
                                     {% endfor %}
                                 </div>
 
-                                <span class="small link-danger">View Element →</span>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <span class="small link-danger">Details →</span>
+                                    <div class="d-flex gap-1">
+                                        <a href="{{ url_for('element_editor', copy_from=elem.id) }}" class="btn btn-xs btn-outline-secondary" title="Kopieren als Vorlage">
+                                            <i class="bi bi-files"></i>
+                                        </a>
+                                        {% if 'Custom' in elem.tags %}
+                                        <a href="{{ url_for('element_editor', element_id=elem.id) }}" class="btn btn-xs btn-outline-primary" title="Bearbeiten">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </div>
                         </a>
                     </div>
@@ -63,6 +75,10 @@
         </div>
     </div>
 {% endfor %}
+
+<style>
+    .btn-xs { padding: 0.1rem 0.3rem; font-size: 0.75rem; }
+</style>
 
 <script>
 document.getElementById('elementFilter').addEventListener('input', function(e) {

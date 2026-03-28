@@ -298,18 +298,45 @@ def builder():
 @app.route("/element-editor", methods=["GET", "POST"])
 @app.route("/element-editor/<element_id>", methods=["GET", "POST"])
 def element_editor(element_id: str = None):
-    # Last 5 created custom_elements for quick access
+    # Last 10 created custom_elements for quick access & template selection
+    all_elements_sorted = sorted(
+        salsa_service.elements.values(),
+        key=lambda e: (e.level, e.name)
+    )
+    
     recent_custom = sorted(
         [e for e in salsa_service.elements.values() if "Custom" in e.tags],
         key=lambda e: e.id,
         reverse=True
     )[:5]
     
+    # Check if we should copy from an existing element
+    copy_from_id = request.args.get("copy_from")
+    
     element_to_edit = None
     if element_id:
         element_to_edit = salsa_service.get_element(element_id)
         if not element_to_edit:
             abort(404)
+        # Convert to dict for consistent template access
+        element_to_edit = element_editor_service.to_dict(element_to_edit)
+    elif copy_from_id:
+        source_element = salsa_service.get_element(copy_from_id)
+        if source_element:
+            element_to_edit = element_editor_service.to_dict(source_element)
+            element_to_edit["id"] = None  # Remove ID so it saves as new
+            element_to_edit["name"] = f"{element_to_edit['name']} (Copy)"
+
+    # Ensure actions are pre-filled if element exists
+    if element_to_edit:
+        element_to_edit["leader_actions"] = element_editor_service.fill_missing_steps(
+            element_to_edit.get("leader_actions", []), 
+            element_to_edit.get("counts", 8)
+        )
+        element_to_edit["follower_actions"] = element_editor_service.fill_missing_steps(
+            element_to_edit.get("follower_actions", []), 
+            element_to_edit.get("counts", 8)
+        )
 
     if request.method == "POST":
         action = request.form.get("action")
@@ -400,6 +427,8 @@ def element_editor(element_id: str = None):
                     return render_template(
                         "element_editor.html",
                         recent_custom=recent_custom,
+                        all_elements=all_elements_sorted,
+                        copy_from_id=copy_from_id,
                         error=f"Validierungsfehler: {', '.join(errors)}",
                         element=element_to_edit
                     )
@@ -407,7 +436,9 @@ def element_editor(element_id: str = None):
     return render_template(
         "element_editor.html",
         recent_custom=recent_custom,
+        all_elements=all_elements_sorted,
         last_added_id=request.args.get("last_added"),
+        copy_from_id=copy_from_id,
         element=element_to_edit
     )
 

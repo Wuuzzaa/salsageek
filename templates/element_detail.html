@@ -23,10 +23,15 @@
             </div>
 
             <div class="text-end">
-                <div class="mb-2">
+                <div class="mb-2 d-flex gap-2 justify-content-end">
+                    <a href="{{ url_for('element_editor', copy_from=element.id) }}" class="btn btn-sm btn-outline-secondary shadow-sm px-3">
+                        <i class="bi bi-files me-1"></i> Copy
+                    </a>
+                    {% if 'Custom' in element.tags %}
                     <a href="{{ url_for('element_editor', element_id=element.id) }}" class="btn btn-sm btn-outline-primary shadow-sm px-3">
                         <i class="bi bi-pencil me-1"></i> Edit
                     </a>
+                    {% endif %}
                 </div>
                 <div class="mb-2">
                     <span class="badge text-bg-{{ level_badge.get(element.level, 'secondary') }}">

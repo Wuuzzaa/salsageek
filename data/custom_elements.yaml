@@ -1,0 +1,129 @@
+elements:
+- id: custom_cross_body_lead__cbl___copy_l_sch_mich___1774694433
+  name: Cross Body Lead (CBL) (Copy lösch mich))
+  description: Zentrales Traveling-Element des Salsa On1 LA Style. Leader öffnet auf
+    1-2-3 den Slot und lässt den Follower auf 5-6-7 durchlaufen.
+  counts: 8
+  level: 2
+  tags:
+  - cbl
+  - traveling
+  - slot
+  - core
+  - on1
+  - Custom
+  pre:
+    hand_hold:
+    - R_L
+    - L_R
+    - R_R
+    - L_L
+    - two_hand
+    position:
+    - open
+    slot:
+    - left
+    connection:
+    - neutral
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold:
+    - R_L
+    position:
+    - open
+    slot:
+    - left
+    connection:
+    - neutral
+    leader_weight: R
+    follower_weight: L
+  leader_actions:
+  - beat: '1'
+    foot: L
+    direction: pause
+    turn_type: ''
+    description: '1: L pause'
+  - beat: '2'
+    foot: R
+    direction: pause
+    turn_type: ''
+    description: '2: R pause'
+  - beat: '3'
+    foot: L
+    direction: pause
+    turn_type: ''
+    description: '3: L pause'
+  - beat: '4'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '4: - pause'
+  - beat: '5'
+    foot: R
+    direction: pause
+    turn_type: ''
+    description: '5: R pause'
+  - beat: '6'
+    foot: L
+    direction: pause
+    turn_type: ''
+    description: '6: L pause'
+  - beat: '7'
+    foot: R
+    direction: pause
+    turn_type: ''
+    description: '7: R pause'
+  - beat: '8'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '8: - pause'
+  follower_actions:
+  - beat: '1'
+    foot: R
+    direction: pause
+    turn_type: ''
+    description: '1: R pause'
+  - beat: '2'
+    foot: L
+    direction: pause
+    turn_type: ''
+    description: '2: L pause'
+  - beat: '3'
+    foot: R
+    direction: pause
+    turn_type: ''
+    description: '3: R pause'
+  - beat: '4'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '4: - pause'
+  - beat: '5'
+    foot: L
+    direction: pause
+    turn_type: ''
+    description: '5: L pause'
+  - beat: '6'
+    foot: R
+    direction: pause
+    turn_type: ''
+    description: '6: R pause'
+  - beat: '7'
+    foot: L
+    direction: pause
+    turn_type: ''
+    description: '7: L pause'
+  - beat: '8'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '8: - pause'
+  signals:
+  - type: physical_lead
+    description: Leader öffnet den Körper und macht den Slot frei
+  notes: Im LA Style wird der Weg primär über Körperöffnung und Timing freigemacht,
+    nicht über Armkraft.

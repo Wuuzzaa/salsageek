@@ -8,6 +8,36 @@ class ElementEditorService:
         self.path = custom_elements_path
         self.schema = schema or {}
 
+    def to_dict(self, obj):
+        """Converts complex types (Sets, Dataclasses) into simple dicts/lists for Jinja2."""
+        if isinstance(obj, set):
+            return sorted(list(obj))
+        if isinstance(obj, (list, tuple)):
+            return [self.to_dict(i) for i in obj]
+        if isinstance(obj, dict):
+            return {k: self.to_dict(v) for k, v in obj.items()}
+        if hasattr(obj, "__dict__"):
+            return {k: self.to_dict(v) for k, v in obj.__dict__.items() if not k.startswith("_")}
+        return obj
+
+    def fill_missing_steps(self, actions: List[Dict], target_counts: int) -> List[Dict]:
+        """Ensures the actions list has exactly target_counts entries."""
+        current_actions = {str(a.get("beat")): a for a in actions if "beat" in a}
+        new_actions = []
+        for i in range(1, target_counts + 1):
+            beat_str = str(i)
+            if beat_str in current_actions:
+                new_actions.append(current_actions[beat_str])
+            else:
+                new_actions.append({
+                    "beat": beat_str,
+                    "foot": "-",
+                    "direction": "pause",
+                    "turn_type": "",
+                    "description": ""
+                })
+        return sorted(new_actions, key=lambda x: int(x["beat"]) if x["beat"].isdigit() else 999)
+
     def validate_element(self, data: Dict) -> Tuple[bool, List[str]]:
         """Checks an element against the schema."""
         if not self.schema:
