@@ -66,9 +66,11 @@ class BuilderService:
             return {"valid": False, "errors": errors, "elem_list": elem_list}
 
         total_counts = sum(elem.counts for elem in elem_list)
+        sequence_names = [elem.name for elem in elem_list]
         return {
             "valid": True,
             "elem_list": elem_list,
+            "sequence_names": sequence_names,
             "total_counts": total_counts,
             "phrase_count": total_counts / 8,
             "start_state": self._state_str(elem_list[0].pre),

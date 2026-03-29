@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}Visualization · SalsaGeek{% endblock %}
+
+{% block content %}
+<div class="mb-4 d-flex justify-content-between align-items-center">
+    <div>
+        <h2 class="h3 mb-1">Flow Visualization</h2>
+        <p class="text-secondary mb-0">
+            Graphical representation of the element sequence and state transitions.
+        </p>
+    </div>
+    <a href="{{ url_for('builder', sequence=raw) }}" class="btn btn-outline-primary">
+        Back to Builder
+    </a>
+</div>
+
+{% if result.valid %}
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body p-4 text-center">
+            <div class="mermaid">
+                graph LR
+                    Start((Start)) --> E1
+                    
+                    {% for eid in sequence %}
+                        {% set elem = elements[eid] %}
+                        E{{ loop.index }}["{{ elem.name }}<br/><small>({{ elem.counts }} Counts)</small>"]
+                        
+                        {% if not loop.last %}
+                            {% set next_eid = sequence[loop.index] %}
+                            {% set next_elem = elements[next_eid] %}
+                            E{{ loop.index }} -- "{{ next_elem.pre.hand_hold|join(', ') if next_elem else '?' }}" --> E{{ loop.index + 1 }}
+                        {% else %}
+                            E{{ loop.index }} --> End((End))
+                        {% endif %}
+                    {% endfor %}
+                    
+                    subgraph Legend
+                        L1[Hand Hold]
+                    end
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body p-4">
+                    <h4 class="h5 mb-3">State Transitions</h4>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr class="text-muted small">
+                                    <th>Element</th>
+                                    <th>Post-State (Hand / Pos)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for eid in sequence %}
+                                    {% set elem = elements[eid] %}
+                                    <tr>
+                                        <td class="fw-bold">{{ elem.name }}</td>
+                                        <td>
+                                            <span class="badge bg-light text-dark border">{{ elem.post.hand_hold }}</span>
+                                            <span class="badge bg-light text-dark border">{{ elem.post.position }}</span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body p-4">
+                    <h4 class="h5 mb-3">Sequence Details</h4>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            Total Counts
+                            <span class="fw-bold">{{ result.total_counts }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            Phrases (8-Beat)
+                            <span class="fw-bold">{{ "%.1f"|format(result.phrase_count) }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            Difficulty
+                            <span class="badge text-bg-info">Level {{ result.elem_list|map(attribute='level')|max }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="alert alert-danger shadow-sm border-0">
+        <h4 class="alert-heading">Invalid Sequence</h4>
+        <p>The visualization cannot be generated because the elements are not compatible.</p>
+        <hr>
+        <p class="mb-0">Please return to the builder and fix the errors.</p>
+    </div>
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+    mermaid.initialize({ 
+        startOnLoad: true,
+        theme: 'neutral',
+        flowchart: {
+            useMaxWidth: true,
+            htmlLabels: true,
+            curve: 'basis'
+        }
+    });
+</script>
+
+<style>
+    .mermaid {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+    }
+</style>
+{% endblock %}

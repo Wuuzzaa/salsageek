@@ -459,6 +459,29 @@ def element_editor(element_id: str = None):
         element=element_to_edit
     )
 
+@app.route("/visualize")
+def visualize():
+    raw_sequence = request.args.get("sequence", "")
+    sequence = builder_service.sequence_from_raw(raw_sequence)
+    
+    if not sequence:
+        return redirect(url_for("builder"))
+        
+    validation = builder_service.validate_sequence(sequence)
+    
+    # Get active profile and known elements for context
+    active_profile = get_active_profile()
+    known_ids = salsa_service.get_known_elements(active_profile)
+    
+    return render_template(
+        "visualize.html",
+        sequence=sequence,
+        raw=raw_sequence,
+        result=validation,
+        elements=salsa_service.elements,
+        known_ids=known_ids
+    )
+
 
 if __name__ == "__main__":
     app.run(debug=True)
