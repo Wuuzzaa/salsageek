@@ -473,13 +473,19 @@ def visualize():
     active_profile = get_active_profile()
     known_ids = salsa_service.get_known_elements(active_profile)
     
+    # Optional: Get figure or name for context
+    title = request.args.get("title", "Flow Visualization")
+    back_url = request.args.get("back", url_for("builder", sequence=raw_sequence))
+    
     return render_template(
         "visualize.html",
         sequence=sequence,
         raw=raw_sequence,
         result=validation,
         elements=salsa_service.elements,
-        known_ids=known_ids
+        known_ids=known_ids,
+        title=title,
+        back_url=back_url
     )
 
 

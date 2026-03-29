@@ -83,6 +83,9 @@
                                                 <a href="{{ url_for('figure_detail', figure_id=fig.id) }}" class="badge bg-success-subtle text-success border-success text-decoration-none">
                                                     {{ fig.name }}
                                                 </a>
+                                                <a href="{{ url_for('visualize', sequence=fig.sequence|join(','), title=fig.name, back=url_for('empfehlungen')) }}" class="small text-muted text-decoration-none ms-1" title="Visualize Flow">
+                                                    <i class="bi bi-diagram-3"></i>
+                                                </a>
                                             {% endfor %}
                                         </div>
                                     {% else %}
@@ -102,6 +105,9 @@
                                             {% for fig in rec.almost_unlocked %}
                                                 <a href="{{ url_for('figure_detail', figure_id=fig.id) }}" class="badge bg-warning-subtle text-dark border-warning text-decoration-none">
                                                     {{ fig.name }}
+                                                </a>
+                                                <a href="{{ url_for('visualize', sequence=fig.sequence|join(','), title=fig.name, back=url_for('empfehlungen')) }}" class="small text-muted text-decoration-none ms-1" title="Visualize Flow">
+                                                    <i class="bi bi-diagram-3"></i>
                                                 </a>
                                             {% endfor %}
                                         </div>

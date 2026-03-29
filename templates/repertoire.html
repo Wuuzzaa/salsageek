@@ -97,6 +97,9 @@
                                             <a href="{{ url_for('element_detail', element_id=elem.id) }}" class="small link-primary text-decoration-none" onclick="event.stopPropagation()">
                                                 <i class="bi bi-info-circle"></i>
                                             </a>
+                                            <a href="{{ url_for('visualize', sequence=elem.id, title=elem.name, back=url_for('repertoire')) }}" class="small text-muted text-decoration-none ms-1" onclick="event.stopPropagation()" title="Visualize State">
+                                                <i class="bi bi-diagram-3"></i>
+                                            </a>
                                         </div>
                                         <div class="d-flex flex-wrap gap-1 mt-1">
                                             <code class="smaller opacity-75 bg-transparent p-0">{{ elem.id }}</code>

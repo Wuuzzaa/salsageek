@@ -1,55 +1,73 @@
 {% extends "base.html" %}
-{% block title %}Visualization · SalsaGeek{% endblock %}
+{% block title %}{{ title }} · SalsaGeek{% endblock %}
 
 {% block content %}
 <div class="mb-4 d-flex justify-content-between align-items-center">
     <div>
-        <h2 class="h3 mb-1">Flow Visualization</h2>
+        <h2 class="h3 mb-1 fw-bold">{{ title }}</h2>
         <p class="text-secondary mb-0">
             Graphical representation of the element sequence and state transitions.
         </p>
     </div>
-    <a href="{{ url_for('builder', sequence=raw) }}" class="btn btn-outline-primary">
-        Back to Builder
+    <a href="{{ back_url }}" class="btn btn-outline-primary shadow-sm rounded-pill px-4">
+        <i class="bi bi-arrow-left me-1"></i> Back
     </a>
 </div>
 
 {% if result.valid %}
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body p-4 text-center">
-            <div class="mermaid">
-                graph LR
-                    Start((Start)) --> E1
-                    
-                    {% for eid in sequence %}
-                        {% set elem = elements[eid] %}
-                        E{{ loop.index }}["{{ elem.name }}<br/><small>({{ elem.counts }} Counts)</small>"]
+    <div class="card shadow-sm border-0 mb-4 overflow-hidden">
+        <div class="card-header bg-white py-3 border-bottom-0">
+            <h5 class="card-title mb-0 d-flex align-items-center">
+                <i class="bi bi-diagram-3 me-2 text-primary"></i> Sequence Flow
+            </h5>
+        </div>
+        <div class="card-body p-4 text-center bg-light-subtle">
+            <div class="mermaid-container">
+                <div class="mermaid">
+                    graph LR
+                        Start((Start)) --> E1
                         
-                        {% if not loop.last %}
-                            {% set next_eid = sequence[loop.index] %}
-                            {% set next_elem = elements[next_eid] %}
-                            E{{ loop.index }} -- "{{ next_elem.pre.hand_hold|join(', ') if next_elem else '?' }}" --> E{{ loop.index + 1 }}
-                        {% else %}
-                            E{{ loop.index }} --> End((End))
-                        {% endif %}
-                    {% endfor %}
-                    
-                    subgraph Legend
-                        L1[Hand Hold]
-                    end
+                        {% for eid in sequence %}
+                            {% set elem = elements[eid] %}
+                            E{{ loop.index }}["<strong>{{ elem.name }}</strong><br/><small>{{ elem.counts }} Counts</small>"]
+                            
+                            {% if not loop.last %}
+                                {% set next_eid = sequence[loop.index] %}
+                                {% set next_elem = elements[next_eid] %}
+                                E{{ loop.index }} -- "<span>{{ next_elem.pre.hand_hold|join(', ') if next_elem else '?' }}<br/>{{ next_elem.pre.position }}</span>" --> E{{ loop.index + 1 }}
+                            {% else %}
+                                E{{ loop.index }} --> End((End))
+                            {% endif %}
+                        {% endfor %}
+                        
+                        style Start fill:#f8f9fa,stroke:#dee2e6
+                        style End fill:#f8f9fa,stroke:#dee2e6
+                        {% for eid in sequence %}
+                            {% if eid in known_ids %}
+                                style E{{ loop.index }} fill:#d1e7dd,stroke:#badbcc
+                            {% else %}
+                                style E{{ loop.index }} fill:#fff3cd,stroke:#ffe69c
+                            {% endif %}
+                        {% endfor %}
+                </div>
+            </div>
+            <div class="mt-3 d-flex justify-content-center gap-3 small">
+                <div class="d-flex align-items-center"><span class="legend-box bg-success-subtle border-success"></span> Known</div>
+                <div class="d-flex align-items-center"><span class="legend-box bg-warning-subtle border-warning"></span> Missing</div>
             </div>
         </div>
     </div>
 
     <div class="row g-4">
-        <div class="col-md-6">
+        <div class="col-md-7">
             <div class="card shadow-sm border-0 h-100">
                 <div class="card-body p-4">
-                    <h4 class="h5 mb-3">State Transitions</h4>
+                    <h4 class="h5 mb-3 fw-bold">Step-by-Step Transitions</h4>
                     <div class="table-responsive">
-                        <table class="table table-sm table-hover">
-                            <thead>
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
                                 <tr class="text-muted small">
+                                    <th style="width: 40px">#</th>
                                     <th>Element</th>
                                     <th>Post-State (Hand / Pos)</th>
                                 </tr>
@@ -58,10 +76,18 @@
                                 {% for eid in sequence %}
                                     {% set elem = elements[eid] %}
                                     <tr>
-                                        <td class="fw-bold">{{ elem.name }}</td>
+                                        <td><span class="badge rounded-pill bg-light text-dark border">{{ loop.index }}</span></td>
                                         <td>
-                                            <span class="badge bg-light text-dark border">{{ elem.post.hand_hold }}</span>
-                                            <span class="badge bg-light text-dark border">{{ elem.post.position }}</span>
+                                            <div class="fw-bold">{{ elem.name }}</div>
+                                            <div class="small text-muted">{{ elem.id }}</div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex flex-wrap gap-1">
+                                                {% for hh in elem.post.hand_hold %}
+                                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-normal">{{ hh }}</span>
+                                                {% endfor %}
+                                                <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle fw-normal">{{ elem.post.position }}</span>
+                                            </div>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -71,34 +97,59 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-5">
             <div class="card shadow-sm border-0 h-100">
                 <div class="card-body p-4">
-                    <h4 class="h5 mb-3">Sequence Details</h4>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                            Total Counts
-                            <span class="fw-bold">{{ result.total_counts }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                            Phrases (8-Beat)
+                    <h4 class="h5 mb-3 fw-bold">Sequence Summary</h4>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent">
+                            <span class="text-secondary">Total Counts</span>
+                            <span class="fw-bold fs-5">{{ result.total_counts }}</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent">
+                            <span class="text-secondary">Phrases (8-Beat)</span>
                             <span class="fw-bold">{{ "%.1f"|format(result.phrase_count) }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                            Difficulty
-                            <span class="badge text-bg-info">Level {{ result.elem_list|map(attribute='level')|max }}</span>
-                        </li>
-                    </ul>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent">
+                            <span class="text-secondary">Difficulty</span>
+                            <span class="badge text-bg-{{ level_badge.get(result.elem_list|map(attribute='level')|max, 'secondary') }} fs-6">
+                                Level {{ result.elem_list|map(attribute='level')|max }}
+                            </span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent">
+                            <span class="text-secondary">Elements</span>
+                            <span class="fw-bold">{{ result.elem_list|length }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 p-3 rounded bg-light border-0">
+                        <h6 class="fw-bold small text-uppercase text-muted mb-2">Full Sequence Path</h6>
+                        <div class="small fw-medium">
+                            {% for elem in result.elem_list %}
+                                {{ elem.name }}{% if not loop.last %} <i class="bi bi-chevron-right text-muted mx-1"></i> {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 {% else %}
-    <div class="alert alert-danger shadow-sm border-0">
-        <h4 class="alert-heading">Invalid Sequence</h4>
-        <p>The visualization cannot be generated because the elements are not compatible.</p>
-        <hr>
-        <p class="mb-0">Please return to the builder and fix the errors.</p>
+    <div class="alert alert-danger shadow-sm border-0 p-4">
+        <div class="d-flex">
+            <i class="bi bi-exclamation-triangle-fill fs-2 me-3"></i>
+            <div>
+                <h4 class="alert-heading fw-bold">Invalid Sequence</h4>
+                <p>The visualization cannot be generated because the elements are not compatible in this order.</p>
+                <ul class="mb-3">
+                    {% for error in result.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                <hr>
+                <p class="mb-0">Please return and check the transition states of your elements.</p>
+            </div>
+        </div>
     </div>
 {% endif %}
 
@@ -108,18 +159,43 @@
         startOnLoad: true,
         theme: 'neutral',
         flowchart: {
-            useMaxWidth: true,
+            useMaxWidth: false,
             htmlLabels: true,
-            curve: 'basis'
-        }
+            curve: 'basis',
+            padding: 40
+        },
+        securityLevel: 'loose'
     });
 </script>
 
 <style>
-    .mermaid {
+    .mermaid-container {
         background: white;
-        padding: 20px;
-        border-radius: 8px;
+        padding: 40px 20px;
+        border-radius: 12px;
+        overflow-x: auto;
+        min-height: 200px;
+        display: flex;
+        justify-content: center;
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.02);
+    }
+    .mermaid {
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    }
+    .mermaid[data-processed="true"] {
+        opacity: 1;
+    }
+    .legend-box {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        margin-right: 6px;
+        border-radius: 3px;
+        border: 1px solid;
+    }
+    .bg-light-subtle {
+        background-color: #fcfcfd !important;
     }
 </style>
 {% endblock %}

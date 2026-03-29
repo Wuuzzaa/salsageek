@@ -24,6 +24,11 @@
 
             <div class="text-end">
                 <div class="mb-2">
+                    <a href="{{ url_for('visualize', sequence=figure.sequence|join(','), title=figure.name, back=url_for('figure_detail', figure_id=figure.id)) }}" class="btn btn-sm btn-outline-primary mb-2 shadow-sm rounded-pill px-3">
+                        <i class="bi bi-diagram-3 me-1"></i> Visualize Flow
+                    </a>
+                </div>
+                <div class="mb-2">
                     <span class="badge text-bg-{{ level_badge.get(figure.level, 'secondary') }}">
                         {{ level_label.get(figure.level, figure.level) }}
                     </span>
