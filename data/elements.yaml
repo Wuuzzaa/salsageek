@@ -1,1006 +1,24 @@
-elements:
+﻿elements:
+  # ===========================================================================
+  # LEVEL 1 – ANFÄNGER (BASICS & DREHUNGEN)
+  # ===========================================================================
+
   - id: basic_open
-    name: Basic Step (Open)
+    name: "Basic Step (Open)"
     description: >
-      Grundschritt in offener Haltung im Salsa On1 / LA Style.
-      Leader bricht auf 1 vorwärts, Follower auf 1 rückwärts.
-      Getanzt wird auf 1-2-3, Pause auf 4, dann 5-6-7, Pause auf 8.
+      Der klassische Grundschritt in offener Haltung (R_L).
+      Leader bricht auf 1 vor, Follower auf 1 zurück.
     counts: 8
     level: 1
-    tags: [basic, footwork, open, on1]
+    tags: [basic, open, on1]
     pre:
       hand_hold: [R_L, two_hand, free]
       position: [open]
-      slot: [left, center]
+      slot: [center]
       leader_weight: [R]
       follower_weight: [L]
     post:
       hand_hold: same
-      position: open
-      slot: left
-      leader_weight: R
-      follower_weight: L
-    leader_actions:
-      - beat: "1"
-        foot: L
-        direction: forward
-        description: Schritt vorwärts links
-      - beat: "2"
-        foot: R
-        direction: in_place
-        description: Gewicht zurück auf rechts / Break
-      - beat: "3"
-        foot: L
-        direction: back_to_center
-        description: Zurück zur Mitte auf links
-      - beat: "4"
-        description: Pause
-      - beat: "5"
-        foot: R
-        direction: back
-        description: Schritt zurück rechts
-      - beat: "6"
-        foot: L
-        direction: in_place
-        description: Gewicht vor auf links / Break
-      - beat: "7"
-        foot: R
-        direction: back_to_center
-        description: Zurück zur Mitte auf rechts
-      - beat: "8"
-        description: Pause
-    follower_actions:
-      - beat: "1"
-        foot: R
-        direction: back
-        description: Schritt zurück rechts (Break)
-      - beat: "2"
-        foot: L
-        direction: in_place
-        description: Gewicht vor auf links
-      - beat: "3"
-        foot: R
-        direction: back_to_center
-        description: Zurück zur Mitte auf rechts
-      - beat: "4"
-        description: Pause
-      - beat: "5"
-        foot: L
-        direction: forward
-        description: Schritt vorwärts links
-      - beat: "6"
-        foot: R
-        direction: in_place
-        description: Gewicht zurück auf rechts / Break
-      - beat: "7"
-        foot: L
-        direction: back_to_center
-        description: Zurück zur Mitte auf links
-      - beat: "8"
-        description: Pause
-    signals:
-      - type: none
-        description: Kein separates Signal, normaler gemeinsamer Grundschritt
-    notes: >
-      Basis für die offene Partnerarbeit im LA Style.
-
-  - id: basic_closed
-    name: Basic Step (Closed)
-    description: >
-      Grundschritt in geschlossener Haltung im Salsa On1 / LA Style.
-      Gleiche Rhythmik wie Open Basic, aber mit geschlossenem Frame.
-    counts: 8
-    level: 1
-    tags: [basic, footwork, closed, on1]
-    pre:
-      hand_hold: [two_hand]
-      position: [closed]
-      slot: [left]
-      leader_weight: [R]
-      follower_weight: [L]
-    post:
-      hand_hold: two_hand
-      position: closed
-      slot: left
-      leader_weight: R
-      follower_weight: L
-    leader_actions:
-      - beat: "1"
-        foot: L
-        direction: forward
-        description: Vorwärts links im geschlossenen Frame
-      - beat: "2"
-        foot: R
-        direction: in_place
-        description: Gewicht zurück auf rechts / Break
-      - beat: "3"
-        foot: L
-        direction: back_to_center
-        description: Zurück zur Mitte auf links
-      - beat: "4"
-        description: Pause
-      - beat: "5"
-        foot: R
-        direction: back
-        description: Rückwärts rechts
-      - beat: "6"
-        foot: L
-        direction: in_place
-        description: Gewicht vor auf links / Break
-      - beat: "7"
-        foot: R
-        direction: back_to_center
-        description: Zurück zur Mitte auf rechts
-      - beat: "8"
-        description: Pause
-    follower_actions:
-      - beat: "1"
-        foot: R
-        direction: back
-        description: Rückwärts rechts (Break)
-      - beat: "2"
-        foot: L
-        direction: in_place
-        description: Gewicht vor auf links
-      - beat: "3"
-        foot: R
-        direction: back_to_center
-        description: Zurück zur Mitte auf rechts
-      - beat: "4"
-        description: Pause
-      - beat: "5"
-        foot: L
-        direction: forward
-        description: Vorwärts links
-      - beat: "6"
-        foot: R
-        direction: in_place
-        description: Gewicht zurück auf rechts / Break
-      - beat: "7"
-        foot: L
-        direction: back_to_center
-        description: Zurück zur Mitte auf links
-      - beat: "8"
-        description: Pause
-    signals:
-      - type: frame_lead
-        description: Führung über stabilen Frame, ohne Armziehen
-    notes: >
-      Geschlossene Haltung für Basics und Übergänge.
-
-  - id: open_to_closed
-    name: Open → Closed Transition
-    description: >
-      Übergang von offener in geschlossene Haltung innerhalb eines 8-Count-Grundmusters.
-      Der Leader lädt den Follower in den Frame ein und schließt die Distanz kontrolliert.
-    counts: 8
-    level: 1
-    tags: [transition, open, closed, position_change]
-    pre:
-      hand_hold: [R_L, two_hand]
-      position: [open]
-      slot: [left]
-      leader_weight: [R]
-      follower_weight: [L]
-    post:
-      hand_hold: two_hand
-      position: closed
-      slot: left
-      leader_weight: R
-      follower_weight: L
-    leader_actions:
-      - beat: "1"
-        foot: L
-        direction: forward
-        description: Basic starten, Distanz leicht verkürzen
-      - beat: "2"
-        foot: R
-        direction: in_place
-        description: Break und Kontakt stabil halten
-      - beat: "3"
-        foot: L
-        direction: center
-        description: Zur Mitte kommen
-      - beat: "4"
-        description: Pause
-      - beat: "5"
-        foot: R
-        direction: back_small
-        description: Kleiner Rückschritt, dabei Follower in geschlossene Haltung aufnehmen
-      - beat: "6"
-        foot: L
-        direction: in_place
-        description: Frame schließen und Gewicht wechseln
-      - beat: "7"
-        foot: R
-        direction: center
-        description: Geschlossene Haltung stabilisieren
-      - beat: "8"
-        description: Pause
-    follower_actions:
-      - beat: "1"
-        foot: R
-        direction: back
-        description: Rückwärts rechts, offenen Kontakt halten
-      - beat: "2"
-        foot: L
-        direction: in_place
-        description: Gewicht vor auf links
-      - beat: "3"
-        foot: R
-        direction: center
-        description: Zur Mitte
-      - beat: "4"
-        description: Pause
-      - beat: "5"
-        foot: L
-        direction: forward_small
-        description: Kleiner Schritt nach vorn in Richtung Leader
-      - beat: "6"
-        foot: R
-        direction: in_place
-        description: Gewicht zurück auf rechts, Frame annehmen
-      - beat: "7"
-        foot: L
-        direction: center
-        description: Geschlossene Haltung stabilisieren
-      - beat: "8"
-        description: Pause
-    signals:
-      - type: invite_in
-        beat: "5"
-        hand: R
-        description: Leader lädt den Follower weich in die geschlossene Haltung ein
-
-  - id: closed_to_open
-    name: Closed → Open Transition
-    description: >
-      Öffnung aus geschlossener in offene Haltung.
-      Der Leader gibt Raum und löst den Frame kontrolliert in eine offene Verbindung auf.
-    counts: 8
-    level: 1
-    tags: [transition, closed, open, position_change]
-    pre:
-      hand_hold: [two_hand]
-      position: [closed]
-      slot: [left]
-      leader_weight: [R]
-      follower_weight: [L]
-    post:
-      hand_hold: R_L
-      position: open
-      slot: left
-      leader_weight: R
-      follower_weight: L
-    leader_actions:
-      - beat: "1"
-        foot: L
-        direction: forward_small
-        description: Start im geschlossenen Frame
-      - beat: "2"
-        foot: R
-        direction: in_place
-        description: Break und Distanz vorbereiten
-      - beat: "3"
-        foot: L
-        direction: center
-        description: Zur Mitte
-      - beat: "4"
-        description: Pause
-      - beat: "5"
-        foot: R
-        direction: back
-        description: Distanz öffnen
-      - beat: "6"
-        foot: L
-        direction: in_place
-        description: Linke-Rechte Verbindung beibehalten, restlichen Frame lösen
-      - beat: "7"
-        foot: R
-        direction: center
-        description: Offene Position stabilisieren
-      - beat: "8"
-        description: Pause
-    follower_actions:
-      - beat: "1"
-        foot: R
-        direction: back_small
-        description: Im geschlossenen Frame starten
-      - beat: "2"
-        foot: L
-        direction: in_place
-        description: Gewicht vor auf links
-      - beat: "3"
-        foot: R
-        direction: center
-        description: Zur Mitte
-      - beat: "4"
-        description: Pause
-      - beat: "5"
-        foot: L
-        direction: forward
-        description: Nach vorn in die offene Distanz
-      - beat: "6"
-        foot: R
-        direction: in_place
-        description: Gewicht zurück auf rechts
-      - beat: "7"
-        foot: L
-        direction: center
-        description: Offene Position stabilisieren
-      - beat: "8"
-        description: Pause
-    signals:
-      - type: open_out
-        beat: "5"
-        hand: L
-        description: Leader gibt Raum und öffnet die Haltung nach außen
-
-  - id: two_hand_hold_entry
-    name: Two Hand Hold Entry
-    description: >
-      Übergang in Two-Hand-Hold aus offener Einhandverbindung oder aus freier Position.
-      Die zweite Hand wird sichtbar und ohne Greifen angeboten.
-    counts: 8
-    level: 1
-    tags: [transition, hand_change, two_hand]
-    pre:
-      hand_hold: [R_L, free]
-      position: [open]
-      slot: [left, center]
-      leader_weight: [R]
-      follower_weight: [L]
-    post:
-      hand_hold: two_hand
-      position: open
-      slot: left
-      leader_weight: R
-      follower_weight: L
-    leader_actions:
-      - beat: "1"
-        foot: L
-        direction: forward
-        description: Open Basic starten
-      - beat: "2"
-        foot: R
-        direction: in_place
-        description: Gewicht zurück auf rechts
-      - beat: "3"
-        foot: L
-        direction: center
-        description: Zur Mitte
-      - beat: "4"
-        description: Pause
-      - beat: "5"
-        foot: R
-        direction: back
-        description: Linke Hand aktiv anbieten
-      - beat: "6"
-        foot: L
-        direction: in_place
-        description: Zweite Verbindung annehmen
-      - beat: "7"
-        foot: R
-        direction: center
-        description: Two-Hand-Hold stabilisieren
-      - beat: "8"
-        description: Pause
-    follower_actions:
-      - beat: "1"
-        foot: R
-        direction: back
-        description: Open Basic rückwärts
-      - beat: "2"
-        foot: L
-        direction: in_place
-        description: Gewicht vor auf links
-      - beat: "3"
-        foot: R
-        direction: center
-        description: Zur Mitte
-      - beat: "4"
-        description: Pause
-      - beat: "5"
-        foot: L
-        direction: forward
-        description: Vorwärts, angebotene zweite Hand sehen
-      - beat: "6"
-        foot: R
-        direction: in_place
-        description: Zweite Hand annehmen
-      - beat: "7"
-        foot: L
-        direction: center
-        description: Two-Hand-Hold stabilisieren
-      - beat: "8"
-        description: Pause
-    signals:
-      - type: offer_second_hand
-        beat: "5"
-        hand: L
-        description: Linke Hand wird klar ins Sichtfeld angeboten
-
-  - id: follower_right_turn
-    name: Follower Right Turn
-    description: >
-      Standard-Rechtsdrehung der Follower im Salsa On1 LA Style.
-      Die Drehung wird typisch auf 5-6-7 getanzt.
-    counts: 8
-    level: 1
-    tags: [turn, follower_turn, right_turn, on1]
-    pre:
-      hand_hold: [R_L, two_hand]
-      position: [open]
-      slot: [left]
-      leader_weight: [R]
-      follower_weight: [L]
-    post:
-      hand_hold: R_L
-      position: open
-      slot: left
-      leader_weight: R
-      follower_weight: L
-    leader_actions:
-      - beat: "1"
-        foot: L
-        direction: forward_small
-        description: Normale Basic-Vorbereitung
-      - beat: "2"
-        foot: R
-        direction: in_place
-        description: Break
-      - beat: "3"
-        foot: L
-        direction: center
-        description: Vorbereitung abgeschlossen
-      - beat: "4"
-        description: Pause
-      - beat: "5"
-        foot: R
-        direction: back_small
-        hand: L
-        action: raise
-        description: Linken Arm heben und Drehfenster öffnen
-      - beat: "6"
-        foot: L
-        direction: in_place
-        hand: L
-        action: guide_cw
-        description: Kreisförmige Führung für Rechtsdrehung
-      - beat: "7"
-        foot: R
-        direction: center
-        hand: L
-        action: lower
-        description: Drehung sauber beenden und Verbindung sammeln
-      - beat: "8"
-        description: Pause
-    follower_actions:
-      - beat: "1"
-        foot: R
-        direction: back
-        description: Schritt zurück rechts (Break)
-      - beat: "2"
-        foot: L
-        direction: in_place
-        description: Gewicht vor auf links
-      - beat: "3"
-        foot: R
-        direction: forward
-        description: Schritt vorwärts rechts (Sammlung)
-      - beat: "4"
-        description: Pause
-      - beat: "5"
-        foot: L
-        direction: forward
-        action: start_turn_cw
-        description: Vorwärts links in die Drehung eintreten (Pivot)
-      - beat: "6"
-        foot: R
-        direction: pivot
-        action: turn_cw
-        description: Rechtsdrehung fortsetzen (1/2 Drehung)
-      - beat: "7"
-        foot: L
-        direction: back
-        action: complete_turn
-        description: Drehung beenden, zurück auf links, wieder zum Leader ausrichten
-      - beat: "8"
-        description: Pause
-    signals:
-      - type: arm_raise
-        beat: "5"
-        hand: L
-        description: Linker Arm hebt sich und schafft Raum für die Drehung
-      - type: circular_lead
-        beat: "5-7"
-        hand: L
-        direction: clockwise
-        description: Weiche kreisförmige Führung für die Rechtsdrehung
-    notes: >
-      Für Anfänger im LA Style ist die Rechtsdrehung auf 5-6-7 die sinnvollere Standardnotation.
-
-  - id: follower_left_turn
-    name: Follower Left Turn
-    description: >
-      Linksdrehung der Follower im Salsa On1 LA Style.
-      Hier als Außen-/Linksdrehung modelliert, geführt über die rechte Leader-Hand.
-    counts: 8
-    level: 2
-    tags: [turn, follower_turn, left_turn, on1]
-    pre:
-      hand_hold: [L_R]
-      position: [open]
-      slot: [left]
-      leader_weight: [R]
-      follower_weight: [L]
-    post:
-      hand_hold: L_R
-      position: open
-      slot: left
-      leader_weight: R
-      follower_weight: L
-    leader_actions:
-      - beat: "1"
-        foot: L
-        direction: forward_small
-        description: Normale Basic-Vorbereitung
-      - beat: "2"
-        foot: R
-        direction: in_place
-        description: Break
-      - beat: "3"
-        foot: L
-        direction: center
-        description: Vorbereitung abgeschlossen
-      - beat: "4"
-        description: Pause
-      - beat: "5"
-        foot: R
-        direction: back_small
-        hand: R
-        action: raise
-        description: Rechten Arm heben und Außenbahn vorbereiten
-      - beat: "6"
-        foot: L
-        direction: in_place
-        hand: R
-        action: guide_ccw
-        description: Führung gegen den Uhrzeigersinn
-      - beat: "7"
-        foot: R
-        direction: center
-        hand: R
-        action: lower
-        description: Drehung sauber schließen
-      - beat: "8"
-        description: Pause
-    follower_actions:
-      - beat: "1"
-        foot: R
-        direction: back
-        description: Schritt zurück rechts (Break)
-      - beat: "2"
-        foot: L
-        direction: in_place
-        description: Gewicht vor auf links
-      - beat: "3"
-        foot: R
-        direction: forward
-        description: Schritt vorwärts rechts (Sammlung)
-      - beat: "4"
-        description: Pause
-      - beat: "5"
-        foot: L
-        direction: forward
-        action: start_turn_ccw
-        description: Vorwärts links in die Linksdrehung eintreten (Pivot)
-      - beat: "6"
-        foot: R
-        direction: pivot
-        action: turn_ccw
-        description: Linksdrehung fortsetzen (1/2 Drehung)
-      - beat: "7"
-        foot: L
-        direction: back
-        action: complete_turn
-        description: Drehung beenden, zurück auf links, wieder zum Leader ausrichten
-      - beat: "8"
-        description: Pause
-    signals:
-      - type: arm_raise
-        beat: "5"
-        hand: R
-        description: Rechter Arm hebt sich für die Linksdrehung
-      - type: circular_lead
-        beat: "5-7"
-        hand: R
-        direction: counter_clockwise
-        description: Weiche Führung gegen den Uhrzeigersinn
-    notes: >
-      Diese Variante setzt L_R als Ausgangshand voraus. Das macht die Notation sauberer und reproduzierbarer.
-
-  - id: hand_change_front
-    name: Hand Change (Front)
-    description: >
-      Wechsel von R_L auf L_R vor dem Körper in offener Position.
-      Wird oft genutzt, um eine saubere Vorbereitung für Linksdrehungen zu schaffen.
-    counts: 8
-    level: 2
-    tags: [transition, hand_change, open]
-    pre:
-      hand_hold: [R_L]
-      position: [open]
-      slot: [left]
-      leader_weight: [R]
-      follower_weight: [L]
-    post:
-      hand_hold: L_R
-      position: open
-      slot: left
-      leader_weight: R
-      follower_weight: L
-    leader_actions:
-      - beat: "1"
-        foot: L
-        direction: forward
-        description: Basic starten
-      - beat: "2"
-        foot: R
-        direction: in_place
-        description: Break
-      - beat: "3"
-        foot: L
-        direction: center
-        description: Vorbereitung halten
-      - beat: "4"
-        description: Pause
-      - beat: "5"
-        foot: R
-        direction: back
-        action: pass_hand_front
-        description: Verbindung vor dem Körper von rechts nach links übergeben
-      - beat: "6"
-        foot: L
-        direction: in_place
-        description: Neue Handverbindung sichern
-      - beat: "7"
-        foot: R
-        direction: center
-        description: L_R stabilisieren
-      - beat: "8"
-        description: Pause
-    follower_actions:
-      - beat: "1"
-        foot: R
-        direction: back
-        description: Basic rückwärts
-      - beat: "2"
-        foot: L
-        direction: in_place
-        description: Gewicht vor
-      - beat: "3"
-        foot: R
-        direction: center
-        description: Zur Mitte
-      - beat: "4"
-        description: Pause
-      - beat: "5"
-        foot: L
-        direction: forward
-        description: Vorwärts bleiben und Handwechsel zulassen
-      - beat: "6"
-        foot: R
-        direction: in_place
-        description: Neue Verbindung annehmen
-      - beat: "7"
-        foot: L
-        direction: center
-        description: L_R stabilisieren
-      - beat: "8"
-        description: Pause
-    signals:
-      - type: hand_pass
-        beat: "5"
-        description: Handwechsel sichtbar und ohne Zug vor dem Körper
-
-  - id: cbl
-    name: Cross Body Lead (CBL)
-    description: >
-      Zentrales Traveling-Element des Salsa On1 LA Style.
-      Leader öffnet auf 1-2-3 den Slot und lässt den Follower auf 5-6-7 durchlaufen.
-    counts: 8
-    level: 2
-    tags: [cbl, traveling, slot, core, on1]
-    pre:
-      hand_hold: [R_L, two_hand]
-      position: [open]
-      slot: [left]
-      leader_weight: [R]
-      follower_weight: [L]
-    post:
-      hand_hold: R_L
-      position: open
-      slot: left
-      leader_weight: R
-      follower_weight: L
-    leader_actions:
-      - beat: "1"
-        foot: L
-        direction: forward_and_open
-        description: Vorwärts mit links und aus dem Slot öffnen
-      - beat: "2"
-        foot: R
-        direction: replace
-        description: Gewicht zurück auf rechts, Oberkörper weiter öffnen
-      - beat: "3"
-        foot: L
-        direction: side_left
-        description: Seitlich aus dem Weg und Slot freigeben
-      - beat: "4"
-        description: Pause
-      - beat: "5"
-        foot: R
-        direction: rotate_and_collect
-        description: Follower durch den Slot führen, Rotation einleiten
-      - beat: "6"
-        foot: L
-        direction: forward_small
-        description: Zum neuen Gegenüber ausrichten
-      - beat: "7"
-        foot: R
-        direction: center
-        description: Offene Position wieder schließen
-      - beat: "8"
-        description: Pause
-    follower_actions:
-      - beat: "1"
-        foot: R
-        direction: back
-        description: Vorbereitung (Break zurück)
-      - beat: "2"
-        foot: L
-        direction: replace
-        description: Gewicht vor auf links
-      - beat: "3"
-        foot: R
-        direction: forward
-        description: Kleiner Schritt vorwärts (Sammlung)
-      - beat: "4"
-        description: Pause
-      - beat: "5"
-        foot: L
-        direction: forward_through_slot
-        description: Durch den geöffneten Slot nach vorn laufen
-      - beat: "6"
-        foot: R
-        direction: forward
-        description: Weiter vorwärts, am Leader vorbei
-      - beat: "7"
-        foot: L
-        direction: pivot_to_face_leader
-        description: Auf links zum Leader ausdrehen (1/2 Drehung)
-      - beat: "8"
-        description: Pause
-    signals:
-      - type: body_open
-        beat: "1-3"
-        description: Leader öffnet den Körper und macht den Slot frei
-      - type: forward_invitation
-        beat: "5"
-        hand: L
-        description: Follower wird ohne Ziehen durch den Slot eingeladen
-    notes: >
-      Im LA Style wird der Weg primär über Körperöffnung und Timing freigemacht, nicht über Armkraft.
-
-  - id: cbl_with_right_turn
-    name: CBL with Follower Right Turn
-    description: >
-      Cross Body Lead mit anschließender Rechtsdrehung der Follower auf 5-6-7.
-      Klassische LA-Style-Kombination.
-    counts: 8
-    level: 2
-    tags: [cbl, turn, follower_turn, combo, on1]
-    pre:
-      hand_hold: [R_L, two_hand]
-      position: [open]
-      slot: [left]
-      leader_weight: [R]
-      follower_weight: [L]
-    post:
-      hand_hold: R_L
-      position: open
-      slot: left
-      leader_weight: R
-      follower_weight: L
-    leader_actions:
-      - beat: "1"
-        foot: L
-        direction: forward_and_open
-        description: CBL-Öffnung beginnen
-      - beat: "2"
-        foot: R
-        direction: replace
-        description: Gewicht zurück, Körper offen halten
-      - beat: "3"
-        foot: L
-        direction: side_left
-        description: Slot freigeben
-      - beat: "4"
-        description: Pause
-      - beat: "5"
-        foot: R
-        direction: rotate_and_raise
-        hand: L
-        action: raise
-        description: Follower durchschicken und Drehfenster öffnen
-      - beat: "6"
-        foot: L
-        direction: in_place
-        hand: L
-        action: guide_cw
-        description: Rechtsdrehung führen
-      - beat: "7"
-        foot: R
-        direction: center
-        hand: L
-        action: lower
-        description: Drehung beenden und Verbindung sammeln
-      - beat: "8"
-        description: Pause
-    follower_actions:
-      - beat: "1"
-        foot: R
-        direction: back
-        description: Vorbereitung (Break zurück)
-      - beat: "2"
-        foot: L
-        direction: replace
-        description: Gewicht vor auf links
-      - beat: "3"
-        foot: R
-        direction: forward
-        description: Kleiner Schritt vor (Sammlung)
-      - beat: "4"
-        description: Pause
-      - beat: "5"
-        foot: L
-        direction: forward_through_slot
-        action: start_turn_cw
-        description: In den Slot treten und Rechtsdrehung einleiten
-      - beat: "6"
-        foot: R
-        direction: pivot
-        action: turn_cw
-        description: Rechtsdrehung fortsetzen (Pivot)
-      - beat: "7"
-        foot: L
-        direction: back
-        action: complete_turn
-        description: Drehung beenden, zurück auf links, zum Leader ausrichten
-      - beat: "8"
-        description: Pause
-    signals:
-      - type: body_open
-        beat: "1-3"
-        description: Normale CBL-Körperöffnung
-      - type: arm_raise
-        beat: "5"
-        hand: L
-        description: Linker Arm schafft Raum für die Rechtsdrehung
-
-  - id: cbl_with_left_turn
-    name: CBL with Follower Left Turn
-    description: >
-      Cross Body Lead mit Linksdrehung der Follower auf 5-6-7.
-      Dafür wird eine L_R-Verbindung als Ausgangsbasis genutzt.
-    counts: 8
-    level: 3
-    tags: [cbl, turn, follower_turn, combo, on1]
-    pre:
-      hand_hold: [L_R]
-      position: [open]
-      slot: [left]
-      leader_weight: [R]
-      follower_weight: [L]
-    post:
-      hand_hold: L_R
-      position: open
-      slot: left
-      leader_weight: R
-      follower_weight: L
-    leader_actions:
-      - beat: "1"
-        foot: L
-        direction: forward_and_open
-        description: CBL-Öffnung beginnen
-      - beat: "2"
-        foot: R
-        direction: replace
-        description: Gewicht zurück, Körper offen halten
-      - beat: "3"
-        foot: L
-        direction: side_left
-        description: Slot freigeben
-      - beat: "4"
-        description: Pause
-      - beat: "5"
-        foot: R
-        direction: rotate_and_raise
-        hand: R
-        action: raise
-        description: Follower durchschicken und Linksdrehung vorbereiten
-      - beat: "6"
-        foot: L
-        direction: in_place
-        hand: R
-        action: guide_ccw
-        description: Linksdrehung führen
-      - beat: "7"
-        foot: R
-        direction: center
-        hand: R
-        action: lower
-        description: Drehung schließen
-      - beat: "8"
-        description: Pause
-    follower_actions:
-      - beat: "1"
-        foot: R
-        direction: back
-        description: Vorbereitung (Break zurück)
-      - beat: "2"
-        foot: L
-        direction: replace
-        description: Gewicht vor auf links
-      - beat: "3"
-        foot: R
-        direction: forward
-        description: Kleiner Schritt vor (Sammlung)
-      - beat: "4"
-        description: Pause
-      - beat: "5"
-        foot: L
-        direction: forward_through_slot
-        action: start_turn_ccw
-        description: In den Slot treten und Linksdrehung einleiten
-      - beat: "6"
-        foot: R
-        direction: pivot
-        action: turn_ccw
-        description: Linksdrehung fortsetzen (Pivot)
-      - beat: "7"
-        foot: L
-        direction: back
-        action: complete_turn
-        description: Drehung beenden, zurück auf links, zum Leader ausrichten
-      - beat: "8"
-        description: Pause
-    signals:
-      - type: body_open
-        beat: "1-3"
-        description: Normale CBL-Körperöffnung
-      - type: arm_raise
-        beat: "5"
-        hand: R
-        description: Rechter Arm schafft Raum für die Linksdrehung
-
-  - id: shine_section
-    name: Shine Section (Solo)
-    description: >
-      Kurze Solo-Passage ohne Handkontakt.
-      Beide tanzen ihren On1-Grundrhythmus frei, bevor wieder verbunden wird.
-    counts: 8
-    level: 2
-    tags: [shine, solo, styling, on1]
-    pre:
-      hand_hold: [R_L, two_hand, free]
-      position: [open]
-      slot: [left, center]
-      leader_weight: [R]
-      follower_weight: [L]
-    post:
-      hand_hold: free
       position: open
       slot: center
       leader_weight: R
@@ -1009,61 +27,934 @@ elements:
       - beat: "1"
         foot: L
         direction: forward
-        description: Solo-Basic vorwärts starten
+        description: "Break vorwärts mit links"
       - beat: "2"
         foot: R
         direction: in_place
-        description: Gewicht zurück
+        description: "Gewicht zurück auf rechts"
       - beat: "3"
         foot: L
-        direction: center
-        description: Zur Mitte
-      - beat: "4"
-        description: Pause
+        direction: back
+        description: "Schritt zurück zur Mitte"
       - beat: "5"
         foot: R
         direction: back
-        description: Rückwärts im Solo-Basic
+        description: "Break rückwärts mit rechts"
       - beat: "6"
         foot: L
         direction: in_place
-        description: Gewicht vor
+        description: "Gewicht vor auf links"
       - beat: "7"
         foot: R
-        direction: center
-        description: Zur Mitte
-      - beat: "8"
-        description: Pause
+        direction: forward
+        description: "Schritt vor zur Mitte"
     follower_actions:
       - beat: "1"
         foot: R
         direction: back
-        description: Solo-Basic rückwärts starten
+        description: "Break rückwärts mit rechts"
       - beat: "2"
         foot: L
         direction: in_place
-        description: Gewicht vor
+        description: "Gewicht vor auf links"
       - beat: "3"
         foot: R
-        direction: center
-        description: Zur Mitte
-      - beat: "4"
-        description: Pause
+        direction: forward
+        description: "Schritt vor zur Mitte"
       - beat: "5"
         foot: L
         direction: forward
-        description: Vorwärts im Solo-Basic
+        description: "Break vorwärts mit links"
       - beat: "6"
         foot: R
         direction: in_place
-        description: Gewicht zurück
+        description: "Gewicht zurück auf rechts"
+      - beat: "7"
+        foot: L
+        direction: back
+        description: "Schritt zurück zur Mitte"
+    signals:
+      - type: connection
+        description: "Leichter Zug/Druck in der R_L Verbindung zur Synchronisation"
+
+  - id: basic_closed
+    name: "Basic Step (Closed)"
+    description: >
+      Grundschritt in geschlossener Tanzhaltung. 
+      Der Leader hat die rechte Hand am Schulterblatt des Followers.
+    counts: 8
+    level: 1
+    tags: [basic, closed, on1]
+    pre:
+      hand_hold: [closed]
+      position: [closed]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: closed
+      position: closed
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1"
+        foot: L
+        direction: forward
+        description: "Break vorwärts im Frame"
+      - beat: "2"
+        foot: R
+        direction: in_place
+      - beat: "3"
+        foot: L
+        direction: back
+      - beat: "5"
+        foot: R
+        direction: back
+      - beat: "6"
+        foot: L
+        direction: in_place
+      - beat: "7"
+        foot: R
+        direction: forward
+    follower_actions:
+      - beat: "1"
+        foot: R
+        direction: back
+      - beat: "2"
+        foot: L
+        direction: in_place
+      - beat: "3"
+        foot: R
+        direction: forward
+      - beat: "5"
+        foot: L
+        direction: forward
+      - beat: "6"
+        foot: R
+        direction: in_place
+      - beat: "7"
+        foot: L
+        direction: back
+
+  - id: side_basic
+    name: "Side Basic"
+    description: "Grundschritt zur Seite (Guapea-ähnlich oder einfach Side-Steps)."
+    counts: 8
+    level: 1
+    tags: [basic, open, side]
+    pre:
+      hand_hold: [R_L, two_hand]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: same
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1"
+        foot: L
+        direction: left
+        description: "Schritt nach links"
+      - beat: "2"
+        foot: R
+        direction: in_place
+      - beat: "3"
+        foot: L
+        direction: center
+      - beat: "5"
+        foot: R
+        direction: right
+        description: "Schritt nach rechts"
+      - beat: "6"
+        foot: L
+        direction: in_place
+      - beat: "7"
+        foot: R
+        direction: center
+    follower_actions:
+      - beat: "1"
+        foot: R
+        direction: right
+      - beat: "2"
+        foot: L
+        direction: in_place
+      - beat: "3"
+        foot: R
+        direction: center
+      - beat: "5"
+        foot: L
+        direction: left
+      - beat: "6"
+        foot: R
+        direction: in_place
       - beat: "7"
         foot: L
         direction: center
-        description: Zur Mitte
-      - beat: "8"
-        description: Pause
-    signals:
-      - type: release_hands
-        beat: "1"
-        description: Hände lösen und Solo-Phase klar markieren
+
+  - id: open_to_closed
+    name: "Open → Closed Transition"
+    description: "Vom Open Hold in die geschlossene Haltung wechseln."
+    counts: 8
+    level: 1
+    tags: [transition, closed]
+    pre:
+      hand_hold: [R_L, two_hand]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: closed
+      position: closed
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1"
+        foot: L
+        direction: forward
+      - beat: "2"
+        foot: R
+        direction: in_place
+      - beat: "3"
+        foot: L
+        direction: center
+      - beat: "5"
+        foot: R
+        direction: back
+        description: "Rechte Hand zum Rücken des Followers führen"
+      - beat: "6"
+        foot: L
+        direction: in_place
+      - beat: "7"
+        foot: R
+        direction: forward
+        description: "In geschlossener Haltung sammeln"
+    follower_actions:
+      - beat: "1"
+        foot: R
+        direction: back
+      - beat: "2"
+        foot: L
+        direction: in_place
+      - beat: "3"
+        foot: R
+        direction: forward
+      - beat: "5"
+        foot: L
+        direction: forward
+      - beat: "6"
+        foot: R
+        direction: in_place
+      - beat: "7"
+        foot: L
+        direction: back
+
+  - id: closed_to_open
+    name: "Closed → Open Transition"
+    description: "Aus der geschlossenen Haltung lösen."
+    counts: 8
+    level: 1
+    tags: [transition, open]
+    pre:
+      hand_hold: [closed]
+      position: [closed]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: R_L
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1"
+        foot: L
+        direction: forward
+      - beat: "2"
+        foot: R
+        direction: in_place
+      - beat: "3"
+        foot: L
+        direction: center
+      - beat: "5"
+        action: release_back
+        description: "Rechte Hand vom Rücken lösen und nach hinten schieben"
+      - beat: "6"
+        foot: L
+        direction: in_place
+      - beat: "7"
+        foot: R
+        direction: forward
+    follower_actions:
+      - beat: "1"
+        foot: R
+        direction: back
+      - beat: "2"
+        foot: L
+        direction: in_place
+      - beat: "3"
+        foot: R
+        direction: forward
+      - beat: "5"
+        foot: L
+        direction: forward
+        description: "Vom Leader weg in den offenen Raum"
+      - beat: "6"
+        foot: R
+        direction: in_place
+      - beat: "7"
+        foot: L
+        direction: back
+
+  - id: follower_right_turn
+    name: "Follower Right Turn"
+    description: "Standard Rechtsdrehung für den Follower auf 5-6-7."
+    counts: 8
+    level: 1
+    tags: [turn, follower_turn, right]
+    pre:
+      hand_hold: [R_L, L_R, two_hand, hammerlock]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: same
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1-3"
+        description: "Vorbereitung durch normalen Break"
+      - beat: "5"
+        hand: L
+        action: raise
+        description: "Hand heben (J-Loop oder direktes Heben)"
+      - beat: "6"
+        hand: L
+        action: guide_cw
+        description: "Führung im Uhrzeigersinn über dem Kopf des Followers"
+      - beat: "7"
+        hand: L
+        action: lower
+        description: "Hand senken"
+    follower_actions:
+      - beat: "1"
+        foot: R
+        direction: back
+      - beat: "2"
+        foot: L
+        direction: in_place
+      - beat: "3"
+        foot: R
+        direction: forward
+        description: "Vorbereitungsschritt vorwärts"
+      - beat: "5"
+        foot: L
+        direction: forward
+        action: turn_cw
+        description: "Step-Turn (Pivot) beginnt"
+      - beat: "6"
+        foot: R
+        direction: forward
+        action: turn_cw
+        description: "Drehung fortsetzen"
+      - beat: "7"
+        foot: L
+        direction: back
+        action: complete_turn
+        description: "Drehung beenden, Blick zum Leader"
+
+  - id: leader_right_turn
+    name: "Leader Right Turn"
+    description: "Rechtsdrehung für den Leader auf 1-2-3."
+    counts: 8
+    level: 1
+    tags: [turn, leader_turn, right]
+    pre:
+      hand_hold: [R_L, two_hand]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: R_L
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1"
+        foot: L
+        direction: forward
+        action: turn_cw
+        description: "Drehung einleiten"
+      - beat: "2"
+        foot: R
+        direction: back
+        action: turn_cw
+      - beat: "3"
+        foot: L
+        direction: center
+        action: complete_turn
+      - beat: "5-7"
+        description: "Rückwärts-Basic zur Stabilisierung"
+    follower_actions:
+      - beat: "1-3"
+        description: "Normaler Rückwärts-Basic"
+
+  # ===========================================================================
+  # LEVEL 2 – MITTELSTUFE (CBL & HANDWECHSEL)
+  # ===========================================================================
+
+  - id: cbl_basic
+    name: "Cross Body Lead (CBL)"
+    description: "Das fundamentale Element des LA Style. Platzwechsel auf der Linie."
+    counts: 8
+    level: 2
+    tags: [cbl, traveling, core]
+    pre:
+      hand_hold: [R_L, L_R, two_hand, closed, hammerlock]
+      position: [open, closed]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: same
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1"
+        foot: L
+        direction: forward
+        description: "Schritt vor, leicht aus dem Slot öffnen"
+      - beat: "2"
+        foot: R
+        direction: side_right
+        description: "Slot komplett freigeben (90 Grad Drehung)"
+      - beat: "3"
+        foot: L
+        direction: in_place
+        description: "Position halten, Follower Platz machen"
+      - beat: "5"
+        foot: R
+        direction: back
+        description: "Follower durch den Slot führen"
+      - beat: "6"
+        foot: L
+        direction: in_place
+        description: "Eindrehen zum Follower"
+      - beat: "7"
+        foot: R
+        direction: forward
+        description: "Schritt vor zur Mitte"
+    follower_actions:
+      - beat: "1"
+        foot: R
+        direction: back
+      - beat: "2"
+        foot: L
+        direction: in_place
+      - beat: "3"
+        foot: R
+        direction: forward
+        description: "Vorbereitung zum Durchlaufen"
+      - beat: "5"
+        foot: L
+        direction: forward
+        description: "Durch den Slot laufen"
+      - beat: "6"
+        foot: R
+        direction: forward
+      - beat: "7"
+        foot: L
+        direction: back
+        action: pivot_180
+        description: "Um 180 Grad drehen zum Leader"
+
+  - id: hand_change_front
+    name: "Hand Change (Front)"
+    description: "Handwechsel R_L zu L_R vor dem Körper."
+    counts: 8
+    level: 2
+    tags: [hand_change, transition]
+    pre:
+      hand_hold: [R_L]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: L_R
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1"
+        foot: L
+        direction: forward
+      - beat: "2"
+        foot: R
+        direction: in_place
+      - beat: "3"
+        foot: L
+        direction: center
+      - beat: "5"
+        foot: R
+        direction: back
+        action: pass_hand
+        description: "Hand vor dem Körper an die linke Hand übergeben"
+      - beat: "6"
+        foot: L
+        direction: in_place
+      - beat: "7"
+        foot: R
+        direction: forward
+    follower_actions:
+      - beat: "1"
+        foot: R
+        direction: back
+      - beat: "2"
+        foot: L
+        direction: in_place
+      - beat: "3"
+        foot: R
+        direction: forward
+      - beat: "5"
+        foot: L
+        direction: forward
+      - beat: "6"
+        foot: R
+        direction: in_place
+      - beat: "7"
+        foot: L
+        direction: back
+
+  - id: hand_change_behind_back
+    name: "Hand Change (Behind Back)"
+    description: "Handwechsel hinter dem Rücken des Leaders während eines Basics."
+    counts: 8
+    level: 2
+    tags: [hand_change, transition, behind_back]
+    pre:
+      hand_hold: [R_L]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: L_R
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1"
+        foot: L
+        direction: forward
+        action: lead_to_side
+      - beat: "2"
+        foot: R
+        direction: in_place
+        action: hand_behind_back
+        description: "Rechte Hand hinter den Rücken führen"
+      - beat: "3"
+        foot: L
+        direction: center
+        action: take_with_left
+        description: "Mit der linken Hand hinter dem Rücken übernehmen"
+      - beat: "5"
+        foot: R
+        direction: back
+      - beat: "6"
+        foot: L
+        direction: in_place
+      - beat: "7"
+        foot: R
+        direction: forward
+    follower_actions:
+      - beat: "1"
+        foot: R
+        direction: back
+      - beat: "2"
+        foot: L
+        direction: in_place
+      - beat: "3"
+        foot: R
+        direction: forward
+      - beat: "5"
+        foot: L
+        direction: forward
+      - beat: "6"
+        foot: R
+        direction: in_place
+      - beat: "7"
+        foot: L
+        direction: back
+
+  - id: two_hand_hold_entry
+    name: "Two Hand Hold Entry"
+    description: "Die zweite Hand aufnehmen."
+    counts: 8
+    level: 2
+    tags: [hand_change, two_hand]
+    pre:
+      hand_hold: [R_L, L_R]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: two_hand
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1"
+        foot: L
+        direction: forward
+      - beat: "2"
+        foot: R
+        direction: in_place
+      - beat: "3"
+        foot: L
+        direction: center
+      - beat: "5"
+        foot: R
+        direction: back
+        action: offer_hand
+        description: "Die freie Hand anbieten"
+      - beat: "6"
+        foot: L
+        direction: in_place
+      - beat: "7"
+        foot: R
+        direction: forward
+    follower_actions:
+      - beat: "1"
+        foot: R
+        direction: back
+      - beat: "2"
+        foot: L
+        direction: in_place
+      - beat: "3"
+        foot: R
+        direction: forward
+      - beat: "5"
+        foot: L
+        direction: forward
+      - beat: "6"
+        foot: R
+        direction: in_place
+        action: take_hand
+        description: "Die angebotene Hand annehmen"
+      - beat: "7"
+        foot: L
+        direction: back
+
+  - id: follower_left_turn_l_r
+    name: "Follower Left Turn (L_R)"
+    description: "Linksdrehung des Followers, geführt mit der linken Leaderhand an der rechten Followerhand."
+    counts: 8
+    level: 2
+    tags: [turn, follower_turn, left]
+    pre:
+      hand_hold: [L_R, two_hand]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: L_R
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1"
+        foot: L
+        direction: forward
+      - beat: "2"
+        foot: R
+        direction: in_place
+      - beat: "3"
+        foot: L
+        direction: center
+      - beat: "5"
+        foot: R
+        direction: back
+        hand: L
+        action: raise
+      - beat: "6"
+        foot: L
+        direction: in_place
+        hand: L
+        action: guide_ccw
+        description: "Führung gegen den Uhrzeigersinn"
+      - beat: "7"
+        foot: R
+        direction: forward
+        hand: L
+        action: lower
+    follower_actions:
+      - beat: "1"
+        foot: R
+        direction: back
+      - beat: "2"
+        foot: L
+        direction: in_place
+      - beat: "3"
+        foot: R
+        direction: forward
+      - beat: "5"
+        foot: L
+        direction: forward
+        action: turn_ccw
+      - beat: "6"
+        foot: R
+        direction: forward
+        action: turn_ccw
+      - beat: "7"
+        foot: L
+        direction: back
+        action: complete_turn
+
+  # ===========================================================================
+  # LEVEL 3 – FORTGESCHRITTEN (VARIATIONEN)
+  # ===========================================================================
+
+  - id: cbl_inside_turn
+    name: "CBL Inside Turn"
+    description: "Cross Body Lead mit einer Linksdrehung des Followers auf 5-6-7."
+    counts: 8
+    level: 3
+    tags: [cbl, turn, follower_turn, inside_turn]
+    pre:
+      hand_hold: [R_L, two_hand]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: R_L
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1-3"
+        description: "Normale CBL-Vorbereitung (Slot öffnen)"
+      - beat: "5"
+        hand: L
+        action: raise_and_guide_ccw
+        description: "Hand heben und Follower zur Linksdrehung 'einkurbeln'"
+      - beat: "6"
+        hand: L
+        action: guide_ccw
+      - beat: "7"
+        hand: L
+        action: lower
+    follower_actions:
+      - beat: "1-3"
+        description: "Normale CBL-Vorbereitung"
+      - beat: "5"
+        foot: L
+        direction: forward
+        action: turn_ccw
+        description: "In den Slot laufen und Linksdrehung starten"
+      - beat: "6"
+        foot: R
+        direction: forward
+        action: turn_ccw
+      - beat: "7"
+        foot: L
+        direction: back
+        action: complete_turn
+
+  - id: cbl_outside_turn
+    name: "CBL Outside Turn"
+    description: "Cross Body Lead mit einer Rechtsdrehung des Followers auf 5-6-7."
+    counts: 8
+    level: 3
+    tags: [cbl, turn, follower_turn, outside_turn]
+    pre:
+      hand_hold: [R_L, two_hand]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: R_L
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1-3"
+        description: "Normale CBL-Vorbereitung"
+      - beat: "5"
+        hand: L
+        action: raise_and_guide_cw
+        description: "Hand heben und Follower zur Rechtsdrehung führen"
+      - beat: "6"
+        hand: L
+        action: guide_cw
+      - beat: "7"
+        hand: L
+        action: lower
+    follower_actions:
+      - beat: "5"
+        foot: L
+        direction: forward
+        action: turn_cw
+      - beat: "6"
+        foot: R
+        direction: forward
+        action: turn_cw
+      - beat: "7"
+        foot: L
+        direction: back
+        action: complete_turn
+
+  - id: copita
+    name: "Copita"
+    description: "Follower wird auf 1-2-3 in eine Linksdrehung geführt (aber bleibt auf der Seite des Leaders) und auf 5-6-7 wieder rausgeschickt."
+    counts: 8
+    level: 3
+    tags: [cbl, turn, special]
+    pre:
+      hand_hold: [two_hand]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: two_hand
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1"
+        foot: L
+        direction: forward
+        description: "Führung zur Linksdrehung (Inside)"
+      - beat: "2"
+        foot: R
+        direction: back
+        description: "Follower 'auffangen' (Compression)"
+      - beat: "3"
+        foot: L
+        direction: center
+        description: "Follower steht links neben dem Leader"
+      - beat: "5"
+        foot: R
+        direction: back
+        description: "Follower nach rechts rausdrehen (Outside)"
+      - beat: "6"
+        foot: L
+        direction: in_place
+      - beat: "7"
+        foot: R
+        direction: forward
+    follower_actions:
+      - beat: "1"
+        foot: R
+        direction: back
+      - beat: "2"
+        foot: L
+        direction: turn_ccw
+        description: "Eindrehen (halbe Linksdrehung)"
+      - beat: "3"
+        foot: R
+        direction: in_place
+        description: "Steht links vom Leader"
+      - beat: "5"
+        foot: L
+        direction: forward
+        action: turn_cw
+        description: "Rausdrehen (Rechtsdrehung)"
+      - beat: "6"
+        foot: R
+        direction: turn_cw
+      - beat: "7"
+        foot: L
+        direction: back
+
+  - id: hammerlock_entry
+    name: "Hammerlock Entry"
+    description: "Follower in eine Rechtsdrehung führen, dabei die untere Hand (L_R) halten, sodass der Arm hinter dem Rücken landet."
+    counts: 8
+    level: 3
+    tags: [turn, hammerlock, hand_change]
+    pre:
+      hand_hold: [two_hand]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: hammerlock
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1"
+        foot: L
+        direction: forward
+      - beat: "2"
+        foot: R
+        direction: in_place
+      - beat: "3"
+        foot: L
+        direction: center
+      - beat: "5"
+        foot: R
+        direction: back
+        hand: L
+        action: raise
+        description: "Obere Hand heben für Rechtsdrehung"
+      - beat: "6"
+        foot: L
+        direction: in_place
+        hand: R
+        action: keep_low
+        description: "Untere Hand tief halten und hinter den Rücken des Followers führen"
+      - beat: "7"
+        foot: R
+        direction: forward
+    follower_actions:
+      - beat: "1"
+        foot: R
+        direction: back
+      - beat: "2"
+        foot: L
+        direction: in_place
+      - beat: "3"
+        foot: R
+        direction: forward
+      - beat: "5"
+        foot: L
+        direction: forward
+        action: turn_cw
+        description: "Rechtsdrehung in den Hammerlock"
+      - beat: "6"
+        foot: R
+        direction: forward
+        action: turn_cw
+      - beat: "7"
+        foot: L
+        direction: back

@@ -1,1 +1,13 @@
-known_elements: []
+known_elements:
+- basic_closed
+- basic_open
+- cbl_basic
+- cbl_inside_turn
+- closed_to_open
+- follower_left_turn_l_r
+- follower_right_turn
+- hammerlock_entry
+- leader_right_turn
+- open_to_closed
+- side_basic
+custom_figures: []

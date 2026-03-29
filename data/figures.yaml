@@ -1,181 +1,122 @@
-# =============================================================================
-# SALSA ON1 (LA STYLE) - FIGUREN-NOTATION
-# =============================================================================
-# Eine Figur ist eine BENANNTE SEQUENZ von Elementen.
-# Die Sequenz ist gültig wenn: post[n].hand_hold ∩ pre[n+1].hand_hold ≠ ∅
-#                          AND post[n].position ∈ pre[n+1].position
-#                          AND post[n].slot     ∈ pre[n+1].slot
-#                          AND post[n].leader_weight ∈ pre[n+1].leader_weight
-#                          AND post[n].follower_weight ∈ pre[n+1].follower_weight
-#
-# FIGUR FELDER:
-#   id            Eindeutiger Bezeichner
-#   name          Anzeigename
-#   description   Textbeschreibung
-#   level         Schwierigkeit (max Level aller enthaltenen Elemente)
-#   sequence      Geordnete Liste von Element-IDs
-#   total_counts  Gesamtanzahl Counts (Summe der Element-counts)
-#   tags          Kategorien
-#   notes         Tipps & Stilhinweise
-# =============================================================================
-
-figures:
-
-  # ---------------------------------------------------------------------------
+﻿figures:
+  # ===========================================================================
   # LEVEL 1 – ANFÄNGER
-  # ---------------------------------------------------------------------------
+  # ===========================================================================
 
-  - id: basic_basic
+  - id: figure_double_basic
     name: "Double Basic"
-    description: "Zwei Open Basics hintereinander."
+    description: "Zwei Grundschritte hintereinander zur Stabilisierung."
     level: 1
     sequence:
       - basic_open
       - basic_open
-    total_counts: 16
-    tags: [beginner, basic, loop]
+    tags: [basic, beginner]
 
-  - id: basic_right_turn
+  - id: figure_basic_right_turn
     name: "Basic + Right Turn"
-    description: >
-      Klassische Anfänger-Kombination:
-      ein Open Basic gefolgt von einer Follower-Rechtsdrehung.
+    description: "Grundschritt gefolgt von einer Rechtsdrehung des Followers."
     level: 1
     sequence:
       - basic_open
       - follower_right_turn
-    total_counts: 16
-    tags: [beginner, turn, classic]
+    tags: [basic, turn, beginner]
 
-  - id: right_turn_loop
-    name: "Right Turn Loop"
-    description: >
-      Mehrere Rechtsdrehungen nacheinander sind möglich,
-      da die Endverbindung wieder in offene R_L-Position zurückkehrt.
-    level: 1
-    sequence:
-      - follower_right_turn
-      - follower_right_turn
-    total_counts: 16
-    tags: [beginner, turn, loop]
-
-  - id: open_closed_open
-    name: "Open – Closed – Open"
-    description: >
-      Wechsel von offener zu geschlossener Haltung und wieder zurück.
+  - id: figure_open_closed_open
+    name: "Open-Closed Transition"
+    description: "Wechsel zwischen offener und geschlossener Haltung."
     level: 1
     sequence:
       - open_to_closed
       - basic_closed
       - closed_to_open
-    total_counts: 24
-    tags: [beginner, transition, frame]
+    tags: [basic, transition, beginner]
 
-  - id: two_hand_basic
-    name: "Two-Hand Entry + Basic"
-    description: >
-      Einstieg in Two-Hand-Hold und anschließend ein normaler Open Basic.
+  - id: figure_leader_turn_basic
+    name: "Leader Right Turn + Basic"
+    description: "Rechtsdrehung des Leaders auf 1-2-3."
     level: 1
     sequence:
-      - two_hand_hold_entry
+      - leader_right_turn
       - basic_open
-    total_counts: 16
-    tags: [beginner, two_hand, basic]
+    tags: [turn, leader, beginner]
 
-  # ---------------------------------------------------------------------------
-  # LEVEL 2 – EINSTIEG MIT CBL UND HANDWECHSEL
-  # ---------------------------------------------------------------------------
+  # ===========================================================================
+  # LEVEL 2 – MITTELSTUFE (CBL & HANDWECHSEL)
+  # ===========================================================================
 
-  - id: basic_cbl
-    name: "Basic + CBL"
-    description: >
-      Open Basic gefolgt von einem Cross Body Lead.
-      Kernfigur für Salsa LA Style.
+  - id: figure_classic_cbl
+    name: "Classic Cross Body Lead"
+    description: "Der Standard-Platzwechsel auf der Linie."
     level: 2
     sequence:
       - basic_open
-      - cbl
-    total_counts: 16
-    tags: [classic, cbl, traveling]
+      - cbl_basic
+    tags: [cbl, core, social]
 
-  - id: cbl_right_turn
-    name: "CBL + Right Turn"
-    description: >
-      Cross Body Lead mit anschließender Follower-Rechtsdrehung.
+  - id: figure_cbl_right_turn
+    name: "CBL + Follower Right Turn"
+    description: "Platzwechsel mit anschließender Rechtsdrehung."
     level: 2
     sequence:
-      - cbl
+      - cbl_basic
       - follower_right_turn
-    total_counts: 16
-    tags: [cbl, turn, classic]
+    tags: [cbl, turn, social]
 
-  - id: two_hand_right_turn
-    name: "Two-Hand Entry + Right Turn"
-    description: >
-      Two-Hand-Hold aufnehmen und daraus eine Rechtsdrehung tanzen.
-    level: 2
-    sequence:
-      - two_hand_hold_entry
-      - follower_right_turn
-    total_counts: 16
-    tags: [two_hand, turn]
-
-  - id: hand_change_left_turn
-    name: "Hand Change + Left Turn"
-    description: >
-      Vorbereitender Handwechsel auf L_R und danach Follower-Linksdrehung.
+  - id: figure_hand_change_cbl
+    name: "Hand Change + CBL"
+    description: "Handwechsel vor dem Körper und danach Platzwechsel."
     level: 2
     sequence:
       - hand_change_front
-      - follower_left_turn
-    total_counts: 16
-    tags: [hand_change, left_turn]
+      - cbl_basic
+    tags: [hand_change, cbl, social]
 
-  - id: shine_reconnect
-    name: "Shine + Reconnect"
-    description: >
-      Solo-Phase, dann Wiedereinstieg über Two-Hand-Hold in den Open Basic.
+  - id: figure_two_hand_right_turn
+    name: "Two-Hand Hold Right Turn"
+    description: "Rechtsdrehung aus dem Two-Hand Hold."
     level: 2
     sequence:
-      - shine_section
       - two_hand_hold_entry
-      - basic_open
-    total_counts: 24
-    tags: [shine, reconnect, musicality]
+      - follower_right_turn
+    tags: [two_hand, turn, social]
 
-  # ---------------------------------------------------------------------------
-  # LEVEL 3 – KOMBINATIONEN
-  # ---------------------------------------------------------------------------
+  # ===========================================================================
+  # LEVEL 3 – FORTGESCHRITTEN
+  # ===========================================================================
 
-  - id: cbl_right_turn_loop
-    name: "CBL + Right Turn + Basic"
-    description: >
-      Traveling-Kombination mit sauberem Rückweg in den normalen Open-Basic-Flow.
-    level: 2
-    sequence:
-      - cbl_with_right_turn
-      - basic_open
-    total_counts: 16
-    tags: [cbl, turn, loopable]
-
-  - id: hand_change_cbl_left_turn
-    name: "Hand Change + CBL Left Turn"
-    description: >
-      Erst Handwechsel auf L_R, dann Cross Body Lead mit Follower-Linksdrehung.
+  - id: figure_cbl_inside_turn
+    name: "CBL Inside Turn"
+    description: "Platzwechsel mit integrierter Linksdrehung."
     level: 3
     sequence:
-      - hand_change_front
-      - cbl_with_left_turn
-    total_counts: 16
-    tags: [hand_change, cbl, left_turn]
+      - basic_open
+      - cbl_inside_turn
+    tags: [cbl, turn, inside, intermediate]
 
-  - id: left_turn_to_cbl_left_turn
-    name: "Left Turn + CBL Left Turn"
-    description: >
-      Zwei aufeinanderfolgende L_R-basierte Linksdrehmuster.
+  - id: figure_cbl_outside_turn
+    name: "CBL Outside Turn"
+    description: "Platzwechsel mit integrierter Rechtsdrehung."
     level: 3
     sequence:
-      - follower_left_turn
-      - cbl_with_left_turn
-    total_counts: 16
-    tags: [left_turn, cbl, combo]
+      - basic_open
+      - cbl_outside_turn
+    tags: [cbl, turn, outside, intermediate]
+
+  - id: figure_copita_basic
+    name: "Classic Copita"
+    description: "Die klassische Copita aus dem Two-Hand Hold."
+    level: 3
+    sequence:
+      - two_hand_hold_entry
+      - copita
+    tags: [special, turn, intermediate]
+
+  - id: figure_hammerlock_cbl
+    name: "Hammerlock to CBL"
+    description: "In den Hammerlock eindrehen und über einen CBL wieder rausführen."
+    level: 3
+    sequence:
+      - two_hand_hold_entry
+      - hammerlock_entry
+      - cbl_basic
+    tags: [hammerlock, cbl, intermediate]
