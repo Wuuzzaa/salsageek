@@ -46,8 +46,8 @@
             <div class="card-body">
                 <div class="text-muted small">Current Level</div>
                 <div class="mt-2">
-                    <span class="badge text-bg-{{ level_badge.get(current_level, 'secondary') }} fs-6">
-                        {{ level_label.get(current_level, current_level) }}
+                    <span class="badge text-bg-{{ level_info(current_level).badge }} fs-6">
+                        {{ level_info(current_level).label }}
                     </span>
                 </div>
             </div>

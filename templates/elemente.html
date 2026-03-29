@@ -28,13 +28,9 @@
     {% for level, items in grouped.items() %}
     <section class="mb-5 level-section">
         <div class="d-flex align-items-center gap-3 mb-3">
-            <span class="badge rounded-pill px-3 py-2 
-                  {% if level|int == 1 %}bg-success{% elif level|int == 2 %}bg-info{% elif level|int == 3 %}bg-warning text-dark{% elif level|int == 4 %}bg-danger{% else %}bg-secondary{% endif %}">
-                Level {{ level }}
+            <span class="badge rounded-pill px-3 py-2 text-bg-{{ level_info(level).badge }}">
+                {{ level_info(level).label }}
             </span>
-            <h2 class="h5 mb-0 fw-bold">
-                {{ level_label[level|int] if level_label and level|int in level_label else 'Level ' ~ level }}
-            </h2>
             <hr class="flex-grow-1 my-0 opacity-10">
             <span class="text-muted small">{{ items|length }} Elements</span>
         </div>

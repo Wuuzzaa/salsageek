@@ -39,8 +39,8 @@
                                             {{ fig.description[:180] }}{% if fig.description|length > 180 %}…{% endif %}
                                         </p>
                                     </div>
-                                    <span class="badge text-bg-{{ level_badge.get(fig.level, 'secondary') }}">
-                                        {{ level_label.get(fig.level, fig.level) }}
+                                    <span class="badge text-bg-{{ level_info(fig.level).badge }}">
+                                        {{ level_info(fig.level).label }}
                                     </span>
                                 </div>
 
@@ -109,8 +109,8 @@
                                             {{ fig.description[:120] }}{% if fig.description|length > 120 %}…{% endif %}
                                         </p>
                                     </div>
-                                    <span class="badge text-bg-{{ level_badge.get(fig.level, 'secondary') }}">
-                                        {{ level_label.get(fig.level, fig.level) }}
+                                    <span class="badge text-bg-{{ level_info(fig.level).badge }}">
+                                        {{ level_info(fig.level).label }}
                                     </span>
                                 </div>
 

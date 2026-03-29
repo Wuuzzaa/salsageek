@@ -26,7 +26,7 @@
                                 <button type="submit" name="action" value="add" class="btn btn-outline-light text-dark border w-100 h-100 text-start d-flex justify-content-between align-items-center">
                                     <span>
                                         <span class="fw-semibold d-block">{{ elem.name }}</span>
-                                        <span class="badge text-bg-{{ level_badge.get(elem.level, 'secondary') }} smaller">Lvl {{ elem.level }}</span>
+                                        <span class="badge text-bg-{{ level_info(elem.level).badge }} smaller">Lvl {{ elem.level }}</span>
                                     </span>
                                     <span class="text-danger fs-4">+</span>
                                 </button>

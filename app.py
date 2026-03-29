@@ -32,7 +32,19 @@ def get_active_profile() -> str:
 
 @app.context_processor
 def inject_globals():
+    def level_info(level: int | str):
+        try:
+            level_int = int(level)
+        except (ValueError, TypeError):
+            level_int = 1
+        
+        return {
+            "label": salsa_service.level_label.get(level_int, f"Level {level_int}"),
+            "badge": salsa_service.level_badge.get(level_int, "secondary")
+        }
+
     return {
+        "level_info": level_info,
         "level_label": salsa_service.level_label,
         "level_badge": salsa_service.level_badge,
         "elements": salsa_service.elements,

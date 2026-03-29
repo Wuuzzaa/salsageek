@@ -29,8 +29,8 @@
                     </a>
                 </div>
                 <div class="mb-2">
-                    <span class="badge text-bg-{{ level_badge.get(figure.level, 'secondary') }}">
-                        {{ level_label.get(figure.level, figure.level) }}
+                    <span class="badge text-bg-{{ level_info(figure.level).badge }}">
+                        {{ level_info(figure.level).label }}
                     </span>
                 </div>
                 <div>

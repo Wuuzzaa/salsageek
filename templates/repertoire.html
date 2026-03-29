@@ -13,8 +13,8 @@
             <button type="submit" class="btn btn-sm btn-outline-danger">Delete Profile</button>
         </form>
         {% endif %}
-        <span class="badge text-bg-{{ level_badge[current_level|int] if level_badge and current_level|int in level_badge else 'secondary' }} fs-6 shadow-sm">
-            {{ level_label[current_level|int] if level_label and current_level|int in level_label else current_level }}
+        <span class="badge text-bg-{{ level_info(current_level|int).badge }} fs-6 shadow-sm">
+            {{ level_info(current_level|int).label }}
         </span>
     </div>
 </div>
@@ -58,7 +58,7 @@
                 <div class="d-flex align-items-center gap-2">
                     <span class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle">Level {{ level }}</span>
                     <h3 class="h6 mb-0 fw-bold">
-                        {{ level_label[level|int] if level_label and level|int in level_label else level }}
+                        {{ level_info(level|int).label }}
                     </h3>
                     {% set level_total = items|length %}
                     {% set level_known = items|selectattr('id', 'in', known_ids)|list|length %}

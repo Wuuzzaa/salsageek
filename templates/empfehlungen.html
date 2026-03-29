@@ -10,8 +10,8 @@
         </p>
     </div>
     <div>
-        <span class="badge text-bg-{{ level_badge.get(current_level, 'secondary') }} fs-6">
-            {{ level_label.get(current_level, current_level) }}
+        <span class="badge text-bg-{{ level_info(current_level).badge }} fs-6">
+            {{ level_info(current_level).label }}
         </span>
     </div>
 </div>
@@ -47,8 +47,8 @@
                             </div>
 
                             <div class="text-end">
-                                <div class="badge text-bg-{{ level_badge.get(rec.element.level, 'secondary') }} fs-6 mb-2">
-                                    {{ level_label.get(rec.element.level, rec.element.level) }}
+                                <div class="badge text-bg-{{ level_info(rec.element.level).badge }} fs-6 mb-2">
+                                    {{ level_info(rec.element.level).label }}
                                 </div>
                                 <div class="text-muted smaller">Score: {{ rec.score }}</div>
                             </div>
@@ -63,7 +63,7 @@
                                     This element brings you closer to <strong>{{ rec.almost_unlocked|length }} figures</strong>.
                                 {% endif %}
                                 {% if rec.element.level <= current_level %}
-                                    It fits perfectly with your current level ({{ level_label.get(rec.element.level) }}).
+                                    It fits perfectly with your current level ({{ level_info(rec.element.level).label }}).
                                 {% else %}
                                     It is the ideal next step for your progress.
                                 {% endif %}
