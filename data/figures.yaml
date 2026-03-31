@@ -120,3 +120,124 @@
       - hammerlock_entry
       - cbl_basic
     tags: [hammerlock, cbl, intermediate]
+
+
+  - id: figure_360_classic
+    name: "Classic 360"
+    description: "CBL mit 360-Drehung des Leaders."
+    level: 3
+    sequence:
+      - basic_open
+      - cbl_360
+      - basic_open
+    tags: [cbl, turn, leader, intermediate]
+
+  - id: figure_double_turn_combo
+    name: "Double Turn Combo"
+    description: "Basic gefolgt von einer doppelten Rechtsdrehung."
+    level: 3
+    sequence:
+      - basic_open
+      - double_right_turn
+      - basic_open
+    tags: [turn, double, intermediate]
+
+  - id: figure_neck_roll_cbl
+    name: "Neck Roll CBL"
+    description: "CBL kombiniert mit einem Neck Roll für ein flüssiges Finish."
+    level: 3
+    sequence:
+      - basic_open
+      - hand_change_front
+      - cbl_basic
+      - neck_roll
+    tags: [special, wrap, intermediate]
+
+  - id: figure_titanic_exit
+    name: "Titanic Exit Figure"
+    description: "In die Titanic Pose und wieder zurück."
+    level: 3
+    sequence:
+      - basic_open
+      - two_hand_hold_entry
+      - titanic_entry
+      - titanic_exit
+    tags: [special, pose, intermediate]
+
+  - id: figure_advanced_hand_change
+    name: "Behind Back CBL"
+    description: "CBL mit Handwechsel hinter dem Rücken des Followers."
+    level: 3
+    sequence:
+      - basic_open
+      - hand_change_behind_back_follower
+      - cbl_basic
+    tags: [hand_change, cbl, intermediate]
+
+
+  - id: figure_double_spin_copita
+    name: "The Double Spin Copita"
+    description: "Eine Copita mit einem spektakulären Doppel-Spin am Ende."
+    level: 4
+    sequence:
+      - basic_open
+      - two_hand_hold_entry
+      - copita_double_spin
+      - basic_open
+    tags: [special, double, turn, intermediate]
+
+  - id: figure_advanced_hammerlock_flow
+    name: "Advanced Hammerlock Flow"
+    description: "Inside Turn in den Hammerlock und CBL wieder raus."
+    level: 3
+    sequence:
+      - basic_open
+      - two_hand_hold_entry
+      - inside_turn_to_hammerlock
+      - cbl_basic
+    tags: [hammerlock, cbl, flow, intermediate]
+
+  - id: figure_hand_toss_variation
+    name: "Hand Toss Variation"
+    description: "Ein CBL mit einem riskanten aber coolen Hand Toss."
+    level: 3
+    sequence:
+      - basic_open
+      - cbl_with_hand_toss
+      - basic_open
+    tags: [cbl, special, social, intermediate]
+
+  - id: figure_double_left_combo
+    name: "Double Left Combo"
+    description: "Handwechsel und dann eine doppelte Linksdrehung."
+    level: 4
+    sequence:
+      - basic_open
+      - hand_change_front
+      - follower_double_left_turn
+      - basic_open
+    tags: [turn, double, intermediate]
+
+
+  - id: figure_neck_wrap_combo
+    name: "Neck Wrap Combo"
+    description: "In den Neck Wrap und mit einem flüssigen Exit wieder raus."
+    level: 3
+    sequence:
+      - basic_open
+      - neck_wrap_entry
+      - neck_wrap_exit
+      - basic_open
+    tags: [special, wrap, intermediate]
+
+  - id: figure_sombrero_social
+    name: "Sombrero Social"
+    description: "Der Sombrero-Klassiker im LA-Style."
+    level: 4
+    sequence:
+      - basic_open
+      - two_hand_hold_entry
+      - sombrero_la_style
+      - sombrero_exit
+      - basic_open
+    tags: [special, wrap, intermediate]

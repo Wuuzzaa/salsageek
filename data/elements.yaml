@@ -541,8 +541,8 @@
         foot: L
         direction: back
 
-  - id: hand_change_behind_back
-    name: "Hand Change (Behind Back)"
+  - id: hand_change_behind_back_leader
+    name: "Hand Change Behind Back (Leader)"
     description: "Handwechsel hinter dem Rücken des Leaders während eines Basics."
     counts: 8
     level: 2
@@ -958,3 +958,577 @@
       - beat: "7"
         foot: L
         direction: back
+
+
+  - id: follower_left_turn_r_l
+    name: "Follower Left Turn (R_L)"
+    description: "Linksdrehung des Followers aus dem Standard-Hold (R_L) auf 5-6-7."
+    counts: 8
+    level: 2
+    tags: [turn, follower_turn, left]
+    pre:
+      hand_hold: [R_L]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: R_L
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1-3"
+        description: "Normaler Break"
+      - beat: "5"
+        hand: L
+        action: raise
+        description: "Hand heben"
+      - beat: "6"
+        hand: L
+        action: guide_ccw
+        description: "Führung gegen den Uhrzeigersinn"
+      - beat: "7"
+        hand: L
+        action: lower
+    follower_actions:
+      - beat: "1-3"
+        description: "Rückwärts Basic"
+      - beat: "5"
+        foot: L
+        direction: forward
+        action: turn_ccw
+      - beat: "6"
+        foot: R
+        direction: forward
+        action: turn_ccw
+      - beat: "7"
+        foot: L
+        direction: back
+        action: complete_turn
+
+  - id: hand_change_behind_back_follower
+    name: "Hand Change Behind Back (Follower)"
+    description: "Handwechsel hinter dem Rücken des Followers während eines CBL."
+    counts: 8
+    level: 2
+    tags: [hand_change, cbl]
+    pre:
+      hand_hold: [R_L]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: L_R
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1-3"
+        description: "CBL Vorbereitung (Slot öffnen)"
+      - beat: "5"
+        action: guide_behind_follower
+        description: "Hand hinter den Rücken des Followers führen"
+      - beat: "6"
+        action: take_with_right
+        description: "Mit der anderen Hand hinter dem Rücken übernehmen"
+      - beat: "7"
+        description: "CBL beenden"
+    follower_actions:
+      - beat: "1-3"
+        description: "CBL Vorbereitung"
+      - beat: "5-7"
+        description: "Normaler CBL Weg"
+
+  - id: double_right_turn
+    name: "Double Right Turn"
+    description: "Doppelte Rechtsdrehung des Followers auf 5-6-7."
+    counts: 8
+    level: 3
+    tags: [turn, double, follower_turn]
+    pre:
+      hand_hold: [R_L, two_hand]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: same
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1-3"
+        description: "Starke Vorbereitung (Prep) auf 3"
+      - beat: "5"
+        hand: L
+        action: double_prep
+        description: "Stärkerer Impuls für zwei Drehungen"
+      - beat: "6"
+        hand: L
+        action: guide_cw_fast
+      - beat: "7"
+        hand: L
+        action: lower
+    follower_actions:
+      - beat: "1-3"
+        description: "Vorbereitung"
+      - beat: "5-6"
+        action: double_turn_cw
+        description: "Zwei schnelle Rechtsdrehungen auf dem Ballen"
+      - beat: "7"
+        foot: L
+        direction: back
+
+  - id: cbl_360
+    name: "CBL 360 (Leader Turn)"
+    description: "CBL bei dem der Leader eine 360-Grad Drehung macht, während der Follower die Seite wechselt."
+    counts: 8
+    level: 3
+    tags: [cbl, turn, leader_turn]
+    pre:
+      hand_hold: [R_L, two_hand]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: same
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1"
+        foot: L
+        direction: forward
+      - beat: "2"
+        foot: R
+        action: turn_cw_90
+      - beat: "3"
+        foot: L
+        action: turn_cw_90
+      - beat: "5"
+        foot: R
+        action: turn_cw_90
+      - beat: "6"
+        foot: L
+        action: turn_cw_90
+      - beat: "7"
+        foot: R
+        direction: forward
+    follower_actions:
+      - beat: "1-3"
+        description: "Vorbereitung"
+      - beat: "5-7"
+        description: "Läuft normal am Leader vorbei (CBL)"
+
+  - id: neck_roll
+    name: "Neck Roll"
+    description: "Die Hand des Followers über den Nacken des Leaders rollen lassen."
+    counts: 8
+    level: 3
+    tags: [special, wrap]
+    pre:
+      hand_hold: [R_L, L_R]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: same
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1-3"
+        description: "Vorbereitung"
+      - beat: "5"
+        action: raise_to_neck
+        description: "Hand zum eigenen Nacken führen"
+      - beat: "6"
+        action: roll_over_neck
+        description: "Hand über den Nacken gleiten lassen"
+      - beat: "7"
+        action: catch_hand
+        description: "Hand auf der anderen Seite wieder aufnehmen"
+    follower_actions:
+      - beat: "1-8"
+        description: "Normaler Grundschritt, folgt der Handführung"
+
+  - id: titanic_entry
+    name: "Titanic Entry"
+    description: "In die Titanic-Pose (beide Arme ausgebreitet, Leader hinter Follower)."
+    counts: 8
+    level: 3
+    tags: [special, pose]
+    pre:
+      hand_hold: [two_hand]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: two_hand
+      position: shadow
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1-3"
+        description: "Vorbereitung"
+      - beat: "5"
+        action: guide_to_shadow
+        description: "Follower vor sich führen"
+      - beat: "6"
+        action: spread_arms
+        description: "Arme zur Seite ausbreiten"
+      - beat: "7"
+        description: "Pose halten"
+    follower_actions:
+      - beat: "1-3"
+        description: "Vorbereitung"
+      - beat: "5"
+        foot: L
+        direction: forward
+      - beat: "6"
+        foot: R
+        action: pivot_180
+      - beat: "7"
+        description: "Arme ausbreiten (Titanic Pose)"
+
+
+  - id: titanic_exit
+    name: "Titanic Exit"
+    description: "Aus der Titanic Pose zurück in die offene Haltung."
+    counts: 8
+    level: 3
+    tags: [special, pose]
+    pre:
+      hand_hold: [two_hand]
+      position: [shadow]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: same
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1-3"
+        description: "Follower nach vorne rausführen"
+      - beat: "5-7"
+        description: "Wieder zur Frontseite ausrichten"
+    follower_actions:
+      - beat: "1-3"
+        foot: R
+        direction: forward
+      - beat: "5-7"
+        action: pivot_180
+        description: "Zurück zum Leader drehen"
+
+
+  - id: follower_double_left_turn
+    name: "Follower Double Left Turn"
+    description: "Doppelte Linksdrehung des Followers auf 5-6-7."
+    counts: 8
+    level: 4
+    tags: [turn, double, follower_turn]
+    pre:
+      hand_hold: [L_R, two_hand]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: same
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1-3"
+        description: "Prep-Signal (J-Loop gegen den Uhrzeigersinn)"
+      - beat: "5"
+        hand: L
+        action: double_prep_ccw
+        description: "Starker Impuls für Linksdrehung"
+      - beat: "6"
+        hand: L
+        action: guide_ccw_fast
+      - beat: "7"
+        hand: L
+        action: lower
+    follower_actions:
+      - beat: "1-3"
+        description: "Vorbereitung"
+      - beat: "5-6"
+        action: double_turn_ccw
+      - beat: "7"
+        foot: L
+        direction: back
+    signals:
+      - beat: "3"
+        type: prep
+        description: "Hand auf 3 leicht nach rechts führen, um auf 5 linksrum Schwung zu geben"
+
+  - id: copita_double_spin
+    name: "Copita with Double Spin"
+    description: "Copita, bei der der Follower am Ende zwei Rechtsdrehungen (Outside) macht."
+    counts: 8
+    level: 4
+    tags: [special, double, intermediate]
+    pre:
+      hand_hold: [two_hand]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: two_hand
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1-3"
+        description: "Eindrehen in die Copita"
+      - beat: "5"
+        hand: both
+        action: double_prep_cw
+        description: "Zwei Drehungen auf dem Rausweg einleiten"
+      - beat: "6"
+        hand: both
+        action: guide_cw_fast
+      - beat: "7"
+        hand: both
+        action: lower
+    follower_actions:
+      - beat: "1-3"
+        description: "Eindrehen in Copita Pose"
+      - beat: "5-6"
+        action: double_turn_cw
+        description: "Zwei schnelle Rechtsdrehungen beim Rausgehen"
+      - beat: "7"
+        foot: L
+        direction: back
+    signals:
+      - beat: "4"
+        type: tension
+        description: "Spannungsaufbau (Compression) im Standbein vor dem Rausdrehen"
+
+  - id: cbl_with_hand_toss
+    name: "CBL with Hand Toss"
+    description: "CBL bei dem der Leader die Hand des Followers kurz loslässt ('wirft') und wieder auffängt."
+    counts: 8
+    level: 3
+    tags: [cbl, special, social]
+    pre:
+      hand_hold: [R_L, two_hand]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: R_L
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1-3"
+        description: "CBL Prep"
+      - beat: "5"
+        action: hand_toss
+        description: "Hand des Followers leicht beschleunigen und loslassen"
+      - beat: "6"
+        action: wait_for_catch
+      - beat: "7"
+        action: catch_hand
+        description: "Hand auf der anderen Seite des Slots wieder auffangen"
+    follower_actions:
+      - beat: "1-3"
+        description: "CBL Weg starten"
+      - beat: "5-7"
+        description: "Weiterlaufen, dabei die Handführung kurzzeitig selbst stabilisieren"
+    signals:
+      - beat: "5"
+        type: release
+        description: "Impulsartiges Loslassen der Verbindung"
+
+  - id: inside_turn_to_hammerlock
+    name: "Inside Turn to Hammerlock"
+    description: "Linksdrehung des Followers, die direkt im Hammerlock endet (untere Hand wird gehalten)."
+    counts: 8
+    level: 3
+    tags: [turn, hammerlock, transition]
+    pre:
+      hand_hold: [two_hand]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: hammerlock
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1-3"
+        description: "Normaler Break"
+      - beat: "5"
+        hand: L
+        action: raise_and_guide_ccw
+        description: "Hand heben für Linksdrehung"
+      - beat: "6"
+        hand: R
+        action: wrap_behind_back
+        description: "Rechte Leaderhand führt linke Followerhand hinter deren Rücken"
+      - beat: "7"
+        description: "Hammerlock Position fixieren"
+    follower_actions:
+      - beat: "5-6"
+        action: turn_ccw
+      - beat: "7"
+        foot: L
+        direction: back
+    signals:
+      - beat: "5"
+        type: connection
+        description: "Beide Hände bleiben verbunden (Continuous Connection)"
+
+
+  - id: neck_wrap_entry
+    name: "Neck Wrap Entry"
+    description: "Follower in einen Wrap führen, bei dem der Arm um den Nacken des Leaders liegt."
+    counts: 8
+    level: 3
+    tags: [special, wrap]
+    pre:
+      hand_hold: [R_L, two_hand]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: same
+      position: shadow
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1-3"
+        description: "Vorbereitung"
+      - beat: "5"
+        action: lead_to_neck
+        description: "Hand des Followers zum eigenen Nacken führen"
+      - beat: "6"
+        action: step_under
+        description: "Unter dem Arm des Followers durchtauchen"
+      - beat: "7"
+        description: "Wrap Position fixieren"
+    follower_actions:
+      - beat: "5-7"
+        description: "Folgt der Hand zum Nacken des Leaders"
+
+  - id: neck_wrap_exit
+    name: "Neck Wrap Exit"
+    description: "Aus dem Neck Wrap zurück in die offene Haltung."
+    counts: 8
+    level: 3
+    tags: [special, wrap]
+    pre:
+      hand_hold: [R_L, two_hand]
+      position: [shadow]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: same
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1-3"
+        description: "Hand vom Nacken lösen und Follower nach vorne führen"
+      - beat: "5-7"
+        description: "Wieder zur Frontseite ausrichten"
+    follower_actions:
+      - beat: "1-3"
+        foot: R
+        direction: forward
+      - beat: "5-7"
+        action: pivot_180
+
+  - id: sombrero_la_style
+    name: "Sombrero (LA Variation)"
+    description: "Beide Hände werden über die Köpfe geführt und auf den Schultern abgelegt."
+    counts: 8
+    level: 4
+    tags: [special, wrap, two_hand]
+    pre:
+      hand_hold: [two_hand]
+      position: [open]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: two_hand
+      position: shadow
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1-3"
+        description: "Vorbereitung"
+      - beat: "5"
+        action: raise_both_hands
+      - beat: "6"
+        action: place_on_shoulders
+        description: "Hände auf die eigenen Schultern und die des Followers legen"
+      - beat: "7"
+        description: "Sombrero Pose"
+    follower_actions:
+      - beat: "5-7"
+        action: turn_cw
+        description: "Drehung unter den Armen in die Pose"
+
+
+  - id: sombrero_exit
+    name: "Sombrero Exit"
+    description: "Hände von den Schultern lösen und zurück in die offene Haltung."
+    counts: 8
+    level: 4
+    tags: [special, wrap, two_hand]
+    pre:
+      hand_hold: [two_hand]
+      position: [shadow]
+      slot: [center]
+      leader_weight: [R]
+      follower_weight: [L]
+    post:
+      hand_hold: two_hand
+      position: open
+      slot: center
+      leader_weight: R
+      follower_weight: L
+    leader_actions:
+      - beat: "1-3"
+        description: "Hände lösen und Follower nach vorne rausführen"
+      - beat: "5-7"
+        description: "Wieder zur Frontseite ausrichten"
+    follower_actions:
+      - beat: "1-3"
+        foot: R
+        direction: forward
+      - beat: "5-7"
+        action: pivot_180

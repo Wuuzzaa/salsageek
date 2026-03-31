@@ -4,4 +4,6 @@ known_elements:
 - side_basic
 - follower_right_turn
 - leader_right_turn
+- cbl_basic
+- hand_change_front
 custom_figures: []
