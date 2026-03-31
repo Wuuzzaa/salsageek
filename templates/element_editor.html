@@ -354,15 +354,60 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="mb-0">
+                        <div class="mb-0 border-top pt-2">
                             <label class="form-label small fw-bold mb-1">Notizen</label>
                             <textarea name="notes" class="form-control smaller" rows="2">{{ element.notes if element else '' }}</textarea>
                         </div>
                     </div>
                 </div>
 
+                <!-- Videos Section -->
+                <div class="card shadow-sm border-0 mb-3">
+                    <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0 small fw-bold">YouTube Videos</h5>
+                        <button type="button" class="btn btn-outline-primary btn-xs" onclick="addVideoField()">
+                            <i class="bi bi-plus"></i>
+                        </button>
+                    </div>
+                    <div class="card-body p-2" id="videoContainer">
+                        {% if element and element.videos %}
+                            {% for video in element.videos %}
+                            <div class="video-entry mb-2 border rounded p-2 bg-light position-relative">
+                                <button type="button" class="btn-close position-absolute top-0 end-0 m-1" style="font-size: 0.5rem;" onclick="this.parentElement.remove()"></button>
+                                <input type="text" name="video_urls" class="form-control form-control-xs mb-1" placeholder="YouTube URL" value="{{ video.url }}">
+                                <div class="row g-1">
+                                    <div class="col-7">
+                                        <input type="text" name="video_titles" class="form-control form-control-xs" placeholder="Titel" value="{{ video.title }}">
+                                    </div>
+                                    <div class="col-5">
+                                        <select name="video_types" class="form-select form-select-xs">
+                                            <option value="Full" {% if video.type == 'Full' %}selected{% endif %}>Full</option>
+                                            <option value="Leader" {% if video.type == 'Leader' %}selected{% endif %}>Leader</option>
+                                            <option value="Follower" {% if video.type == 'Follower' %}selected{% endif %}>Follower</option>
+                                            <option value="Slow" {% if video.type == 'Slow' %}selected{% endif %}>Slow</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    {% if not element or not element.videos %}
+                    <div class="card-footer bg-white py-2 text-center">
+                        <button type="button" class="btn btn-link btn-xs text-decoration-none" onclick="addVideoField()">
+                            <i class="bi bi-plus-circle me-1"></i> Video hinzufügen
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+
                 <button type="submit" class="btn btn-primary w-100 shadow-sm fw-bold">
-                    <i class="bi bi-save me-1"></i> Speichern
+                    <i class="bi bi-save me-1"></i> 
+                    {% if element and element.id and not copy_from_id %}
+                        Aktualisieren
+                    {% else %}
+                        Speichern
+                    {% endif %}
                 </button>
                 
                 {% if element and element.id %}
@@ -384,7 +429,7 @@
 <script>
 function loadTemplate(id) {
     if (id) {
-        window.location.href = "{{ url_for('element_editor') }}?copy_from=" + id;
+        window.location.href = "{{ url_for('element_editor') }}/" + id;
     } else {
         window.location.href = "{{ url_for('element_editor') }}";
     }
@@ -422,6 +467,30 @@ function updateActionsRaw(role) {
     
     const target = document.getElementById(`${role}_actions_raw`);
     if (target) target.value = rawText.trim();
+}
+
+function addVideoField() {
+    const container = document.getElementById('videoContainer');
+    const div = document.createElement('div');
+    div.className = 'video-entry mb-2 border rounded p-2 bg-light position-relative';
+    div.innerHTML = `
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-1" style="font-size: 0.5rem;" onclick="this.parentElement.remove()"></button>
+        <input type="text" name="video_urls" class="form-control form-control-xs mb-1" placeholder="YouTube URL">
+        <div class="row g-1">
+            <div class="col-7">
+                <input type="text" name="video_titles" class="form-control form-control-xs" placeholder="Titel">
+            </div>
+            <div class="col-5">
+                <select name="video_types" class="form-select form-select-xs">
+                    <option value="Full">Full</option>
+                    <option value="Leader">Leader</option>
+                    <option value="Follower">Follower</option>
+                    <option value="Slow">Slow</option>
+                </select>
+            </div>
+        </div>
+    `;
+    container.appendChild(div);
 }
 
 // Initial update

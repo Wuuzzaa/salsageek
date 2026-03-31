@@ -27,11 +27,9 @@
                     <a href="{{ url_for('element_editor', copy_from=element.id) }}" class="btn btn-sm btn-outline-secondary shadow-sm px-3">
                         <i class="bi bi-files me-1"></i> Copy
                     </a>
-                    {% if 'Custom' in element.tags %}
                     <a href="{{ url_for('element_editor', element_id=element.id) }}" class="btn btn-sm btn-outline-primary shadow-sm px-3">
                         <i class="bi bi-pencil me-1"></i> Edit
                     </a>
-                    {% endif %}
                 </div>
                 <div class="mb-2">
                     <span class="badge text-bg-{{ level_info(element.level).badge }}">
@@ -212,12 +210,41 @@
     </div>
 </div>
 
-{% if element.notes %}
-<div class="card shadow-sm border-0 mt-4">
-    <div class="card-body p-4">
-        <h3 class="h5 mb-3">Notes</h3>
-        <p class="mb-0">{{ element.notes }}</p>
+{% if element.notes or element.videos %}
+<div class="row g-4 mt-1">
+    {% if element.videos %}
+    <div class="{% if element.notes %}col-lg-8{% else %}col-12{% endif %}">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body p-4">
+                <h3 class="h5 mb-3">Videos</h3>
+                <div class="row g-3">
+                    {% for video in element.videos %}
+                    <div class="col-md-{% if element.videos|length == 1 %}12{% else %}6{% endif %}">
+                        <div class="ratio ratio-16x9 mb-2 shadow-sm rounded overflow-hidden">
+                            <iframe src="{{ video.url|youtube_embed }}" title="{{ video.title }}" allowfullscreen></iframe>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center px-1">
+                            <span class="small fw-bold">{{ video.title or "Video " ~ loop.index }}</span>
+                            <span class="badge text-bg-light border smaller">{{ video.type }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
     </div>
+    {% endif %}
+
+    {% if element.notes %}
+    <div class="{% if element.videos %}col-lg-4{% else %}col-12{% endif %}">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body p-4">
+                <h3 class="h5 mb-3">Notes</h3>
+                <p class="mb-0" style="white-space: pre-wrap;">{{ element.notes }}</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endif %}
 

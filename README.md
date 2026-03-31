@@ -14,6 +14,7 @@ Die Anwendung verfügt über umfangreiche automatisierte Tests, die sowohl die t
 - **Vollständige Seiten-Abdeckung:** Es wird für jedes Element und jede Figur automatisch geprüft, ob die Detailseite fehlerfrei lädt.
 - **Visualisierungs-Check:** Die Flow-Visualisierung (Mermaid.js) wird für alle validen Figuren generiert und validiert.
 - **Routenzugriff:** Alle Hauptseiten (Builder, Repertoire, etc.) werden auf Erreichbarkeit geprüft.
+- **Logik-Tests:** Die Kernlogik für die Video-Integration (YouTube-Link-Konvertierung) und die Editor-Funktionen (Bearbeiten/Aktualisieren von Elementen) wird separat verifiziert.
 
 ### Tests ausführen
 Um die Tests in der PowerShell zu starten, führe folgende Befehle aus:

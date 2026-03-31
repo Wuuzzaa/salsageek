@@ -174,8 +174,8 @@ class ElementEditorService:
     def add_custom_element(self, name: str, level: int, counts: int, pre: Dict, post: Dict, 
                            description: str = "", tags: List[str] = None, 
                            leader_actions: List[Dict] = None, follower_actions: List[Dict] = None,
-                           signals: List[Dict] = None, notes: str = "",
-                           custom_id: str = None) -> Tuple[Optional[str], List[str]]:
+                           signals: List[Dict] = None, videos: List[Dict[str, str]] = None,
+                           notes: str = "", custom_id: str = None) -> Tuple[Optional[str], List[str]]:
         # Generate ID if not provided
         if not custom_id:
             import time
@@ -195,6 +195,7 @@ class ElementEditorService:
             "leader_actions": leader_actions or [],
             "follower_actions": follower_actions or [],
             "signals": signals or [],
+            "videos": videos or [],
             "notes": notes or ""
         }
 

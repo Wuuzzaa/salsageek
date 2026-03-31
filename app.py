@@ -53,6 +53,34 @@ def inject_globals():
         "schema": salsa_service.schema,
     }
 
+@app.template_filter("youtube_embed")
+def youtube_embed_filter(url: str) -> str:
+    """Converts YouTube URLs (watch, short, etc.) to embed format."""
+    if not url:
+        return ""
+    
+    import re
+    # Regular watch links: https://www.youtube.com/watch?v=abc
+    # Short links: https://youtu.be/abc
+    # Mobile links: https://m.youtube.com/watch?v=abc
+    # Embed links already: https://www.youtube.com/embed/abc
+    
+    if "youtube.com/embed/" in url:
+        return url
+        
+    video_id = None
+    if "youtu.be/" in url:
+        video_id = url.split("youtu.be/")[1].split("?")[0]
+    elif "v=" in url:
+        video_id = url.split("v=")[1].split("&")[0]
+    elif "youtube.com/v/" in url:
+        video_id = url.split("youtube.com/v/")[1].split("?")[0]
+        
+    if video_id:
+        return f"https://www.youtube.com/embed/{video_id}"
+        
+    return url
+
 
 @app.route("/")
 def index():
@@ -406,6 +434,19 @@ def element_editor(element_id: str = None):
             # Notes
             notes = request.form.get("notes", "").strip()
 
+            # Videos
+            video_urls = request.form.getlist("video_urls")
+            video_titles = request.form.getlist("video_titles")
+            video_types = request.form.getlist("video_types")
+            videos = []
+            for i in range(len(video_urls)):
+                if video_urls[i].strip():
+                    videos.append({
+                        "url": video_urls[i].strip(),
+                        "title": video_titles[i].strip() if i < len(video_titles) else "",
+                        "type": video_types[i].strip() if i < len(video_types) else "Full"
+                    })
+
             # Parse actions (simple: "beat: foot direction [turn_type]")
             def parse_actions(raw_text):
                 actions = []
@@ -440,7 +481,7 @@ def element_editor(element_id: str = None):
                 new_id, errors = element_editor_service.add_custom_element(
                     name=name, level=level, counts=counts, 
                     pre=pre, post=post, description=desc, 
-                    tags=tags, signals=signals, notes=notes,
+                    tags=tags, signals=signals, videos=videos, notes=notes,
                     leader_actions=leader_actions,
                     follower_actions=follower_actions,
                     custom_id=element_id

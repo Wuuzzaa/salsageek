@@ -79,7 +79,15 @@
                                         <td><span class="badge rounded-pill bg-light text-dark border">{{ loop.index }}</span></td>
                                         <td>
                                             <div class="fw-bold">{{ elem.name }}</div>
-                                            <div class="small text-muted">{{ elem.id }}</div>
+                                            <div class="small text-muted d-flex align-items-center gap-2">
+                                                {{ elem.id }}
+                                                {% if elem.videos %}
+                                                <button type="button" class="btn btn-link p-0 text-primary smaller text-decoration-none" 
+                                                        onclick="openVideoModal('{{ elem.name }}', {{ elem.videos|tojson|safe }})">
+                                                    <i class="bi bi-play-circle-fill"></i> Video
+                                                </button>
+                                                {% endif %}
+                                            </div>
                                         </td>
                                         <td>
                                             <div class="d-flex flex-wrap gap-1">
@@ -153,6 +161,21 @@
     </div>
 {% endif %}
 
+<!-- Video Modal -->
+<div class="modal fade" id="videoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" id="videoModalLabel">Element Video</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div id="videoModalContent"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>
     mermaid.initialize({ 
@@ -166,6 +189,41 @@
         },
         securityLevel: 'loose'
     });
+
+    function openVideoModal(name, videos) {
+        document.getElementById('videoModalLabel').innerText = name + ' Videos';
+        let content = '<div class="row g-3">';
+        
+        // Helper to convert YT URL to embed
+        function toEmbed(url) {
+            if (url.includes('youtube.com/embed/')) return url;
+            let id = '';
+            if (url.includes('youtu.be/')) id = url.split('youtu.be/')[1].split('?')[0];
+            else if (url.includes('v=')) id = url.split('v=')[1].split('&')[0];
+            return id ? 'https://www.youtube.com/embed/' + id : url;
+        }
+
+        videos.forEach(v => {
+            content += `
+                <div class="col-12 col-md-${videos.length > 1 ? '6' : '12'}">
+                    <div class="ratio ratio-16x9 rounded shadow-sm overflow-hidden mb-2">
+                        <iframe src="${toEmbed(v.url)}" allowfullscreen></iframe>
+                    </div>
+                    <div class="small fw-bold">${v.title || 'Video'} <span class="badge text-bg-light border ms-1">${v.type || 'Full'}</span></div>
+                </div>
+            `;
+        });
+        content += '</div>';
+        document.getElementById('videoModalContent').innerHTML = content;
+        
+        const myModal = new bootstrap.Modal(document.getElementById('videoModal'));
+        myModal.show();
+        
+        // Stop videos when modal closed
+        document.getElementById('videoModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('videoModalContent').innerHTML = '';
+        });
+    }
 </script>
 
 <style>

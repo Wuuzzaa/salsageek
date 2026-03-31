@@ -123,6 +123,7 @@ class Element:
     leader_actions: List[LeaderAction]
     follower_actions: List[FollowerAction]
     signals: List[Signal]
+    videos: List[Dict[str, str]] = field(default_factory=list)
     notes: str = ""
 
     def can_follow(self, other: "Element") -> bool:
@@ -160,6 +161,7 @@ class Figure:
     sequence: List[str]   # Element IDs
     total_counts: int
     tags: List[str]
+    videos: List[Dict[str, str]] = field(default_factory=list)
     notes: str = ""
     # Populated after loading:
     elements: List[Element] = field(default_factory=list)
@@ -277,6 +279,7 @@ def load_elements(path: Path) -> Dict[str, Element]:
             leader_actions=_parse_actions(raw.get("leader_actions", [])),
             follower_actions=_parse_follower_actions(raw.get("follower_actions", [])),
             signals=_parse_signals(raw.get("signals", [])),
+            videos=raw.get("videos", []),
             notes=raw.get("notes", "").strip(),
         )
         elements[elem.id] = elem
@@ -298,6 +301,7 @@ def load_figures(path: Path, elements: Dict[str, Element]) -> Dict[str, Figure]:
             sequence=raw.get("sequence", []),
             total_counts=int(raw.get("total_counts", 0)),
             tags=raw.get("tags", []),
+            videos=raw.get("videos", []),
             notes=raw.get("notes", "").strip(),
         )
 
