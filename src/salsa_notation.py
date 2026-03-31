@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Dict, Optional, Set
+from typing import List, Dict, Optional, Set, Any
 import yaml
 
 
@@ -15,15 +15,21 @@ import yaml
 
 @dataclass
 class SalsaState:
-    """Represents the complete state passed between two elements."""
-    hand_hold: Set[str]   # possible values (multiple = compatible with multiple)
-    position: Set[str]
-    slot: Set[str]
-    leader_weight: Set[str]
-    follower_weight: Set[str]
+    """
+    Represents the physical configuration of the couple (hand hold, position, weight, etc.) 
+    at a specific point in time (usually between elements).
+    
+    Fields are Sets to allow for multiple compatible configurations.
+    """
+    hand_hold: Set[str]   # e.g., {'open', 'closed', 'left-to-right'}
+    position: Set[str]    # e.g., {'closed', 'open', 'side-by-side'}
+    slot: Set[str]        # e.g., {'center', 'left', 'right'}
+    leader_weight: Set[str]   # {'L', 'R'}
+    follower_weight: Set[str] # {'L', 'R'}
     connection: Set[str] = field(default_factory=lambda: {"neutral"})
 
     def state_str(self) -> str:
+        """Returns a human-readable representation of the state for tooltips/debug."""
         parts: List[str] = []
         def fmt(s):
             if isinstance(s, (set, list)):
@@ -49,7 +55,15 @@ class SalsaState:
         return " · ".join(parts)
 
     def resolve_same(self, pre: "SalsaState") -> "SalsaState":
-        """'same' in any field means: take value from pre-state."""
+        """
+        Resolves 'same' markers in the state by taking the actual values from the preceding state.
+        
+        Args:
+            pre: The preceding state to inherit values from.
+            
+        Returns:
+            A new SalsaState with 'same' values replaced.
+        """
         def resolve(post_val, pre_val):
             # Check for 'same' in string, set or list
             if isinstance(post_val, (set, list)):
@@ -69,7 +83,10 @@ class SalsaState:
         )
 
     def compatible_with(self, other: "SalsaState") -> bool:
-        """Checks if this state (as post) is compatible with 'other' (as pre)."""
+        """
+        Checks if this state (acting as post-condition) is compatible with 'other' 
+        (acting as pre-condition) by checking for non-empty intersections of all fields.
+        """
         return bool(
             self.hand_hold & other.hand_hold and
             self.position & other.position and
@@ -82,6 +99,7 @@ class SalsaState:
 
 @dataclass
 class LeaderAction:
+    """Represents an action performed by the leader on a specific beat."""
     beat: str
     foot: Optional[str] = None
     direction: Optional[str] = None
@@ -93,6 +111,7 @@ class LeaderAction:
 
 @dataclass
 class FollowerAction:
+    """Represents an action performed by the follower on a specific beat."""
     beat: str
     foot: Optional[str] = None
     direction: Optional[str] = None
@@ -103,7 +122,8 @@ class FollowerAction:
 
 @dataclass
 class Signal:
-    type: str
+    """Represents a lead signal given by the leader."""
+    type: str # e.g., 'visual', 'tension', 'physical'
     description: str = ""
     beat: Optional[str] = None
     hand: Optional[str] = None
@@ -112,6 +132,10 @@ class Signal:
 
 @dataclass
 class Element:
+    """
+    The building block of a salsa figure. 
+    Defines what happens during a specific number of beats.
+    """
     id: str
     name: str
     description: str
@@ -127,11 +151,11 @@ class Element:
     notes: str = ""
 
     def can_follow(self, other: "Element") -> bool:
-        """Can self follow directly after 'other'?"""
+        """Checks if this element can be performed directly after the given 'other' element."""
         return other.post.compatible_with(self.pre)
 
     def explain_compatibility_error(self, other: "Element") -> str:
-        """User-friendly explanation why this element cannot follow 'other'."""
+        """Provides a user-friendly explanation of why this element cannot follow 'other'."""
         post = other.post
         pre = self.pre
         
@@ -154,6 +178,9 @@ class Element:
 
 @dataclass
 class Figure:
+    """
+    A sequence of elements forming a complete move or combination.
+    """
     id: str
     name: str
     description: str
@@ -169,14 +196,15 @@ class Figure:
     validation_errors: List[str] = field(default_factory=list)
 
     def is_executable_with(self, known_ids: Set[str]) -> bool:
-        """Can this figure be performed with the known repertoire?"""
+        """Returns True if all elements in the sequence are in the known repertoire."""
         return all(eid in known_ids for eid in self.sequence)
 
     def missing_elements(self, known_ids: Set[str]) -> List[str]:
+        """Returns a list of element IDs that are not yet in the known repertoire."""
         return [eid for eid in self.sequence if eid not in known_ids]
 
     def is_almost_executable(self, known_ids: Set[str]) -> bool:
-        """Is exactly one element missing from the repertoire?"""
+        """Returns True if exactly one element is missing from the known repertoire."""
         missing = self.missing_elements(known_ids)
         return len(missing) == 1
 
@@ -186,7 +214,10 @@ class Figure:
 # ---------------------------------------------------------------------------
 
 def _parse_state(raw: dict, key: str = None) -> SalsaState:
-    """Converts a YAML dict into a SalsaState object."""
+    """
+    Internal helper to convert a YAML state dictionary into a SalsaState object.
+    Handles single values, lists, and None (converting to {'any'}).
+    """
     def as_set(val) -> Set[str]:
         if val is None:
             return {"any"}
@@ -205,6 +236,7 @@ def _parse_state(raw: dict, key: str = None) -> SalsaState:
 
 
 def _parse_actions(raw_list: list) -> List[LeaderAction]:
+    """Parses a list of leader action dictionaries into LeaderAction objects."""
     if not raw_list:
         return []
     result = []
@@ -222,6 +254,7 @@ def _parse_actions(raw_list: list) -> List[LeaderAction]:
 
 
 def _parse_follower_actions(raw_list: list) -> List[FollowerAction]:
+    """Parses a list of follower action dictionaries into FollowerAction objects."""
     if not raw_list:
         return []
     result = []
@@ -238,6 +271,7 @@ def _parse_follower_actions(raw_list: list) -> List[FollowerAction]:
 
 
 def _parse_signals(raw_list: list) -> List[Signal]:
+    """Parses a list of signal dictionaries into Signal objects."""
     if not raw_list:
         return []
     result = []
@@ -253,6 +287,10 @@ def _parse_signals(raw_list: list) -> List[Signal]:
 
 
 def load_elements(path: Path) -> Dict[str, Element]:
+    """
+    Loads elements from a YAML file.
+    Resolves 'same' post-conditions based on pre-conditions.
+    """
     if not path.exists():
         return {}
     with open(path, encoding="utf-8") as f:
@@ -288,6 +326,10 @@ def load_elements(path: Path) -> Dict[str, Element]:
 
 
 def load_figures(path: Path, elements: Dict[str, Element]) -> Dict[str, Figure]:
+    """
+    Loads figures from a YAML file and validates them against the provided elements.
+    Checks for state compatibility between elements in a sequence.
+    """
     with open(path, encoding="utf-8") as f:
         data = yaml.safe_load(f)
 
@@ -345,7 +387,17 @@ def get_executable_figures(
     figures: Dict[str, Figure],
     only_valid: bool = True,
 ) -> List[Figure]:
-    """All figures that can be performed with the current repertoire."""
+    """
+    Returns a list of figures that can be performed given the set of known element IDs.
+    
+    Args:
+        known_ids: Set of element IDs the user already knows.
+        figures: Dictionary of all available figures.
+        only_valid: If True, only return figures that passed state validation.
+        
+    Returns:
+        Sorted list of executable figures (by level).
+    """
     result = []
     for fig in figures.values():
         if only_valid and not fig.valid:
@@ -360,13 +412,18 @@ def score_element_to_learn(
     known_ids: Set[str],
     figures: Dict[str, Figure],
     elements: Dict[str, Element],
-) -> Dict:
+) -> Dict[str, Any]:
     """
-    Calculates a learning score for an element.
-    Criteria:
-      - How many new figures are unlocked?
-      - How many of these figures only need 0 elements afterwards?
-      - Level appropriateness (near current level)
+    Calculates a learning score for an element based on how many new figures it unlocks.
+    
+    Args:
+        candidate_id: ID of the element to evaluate.
+        known_ids: Set of IDs already known.
+        figures: Dictionary of all figures.
+        elements: Dictionary of all elements.
+        
+    Returns:
+        Dictionary containing score, element object, and lists of unlocked/almost unlocked figures.
     """
     if candidate_id not in elements:
         return {"score": 0, "new_figures": [], "partially_unlocked": []}
@@ -407,10 +464,19 @@ def recommend_elements_to_learn(
     elements: Dict[str, Element],
     current_level: int,
     top_n: int = 5,
-) -> List[Dict]:
+) -> List[Dict[str, Any]]:
     """
-    Recommends the next elements to learn.
-    Filters for level current_level and current_level+1.
+    Recommends the next elements to learn based on the current level and unlocked figures.
+    
+    Args:
+        known_ids: Set of IDs already known.
+        figures: Dictionary of all figures.
+        elements: Dictionary of all elements.
+        current_level: Current learning level.
+        top_n: Maximum number of recommendations to return.
+        
+    Returns:
+        List of dictionaries with recommendation details, sorted by score descending.
     """
     candidates = [
         eid for eid, e in elements.items()

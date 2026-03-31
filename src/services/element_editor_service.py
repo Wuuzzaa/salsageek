@@ -1,15 +1,27 @@
 import yaml
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Any
 import re
+import time
 
 class ElementEditorService:
+    """
+    Service for creating, updating and validating custom salsa elements.
+    """
     def __init__(self, custom_elements_path: Path, schema: Optional[Dict] = None):
         self.path = custom_elements_path
         self.schema = schema or {}
 
-    def to_dict(self, obj):
-        """Converts complex types (Sets, Dataclasses) into simple dicts/lists for Jinja2."""
+    def to_dict(self, obj: Any) -> Any:
+        """
+        Converts complex types (Sets, Dataclasses, SalsaState) into simple dicts/lists for Jinja2.
+        
+        Args:
+            obj: The object to convert.
+            
+        Returns:
+            A JSON-serializable representation of the object.
+        """
         if obj is None:
             return None
         if isinstance(obj, (str, int, float, bool)):
@@ -32,8 +44,6 @@ class ElementEditorService:
         try:
             from dataclasses import asdict, is_dataclass
             if is_dataclass(obj):
-                # Using standard asdict and then converting its result recursively
-                # to handle Sets within the dataclass
                 return self.to_dict(asdict(obj))
         except ImportError:
             pass
@@ -52,7 +62,16 @@ class ElementEditorService:
         return str(obj)
 
     def fill_missing_steps(self, actions: List[Dict], target_counts: int) -> List[Dict]:
-        """Ensures the actions list has exactly target_counts entries."""
+        """
+        Ensures the actions list has exactly target_counts entries by filling gaps with pauses.
+        
+        Args:
+            actions: List of action dictionaries.
+            target_counts: The required number of beats.
+            
+        Returns:
+            A complete list of actions for all beats.
+        """
         current_actions = {str(a.get("beat")): a for a in actions if "beat" in a}
         new_actions = []
         for i in range(1, target_counts + 1):
@@ -69,104 +88,110 @@ class ElementEditorService:
                 })
         return sorted(new_actions, key=lambda x: int(x["beat"]) if x["beat"].isdigit() else 999)
 
+    def parse_actions_raw(self, raw_text: str) -> List[Dict[str, str]]:
+        """
+        Parses raw text into a list of action dictionaries.
+        Format expected: "beat: foot direction [turn_type]"
+        
+        Args:
+            raw_text: The multiline string from the form input.
+            
+        Returns:
+            List of parsed action dicts.
+        """
+        actions = []
+        if not raw_text:
+            return actions
+            
+        for line in raw_text.splitlines():
+            if ":" in line:
+                parts = line.split(":", 1)
+                beat = parts[0].strip()
+                rest = parts[1].strip().split()
+                
+                # Special case: "-" or "pause" means no foot action
+                foot = rest[0] if len(rest) > 0 else ""
+                direction = rest[1] if len(rest) > 1 else ""
+                turn_type = rest[2] if len(rest) > 2 else ""
+                
+                if foot in ["-", "pause"]:
+                    foot = ""
+                    if not direction: 
+                        direction = "pause"
+                
+                actions.append({
+                    "beat": beat,
+                    "foot": foot,
+                    "direction": direction,
+                    "turn_type": turn_type,
+                    "description": line.strip()
+                })
+        return actions
+
     def validate_element(self, data: Dict) -> Tuple[bool, List[str]]:
-        """Checks an element against the schema."""
+        """
+        Checks an element against the schema for valid values.
+        
+        Args:
+            data: The element data to validate.
+            
+        Returns:
+            Tuple of (is_valid, list_of_errors).
+        """
         if not self.schema:
             return True, []
         
         errors = []
-        # Hand hold
-        valid_hands = {h["id"] for h in self.schema.get("hand_holds", [])}
-        valid_hands.add("same")
-        valid_hands.add("any")
         
-        pre_hands = data.get("pre", {}).get("hand_hold", [])
-        for h in pre_hands:
-            if h not in valid_hands:
-                errors.append(f"Invalid pre-hand hold: {h}")
-        
-        post_hands = data.get("post", {}).get("hand_hold", [])
-        if isinstance(post_hands, str): post_hands = [post_hands]
-        for h in post_hands:
-            if h not in valid_hands:
-                errors.append(f"Invalid post-hand hold: {h}")
+        # 1. Validate Pre/Post states
+        self._validate_state_fields(data.get("pre", {}), "pre", errors)
+        self._validate_state_fields(data.get("post", {}), "post", errors)
 
-        # Connection
-        valid_conn = {c["id"] for c in self.schema.get("connections", [])}
-        valid_conn.add("same")
-        valid_conn.add("any")
-        for c in data.get("pre", {}).get("connection", []):
-            if c not in valid_conn:
-                errors.append(f"Invalid pre-connection: {c}")
-        post_conn = data.get("post", {}).get("connection", [])
-        if isinstance(post_conn, str): post_conn = [post_conn]
-        for c in post_conn:
-            if c not in valid_conn:
-                errors.append(f"Invalid post-connection: {c}")
-
-        # Position
-        valid_pos = {p["id"] for p in self.schema.get("positions", [])}
-        valid_pos.add("same")
-        valid_pos.add("any")
-        for p in data.get("pre", {}).get("position", []):
-            if p not in valid_pos:
-                errors.append(f"Invalid pre-position: {p}")
-        post_pos = data.get("post", {}).get("position", [])
-        if isinstance(post_pos, str): post_pos = [post_pos]
-        for p in post_pos:
-            if p not in valid_pos:
-                errors.append(f"Invalid post-position: {p}")
-
-        # Slot
-        valid_slots = {s["id"] for s in self.schema.get("slots", [])}
-        valid_slots.add("same")
-        valid_slots.add("any")
-        for s in data.get("pre", {}).get("slot", []):
-            if s not in valid_slots:
-                errors.append(f"Invalid pre-slot: {s}")
-        post_slot = data.get("post", {}).get("slot", [])
-        if isinstance(post_slot, str): post_slot = [post_slot]
-        for s in post_slot:
-            if s not in valid_slots:
-                errors.append(f"Invalid post-slot: {s}")
-
-        # Weight
-        valid_weights = {w["id"] for w in self.schema.get("weights", [])}
-        valid_weights.add("same")
-        valid_weights.add("any")
-        for w in data.get("pre", {}).get("leader_weight", []):
-            if w not in valid_weights:
-                errors.append(f"Invalid pre-leader-weight: {w}")
-        for w in data.get("pre", {}).get("follower_weight", []):
-            if w not in valid_weights:
-                errors.append(f"Invalid pre-follower-weight: {w}")
-        
-        post_l_weight = data.get("post", {}).get("leader_weight", [])
-        if isinstance(post_l_weight, str): post_l_weight = [post_l_weight]
-        for w in post_l_weight:
-            if w not in valid_weights:
-                errors.append(f"Invalid post-leader-weight: {w}")
-        
-        post_f_weight = data.get("post", {}).get("follower_weight", [])
-        if isinstance(post_f_weight, str): post_f_weight = [post_f_weight]
-        for w in post_f_weight:
-            if w not in valid_weights:
-                errors.append(f"Invalid post-follower-weight: {w}")
-
-        # Actions
-        valid_dirs = {d["id"] for d in self.schema.get("directions", [])}
-        valid_turns = {t["id"] for t in self.schema.get("turn_types", [])}
-        for action in data.get("leader_actions", []) + data.get("follower_actions", []):
-            d = action.get("direction")
-            if d and d not in valid_dirs:
-                errors.append(f"Invalid direction in actions: {d}")
-            t = action.get("turn_type")
-            if t and t not in valid_turns:
-                errors.append(f"Invalid turn_type in actions: {t}")
+        # 2. Validate Actions
+        self._validate_actions(data.get("leader_actions", []), "leader", errors)
+        self._validate_actions(data.get("follower_actions", []), "follower", errors)
 
         return len(errors) == 0, errors
 
+    def _validate_state_fields(self, state: Dict, prefix: str, errors: List[str]):
+        """Internal helper to validate state fields against schema."""
+        field_mapping = {
+            "hand_hold": "hand_holds",
+            "connection": "connections",
+            "position": "positions",
+            "slot": "slots",
+            "leader_weight": "weights",
+            "follower_weight": "weights"
+        }
+        
+        for field, schema_key in field_mapping.items():
+            valid_values = {v["id"] for v in self.schema.get(schema_key, [])}
+            valid_values.update({"same", "any"})
+            
+            values = state.get(field, [])
+            if isinstance(values, str):
+                values = [values]
+                
+            for val in values:
+                if val not in valid_values:
+                    errors.append(f"Invalid {prefix}-{field}: {val}")
+
+    def _validate_actions(self, actions: List[Dict], person: str, errors: List[str]):
+        """Internal helper to validate actions against schema."""
+        valid_dirs = {d["id"] for d in self.schema.get("directions", [])}
+        valid_turns = {t["id"] for t in self.schema.get("turn_types", [])}
+        
+        for action in actions:
+            d = action.get("direction")
+            if d and d not in valid_dirs:
+                errors.append(f"Invalid direction in {person} actions: {d}")
+            
+            t = action.get("turn_type")
+            if t and t not in valid_turns:
+                errors.append(f"Invalid turn_type in {person} actions: {t}")
+
     def _slugify(self, text: str) -> str:
+        """Converts a string to a URL-friendly slug."""
         text = text.lower().strip()
         text = re.sub(r"[^a-z0-9_\-]", "_", text)
         return text if text else "element"
@@ -176,9 +201,29 @@ class ElementEditorService:
                            leader_actions: List[Dict] = None, follower_actions: List[Dict] = None,
                            signals: List[Dict] = None, videos: List[Dict[str, str]] = None,
                            notes: str = "", custom_id: str = None) -> Tuple[Optional[str], List[str]]:
+        """
+        Adds or updates a custom element in the YAML storage.
+        
+        Args:
+            name: Human-readable name.
+            level: Difficulty level (1-5).
+            counts: Number of beats (usually 8).
+            pre: Pre-conditions state.
+            post: Post-conditions state.
+            description: Short description.
+            tags: List of tags.
+            leader_actions: List of leader actions.
+            follower_actions: List of follower actions.
+            signals: List of hand signals.
+            videos: List of associated video dicts (url, title, type).
+            notes: Additional notes.
+            custom_id: If provided, the element with this ID will be updated.
+            
+        Returns:
+            Tuple of (element_id, list_of_errors).
+        """
         # Generate ID if not provided
         if not custom_id:
-            import time
             elem_id = f"custom_{self._slugify(name)}_{int(time.time())}"
         else:
             elem_id = custom_id
@@ -204,7 +249,7 @@ class ElementEditorService:
         if not is_valid:
             return None, errors
 
-        # Load
+        # Load existing custom elements
         data = {"elements": []}
         if self.path.exists():
             with open(self.path, "r", encoding="utf-8") as f:
@@ -212,13 +257,13 @@ class ElementEditorService:
                 if existing and "elements" in existing:
                     data = existing
         
-        # If updating, replace existing element with same ID
+        # If updating, remove the old version
         if custom_id:
             data["elements"] = [e for e in data["elements"] if e["id"] != custom_id]
             
         data["elements"].append(new_element)
 
-        # Save
+        # Save back to YAML
         with open(self.path, "w", encoding="utf-8") as f:
             yaml.dump(data, f, allow_unicode=True, sort_keys=False)
             

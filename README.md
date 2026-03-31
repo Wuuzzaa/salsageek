@@ -1,5 +1,18 @@
 # SalsaGeek
 
+## Architektur & Refactoring
+
+SalsaGeek wurde im Hinblick auf Wartbarkeit und Erweiterbarkeit entwickelt. Vor dem Release im Master wurde ein umfassendes Refactoring durchgeführt:
+
+- **Modulare Services:** Die Logik ist in spezialisierte Services unterteilt (`SalsaService`, `BuilderService`, `ElementEditorService`), die über `app.py` koordiniert werden.
+- **Zustands-Validierung:** Das Kern-Datenmodell in `src/salsa_notation.py` validiert die physische Kompatibilität von Tanzelementen (Handhaltung, Position, Gewicht) über Mengen-Operationen.
+- **Repertoire-Management:** Nutzer können über Profile ihren Fortschritt tracken und Empfehlungen für das nächste zu lernende Element erhalten.
+- **Video-Integration:** YouTube-Videos können nahtlos in Elemente und Figuren eingebettet werden. Die Konvertierung erfolgt über einen zentralen Utility-Filter.
+- **Frontend-Macros:** Wiederkehrende UI-Komponenten (z. B. Video-Galerien) sind in `templates/macros.html` als Jinja2-Makros gekapselt.
+
+### Dokumentation
+Alle Kern-Module verfügen über ausführliche Docstrings und Type Hints, um neuen Entwicklern den Einstieg zu erleichtern.
+
 ## Lokale Ausführung
 ```bash
 python app.py

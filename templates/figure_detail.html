@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros.html" import video_gallery, video_strip %}
 {% block title %}{{ figure.name }} · SalsaGeek{% endblock %}
 
 {% block content %}
@@ -56,24 +57,7 @@
 <div class="row g-4 mb-4">
     {% if figure.videos %}
     <div class="{% if figure.notes %}col-lg-8{% else %}col-12{% endif %}">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-body p-4">
-                <h3 class="h5 mb-3">Figure Videos</h3>
-                <div class="row g-3">
-                    {% for video in figure.videos %}
-                    <div class="col-md-{% if figure.videos|length == 1 %}12{% else %}6{% endif %}">
-                        <div class="ratio ratio-16x9 mb-2 shadow-sm rounded overflow-hidden">
-                            <iframe src="{{ video.url|youtube_embed }}" title="{{ video.title }}" allowfullscreen></iframe>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center px-1">
-                            <span class="small fw-bold">{{ video.title or "Video " ~ loop.index }}</span>
-                            <span class="badge text-bg-light border smaller">{{ video.type }}</span>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
+        {{ video_gallery(figure.videos, title="Figure Videos") }}
     </div>
     {% endif %}
 
@@ -121,16 +105,7 @@
                 {% if elem.videos %}
                 <div class="mb-4">
                     <h4 class="h6 mb-2">Element Videos</h4>
-                    <div class="row g-2">
-                        {% for v in elem.videos %}
-                        <div class="col-md-4">
-                            <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
-                                <iframe src="{{ v.url|youtube_embed }}" allowfullscreen></iframe>
-                            </div>
-                            <div class="smaller text-muted mt-1">{{ v.title or "Element Video" }}</div>
-                        </div>
-                        {% endfor %}
-                    </div>
+                    {{ video_strip(elem.videos) }}
                 </div>
                 {% endif %}
 

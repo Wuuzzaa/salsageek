@@ -14,6 +14,7 @@ from src.salsa_notation import (
 from src.services.builder_service import BuilderService
 from src.services.element_editor_service import ElementEditorService
 from src.services.salsa_service import SalsaService
+from src.utils import youtube_embed_url
 
 BASE_DIR = Path(__file__).parent
 DATA_DIR = BASE_DIR / "data"
@@ -56,30 +57,7 @@ def inject_globals():
 @app.template_filter("youtube_embed")
 def youtube_embed_filter(url: str) -> str:
     """Converts YouTube URLs (watch, short, etc.) to embed format."""
-    if not url:
-        return ""
-    
-    import re
-    # Regular watch links: https://www.youtube.com/watch?v=abc
-    # Short links: https://youtu.be/abc
-    # Mobile links: https://m.youtube.com/watch?v=abc
-    # Embed links already: https://www.youtube.com/embed/abc
-    
-    if "youtube.com/embed/" in url:
-        return url
-        
-    video_id = None
-    if "youtu.be/" in url:
-        video_id = url.split("youtu.be/")[1].split("?")[0]
-    elif "v=" in url:
-        video_id = url.split("v=")[1].split("&")[0]
-    elif "youtube.com/v/" in url:
-        video_id = url.split("youtube.com/v/")[1].split("?")[0]
-        
-    if video_id:
-        return f"https://www.youtube.com/embed/{video_id}"
-        
-    return url
+    return youtube_embed_url(url)
 
 
 @app.route("/")
@@ -447,35 +425,9 @@ def element_editor(element_id: str = None):
                         "type": video_types[i].strip() if i < len(video_types) else "Full"
                     })
 
-            # Parse actions (simple: "beat: foot direction [turn_type]")
-            def parse_actions(raw_text):
-                actions = []
-                for line in raw_text.splitlines():
-                    if ":" in line:
-                        parts = line.split(":", 1)
-                        beat = parts[0].strip()
-                        rest = parts[1].strip().split()
-                        
-                        # Special case: "-" or "pause" means no foot action
-                        foot = rest[0] if len(rest) > 0 else ""
-                        direction = rest[1] if len(rest) > 1 else ""
-                        turn_type = rest[2] if len(rest) > 2 else ""
-                        
-                        if foot in ["-", "pause"]:
-                            foot = ""
-                            if not direction: direction = "pause"
-                        
-                        actions.append({
-                            "beat": beat,
-                            "foot": foot,
-                            "direction": direction,
-                            "turn_type": turn_type,
-                            "description": line.strip()
-                        })
-                return actions
-
-            leader_actions = parse_actions(request.form.get("leader_actions_raw", ""))
-            follower_actions = parse_actions(request.form.get("follower_actions_raw", ""))
+            # Parse actions using the service
+            leader_actions = element_editor_service.parse_actions_raw(request.form.get("leader_actions_raw", ""))
+            follower_actions = element_editor_service.parse_actions_raw(request.form.get("follower_actions_raw", ""))
             
             if name:
                 new_id, errors = element_editor_service.add_custom_element(
