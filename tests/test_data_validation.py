@@ -5,15 +5,25 @@ from src.salsa_notation import load_elements, load_figures
 def get_data_dir(app):
     return Path(app.root_path) / 'data'
 
-def test_elements_data_valid(app):
-    data_dir = get_data_dir(app)
+def load_all_elements_for_test(data_dir: Path):
     elements = load_elements(data_dir / 'elements.yaml')
     
-    # Check custom elements if they exist
-    custom_path = data_dir / 'custom_elements.yaml'
-    if custom_path.exists():
-        custom_elements = load_elements(custom_path)
-        elements.update(custom_elements)
+    # Legacy custom elements
+    custom_legacy = data_dir / 'custom_elements.yaml'
+    if custom_legacy.exists():
+        elements.update(load_elements(custom_legacy))
+        
+    # New individual custom elements
+    custom_dir = data_dir / 'custom_elements'
+    if custom_dir.exists() and custom_dir.is_dir():
+        for yaml_file in custom_dir.glob("*.yaml"):
+            elements.update(load_elements(yaml_file))
+            
+    return elements
+
+def test_elements_data_valid(app):
+    data_dir = get_data_dir(app)
+    elements = load_all_elements_for_test(data_dir)
     
     assert len(elements) > 0, 'Keine Elemente gefunden'
     for eid, elem in elements.items():
@@ -23,12 +33,8 @@ def test_elements_data_valid(app):
 
 def test_figures_data_valid(app):
     data_dir = get_data_dir(app)
-    elements = load_elements(data_dir / 'elements.yaml')
+    elements = load_all_elements_for_test(data_dir)
     
-    custom_path = data_dir / 'custom_elements.yaml'
-    if custom_path.exists():
-        elements.update(load_elements(custom_path))
-        
     figures = load_figures(data_dir / 'figures.yaml', elements)
     
     errors = []
@@ -40,14 +46,14 @@ def test_figures_data_valid(app):
 
 def test_all_elements_pages(client, app):
     data_dir = get_data_dir(app)
-    elements = load_elements(data_dir / 'elements.yaml')
+    elements = load_all_elements_for_test(data_dir)
     for eid in elements.keys():
         response = client.get(f'/element/{eid}')
         assert response.status_code == 200, f"Detailseite für Element '{eid}' konnte nicht geladen werden"
 
 def test_all_figures_pages(client, app):
     data_dir = get_data_dir(app)
-    elements = load_elements(data_dir / 'elements.yaml')
+    elements = load_all_elements_for_test(data_dir)
     figures = load_figures(data_dir / 'figures.yaml', elements)
     for fid in figures.keys():
         response = client.get(f'/figuren/{fid}')
@@ -55,7 +61,7 @@ def test_all_figures_pages(client, app):
 
 def test_visualize_sequences(client, app):
     data_dir = get_data_dir(app)
-    elements = load_elements(data_dir / 'elements.yaml')
+    elements = load_all_elements_for_test(data_dir)
     figures = load_figures(data_dir / 'figures.yaml', elements)
     
     # Test visualization for each figure's sequence

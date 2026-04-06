@@ -66,8 +66,12 @@ directions:
     name: Am Platz
   - id: back_to_center
     name: Zurück zur Mitte
+  - id: center
+    name: In die Mitte (Center)
   - id: side
     name: Seitwärts
+  - id: side_right
+    name: Seitwärts Rechts
   - id: turn_cw
     name: Drehung (Uhrzeigersinn)
   - id: turn_ccw
@@ -86,6 +90,42 @@ turn_types:
     name: Traveling Turn (Wandernd)
   - id: hook
     name: Hook Turn
+    
+actions:
+  - id: turn_cw
+    name: "Drehung Rechts (CW)"
+  - id: turn_ccw
+    name: "Drehung Links (CCW)"
+  - id: pivot_180
+    name: "Pivot 180°"
+  - id: double_turn_cw
+    name: "Doppel-Drehung Rechts"
+  - id: double_turn_ccw
+    name: "Doppel-Drehung Links"
+  - id: prep_cw
+    name: "Preparation Rechts"
+  - id: prep_ccw
+    name: "Preparation Links"
+  - id: catch_hand
+    name: "Hand fangen"
+  - id: offer_hand
+    name: "Hand anbieten"
+  - id: pass_hand
+    name: "Hand übergeben"
+  - id: take_hand
+    name: "Hand nehmen"
+  - id: toss_hand
+    name: "Hand-Toss"
+  - id: step_under
+    name: "Unter-Arm durchlaufen"
+  - id: wrap_behind_back
+    name: "Wrap (hinter Rücken)"
+  - id: guide_behind_follower
+    name: "Hinter Follower führen"
+  - id: raise
+    name: "Hand heben"
+  - id: lower
+    name: "Hand senken"
 
 feet:
   - id: L

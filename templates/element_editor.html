@@ -64,7 +64,7 @@
 </div>
 {% endif %}
 
-<form method="post" id="elementForm">
+<form method="post" id="elementForm" autocomplete="off">
     <input type="hidden" name="action" value="add_element">
     <!-- Hidden fields for the backend to parse actions -->
     <textarea name="leader_actions_raw" id="leader_actions_raw" class="d-none"></textarea>
@@ -122,7 +122,7 @@
                                 <div class="row g-2">
                                     <div class="col-6">
                                         <label class="form-label smaller fw-bold mb-1">Gewicht L</label>
-                                        <select name="pre_leader_weight" class="form-select form-select-sm">
+                                        <select name="pre_leader_weight" class="form-select form-select-sm" multiple size="2">
                                             {% for w in schema.weights %}
                                             <option value="{{ w.id }}" {% if (element and w.id in element.pre.leader_weight) or (not element and w.id == 'R') %}selected{% endif %}>{{ w.name }}</option>
                                             {% endfor %}
@@ -130,7 +130,7 @@
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label smaller fw-bold mb-1">Gewicht F</label>
-                                        <select name="pre_follower_weight" class="form-select form-select-sm">
+                                        <select name="pre_follower_weight" class="form-select form-select-sm" multiple size="2">
                                             {% for w in schema.weights %}
                                             <option value="{{ w.id }}" {% if (element and w.id in element.pre.follower_weight) or (not element and w.id == 'L') %}selected{% endif %}>{{ w.name }}</option>
                                             {% endfor %}
@@ -209,7 +209,7 @@
                                 <div class="row g-2">
                                     <div class="col-6">
                                         <label class="form-label smaller fw-bold mb-1">Gewicht L</label>
-                                        <select name="post_leader_weight" class="form-select form-select-sm">
+                                        <select name="post_leader_weight" class="form-select form-select-sm" multiple size="3">
                                             <option value="same" {% if element and 'same' in element.post.leader_weight %}selected{% endif %}>Gleichbleibend</option>
                                             {% for w in schema.weights %}
                                             <option value="{{ w.id }}" {% if element and w.id in element.post.leader_weight %}selected{% endif %}>{{ w.name }}</option>
@@ -218,7 +218,7 @@
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label smaller fw-bold mb-1">Gewicht F</label>
-                                        <select name="post_follower_weight" class="form-select form-select-sm">
+                                        <select name="post_follower_weight" class="form-select form-select-sm" multiple size="3">
                                             <option value="same" {% if element and 'same' in element.post.follower_weight %}selected{% endif %}>Gleichbleibend</option>
                                             {% for w in schema.weights %}
                                             <option value="{{ w.id }}" {% if element and w.id in element.post.follower_weight %}selected{% endif %}>{{ w.name }}</option>
@@ -268,53 +268,69 @@
                             <tbody id="stepsTableBody">
                                 {% for i in range(1, 17) %}
                                 <tr class="step-row" data-beat="{{ i }}">
+                                    {% set curr = element.leader_actions[i-1] if element and element.leader_actions and i <= element.leader_actions|length else None %}
+                                    {% set curr_f = element.follower_actions[i-1] if element and element.follower_actions and i <= element.follower_actions|length else None %}
                                     <td class="text-center fw-bold bg-light border-end">{{ i }}</td>
                                     <td class="border-end">
-                                        <div class="d-flex gap-1">
-                                            <div class="btn-group btn-group-xs" role="group">
-                                                {% for f in ['L', 'R', '-'] %}
-                                                <input type="radio" class="btn-check" name="l_foot_{{ i }}" id="l_foot_{{ f }}_{{ i }}" value="{{ f }}" 
-                                                    onchange="updateActionsRaw('leader')"
-                                                    {% set curr = element.leader_actions[i-1] if element and element.leader_actions and i <= element.leader_actions|length else None %}
-                                                    {% if (curr and curr.foot == f) or (not curr and f == '-') %}checked{% endif %}>
-                                                <label class="btn btn-outline-primary btn-xs" for="l_foot_{{ f }}_{{ i }}">{{ f }}</label>
-                                                {% endfor %}
+                                        <div class="d-flex flex-column gap-1">
+                                            <div class="d-flex gap-1">
+                                                <div class="btn-group btn-group-xs" role="group">
+                                                    {% for f in ['L', 'R', '-'] %}
+                                                    <input type="radio" class="btn-check" name="l_foot_{{ i }}" id="l_foot_{{ f }}_{{ i }}" value="{{ f }}" 
+                                                        onchange="updateActionsRaw('leader')"
+                                                        {% if (curr and (curr.foot == f or (not curr.foot and f == '-'))) or (not curr and f == '-') %}checked{% endif %}>
+                                                    <label class="btn btn-outline-primary btn-xs" for="l_foot_{{ f }}_{{ i }}">{{ f }}</label>
+                                                    {% endfor %}
+                                                </div>
+                                                <select class="form-select form-select-xs" id="l_dir_{{ i }}" name="l_dir_{{ i }}" onchange="updateActionsRaw('leader')">
+                                                    {% for dir in schema.directions %}
+                                                    <option value="{{ dir.id }}" {% if (curr and (curr.direction == dir.id or (not curr.direction and dir.id == 'pause'))) or (not curr and dir.id == 'pause') %}selected{% endif %}>{{ dir.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <select class="form-select form-select-xs" id="l_turn_{{ i }}" name="l_turn_{{ i }}" onchange="updateActionsRaw('leader')" style="max-width: 85px;">
+                                                    <option value="" {% if not curr or not curr.turn_type %}selected{% endif %}>- Turn -</option>
+                                                    {% for t in schema.turn_types %}
+                                                    <option value="{{ t.id }}" {% if curr and curr.turn_type == t.id %}selected{% endif %}>{{ t.name }}</option>
+                                                    {% endfor %}
+                                                </select>
                                             </div>
-                                            <select class="form-select form-select-xs" id="l_dir_{{ i }}" onchange="updateActionsRaw('leader')">
-                                                {% for dir in schema.directions %}
-                                                <option value="{{ dir.id }}" {% if curr and curr.direction == dir.id %}selected{% elif not curr and dir.id == 'pause' %}selected{% endif %}>{{ dir.name }}</option>
-                                                {% endfor %}
-                                            </select>
-                                            <select class="form-select form-select-xs" id="l_turn_{{ i }}" onchange="updateActionsRaw('leader')" style="max-width: 85px;">
-                                                <option value="">- Turn -</option>
-                                                {% for t in schema.turn_types %}
-                                                <option value="{{ t.id }}" {% if curr and curr.turn_type == t.id %}selected{% endif %}>{{ t.name }}</option>
-                                                {% endfor %}
-                                            </select>
+                                            <div class="d-flex gap-1 mt-1">
+                                                <input type="text" name="l_action_{{ i }}" class="form-control form-control-xs" 
+                                                    placeholder="Action" list="actionList" value="{{ curr.action if curr and curr.action else '' }}">
+                                                <input type="text" name="l_desc_{{ i }}" class="form-control form-control-xs" 
+                                                    placeholder="Beschreibung" value="{{ curr.description if curr and curr.description else '' }}">
+                                            </div>
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="d-flex gap-1">
-                                            <div class="btn-group btn-group-xs" role="group">
-                                                {% for f in ['L', 'R', '-'] %}
-                                                <input type="radio" class="btn-check" name="f_foot_{{ i }}" id="f_foot_{{ f }}_{{ i }}" value="{{ f }}" 
-                                                    onchange="updateActionsRaw('follower')"
-                                                    {% set curr_f = element.follower_actions[i-1] if element and element.follower_actions and i <= element.follower_actions|length else None %}
-                                                    {% if (curr_f and curr_f.foot == f) or (not curr_f and f == '-') %}checked{% endif %}>
-                                                <label class="btn btn-outline-info btn-xs" for="f_foot_{{ f }}_{{ i }}">{{ f }}</label>
-                                                {% endfor %}
+                                        <div class="d-flex flex-column gap-1">
+                                            <div class="d-flex gap-1">
+                                                <div class="btn-group btn-group-xs" role="group">
+                                                    {% for f in ['L', 'R', '-'] %}
+                                                    <input type="radio" class="btn-check" name="f_foot_{{ i }}" id="f_foot_{{ f }}_{{ i }}" value="{{ f }}" 
+                                                        onchange="updateActionsRaw('follower')"
+                                                        {% if (curr_f and (curr_f.foot == f or (not curr_f.foot and f == '-'))) or (not curr_f and f == '-') %}checked{% endif %}>
+                                                    <label class="btn btn-outline-info btn-xs" for="f_foot_{{ f }}_{{ i }}">{{ f }}</label>
+                                                    {% endfor %}
+                                                </div>
+                                                <select class="form-select form-select-xs" id="f_dir_{{ i }}" name="f_dir_{{ i }}" onchange="updateActionsRaw('follower')">
+                                                    {% for dir in schema.directions %}
+                                                    <option value="{{ dir.id }}" {% if (curr_f and (curr_f.direction == dir.id or (not curr_f.direction and dir.id == 'pause'))) or (not curr_f and dir.id == 'pause') %}selected{% endif %}>{{ dir.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <select class="form-select form-select-xs" id="f_turn_{{ i }}" name="f_turn_{{ i }}" onchange="updateActionsRaw('follower')" style="max-width: 85px;">
+                                                    <option value="" {% if not curr_f or not curr_f.turn_type %}selected{% endif %}>- Turn -</option>
+                                                    {% for t in schema.turn_types %}
+                                                    <option value="{{ t.id }}" {% if curr_f and curr_f.turn_type == t.id %}selected{% endif %}>{{ t.name }}</option>
+                                                    {% endfor %}
+                                                </select>
                                             </div>
-                                            <select class="form-select form-select-xs" id="f_dir_{{ i }}" onchange="updateActionsRaw('follower')">
-                                                {% for dir in schema.directions %}
-                                                <option value="{{ dir.id }}" {% if curr_f and curr_f.direction == dir.id %}selected{% elif not curr_f and dir.id == 'pause' %}selected{% endif %}>{{ dir.name }}</option>
-                                                {% endfor %}
-                                            </select>
-                                            <select class="form-select form-select-xs" id="f_turn_{{ i }}" onchange="updateActionsRaw('follower')" style="max-width: 85px;">
-                                                <option value="">- Turn -</option>
-                                                {% for t in schema.turn_types %}
-                                                <option value="{{ t.id }}" {% if curr_f and curr_f.turn_type == t.id %}selected{% endif %}>{{ t.name }}</option>
-                                                {% endfor %}
-                                            </select>
+                                            <div class="d-flex gap-1 mt-1">
+                                                <input type="text" name="f_action_{{ i }}" class="form-control form-control-xs" 
+                                                    placeholder="Action" list="actionList" value="{{ curr_f.action if curr_f and curr_f.action else '' }}">
+                                                <input type="text" name="f_desc_{{ i }}" class="form-control form-control-xs" 
+                                                    placeholder="Beschreibung" value="{{ curr_f.description if curr_f and curr_f.description else '' }}">
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
@@ -374,7 +390,7 @@
                                 <div class="col-6">
                                     <select name="signal_type" class="form-select form-select-sm">
                                         {% for st in schema.signal_types %}
-                                        <option value="{{ st.id }}" {% if element and element.signals and element.signals[0].type == st.id %}selected{% endif %}>{{ st.name }}</option>
+                                        <option value="{{ st.id }}" {% if element and element.signals and element.signals|length > 0 and element.signals[0].type == st.id %}selected{% elif not element and st.id == 'none' %}selected{% endif %}>{{ st.name }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -448,6 +464,14 @@
             </div>
         </div>
     </div>
+    <!-- Action Suggestion Datalist -->
+    <datalist id="actionList">
+        {% if schema.actions %}
+            {% for act in schema.actions %}
+            <option value="{{ act.id }}">{{ act.name }}</option>
+            {% endfor %}
+        {% endif %}
+    </datalist>
 </form>
 
 <style>
@@ -457,6 +481,11 @@
 </style>
 
 <script>
+window.onload = function() {
+    updateActionsRaw('leader');
+    updateActionsRaw('follower');
+};
+
 function loadTemplate(id) {
     if (id) {
         window.location.href = "{{ url_for('element_editor') }}/" + id;

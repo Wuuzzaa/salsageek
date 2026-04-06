@@ -28,7 +28,9 @@ class ElementEditorService:
         if isinstance(obj, (str, int, float, bool)):
             return obj
         if isinstance(obj, (list, tuple, set)):
-            return [self.to_dict(i) for i in sorted(list(obj), key=lambda x: str(x))]
+            if isinstance(obj, set):
+                return [self.to_dict(i) for i in sorted(list(obj), key=lambda x: str(x))]
+            return [self.to_dict(i) for i in obj]
         if isinstance(obj, dict):
             return {str(k): self.to_dict(v) for k, v in obj.items()}
         
@@ -129,6 +131,45 @@ class ElementEditorService:
                 })
         return actions
 
+    def parse_actions_from_form(self, form_data: Any, counts: int, role: str) -> List[Dict[str, str]]:
+        """
+        Parses individual form fields (l_foot_1, l_dir_1, etc.) into actions.
+        """
+        prefix = 'l' if role == 'leader' else 'f'
+        actions = []
+        
+        for i in range(1, counts + 1):
+            foot = form_data.get(f"{prefix}_foot_{i}", "-")
+            direction = form_data.get(f"{prefix}_dir_{i}", "pause")
+            turn_type = form_data.get(f"{prefix}_turn_{i}", "")
+            action_val = form_data.get(f"{prefix}_action_{i}", "").strip()
+            hand_val = form_data.get(f"{prefix}_hand_{i}", "").strip()
+            description = form_data.get(f"{prefix}_desc_{i}", "").strip()
+            
+            # Normalization
+            if foot in ["-", "pause", "none", ""]:
+                foot = ""
+            
+            if not direction or direction in ["-", "none", ""]:
+                direction = "pause"
+            
+            # If no description is provided, generate a basic one
+            if not description:
+                description = f"{i}: {foot if foot else '-'} {direction} {turn_type}".strip()
+            
+            # If everything is empty/pause, we still keep it as a 'pause' step
+            actions.append({
+                "beat": str(i),
+                "foot": foot,
+                "direction": direction,
+                "turn_type": turn_type if turn_type else "",
+                "action": action_val if action_val else None,
+                "hand": hand_val if hand_val else None,
+                "description": description
+            })
+            
+        return actions
+
     def validate_element(self, data: Dict) -> Tuple[bool, List[str]]:
         """
         Checks an element against the schema for valid values.
@@ -175,21 +216,24 @@ class ElementEditorService:
                 
             for val in values:
                 if val not in valid_values:
-                    errors.append(f"Invalid {prefix}-{field}: {val}")
+                    field_display = field.replace('_', ' ').capitalize()
+                    errors.append(f"{prefix.upper()} {field_display}: Ungültiger Wert '{val}'")
 
     def _validate_actions(self, actions: List[Dict], person: str, errors: List[str]):
         """Internal helper to validate actions against schema."""
         valid_dirs = {d["id"] for d in self.schema.get("directions", [])}
         valid_turns = {t["id"] for t in self.schema.get("turn_types", [])}
+        valid_turns.add("") # Allow empty turn
         
         for action in actions:
+            beat = action.get("beat", "?")
             d = action.get("direction")
             if d and d not in valid_dirs:
-                errors.append(f"Invalid direction in {person} actions: {d}")
+                errors.append(f"Beat {beat}: Ungültige Richtung '{d}' ({person.capitalize()})")
             
             t = action.get("turn_type")
             if t and t not in valid_turns:
-                errors.append(f"Invalid turn_type in {person} actions: {t}")
+                errors.append(f"Beat {beat}: Ungültiger Turn-Typ '{t}' ({person.capitalize()})")
 
     def _slugify(self, text: str) -> str:
         """Converts a string to a URL-friendly slug."""

@@ -20,7 +20,7 @@ def test_edit_overwrites_existing_standard_element(client, tmp_path, monkeypatch
         "slots": [{"id": "center"}],
         "connections": [{"id": "neutral"}],
         "weights": [{"id": "L"}, {"id": "R"}],
-        "directions": [],
+        "directions": [{"id": "pause"}],
         "turn_types": []
     }
     element_editor_service.schema = salsa_service.schema
@@ -69,7 +69,7 @@ def test_update_custom_element_no_duplicates(client, tmp_path, monkeypatch):
         "slots": [{"id": "center"}],
         "connections": [{"id": "neutral"}],
         "weights": [{"id": "L"}, {"id": "R"}],
-        "directions": [],
+        "directions": [{"id": "pause"}],
         "turn_types": []
     }
     element_editor_service.schema = salsa_service.schema

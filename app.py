@@ -461,9 +461,9 @@ def element_editor(element_id: str = None):
                         "type": video_types[i].strip() if i < len(video_types) else "Full"
                     })
 
-            # Parse actions using the service
-            leader_actions = element_editor_service.parse_actions_raw(request.form.get("leader_actions_raw", ""))
-            follower_actions = element_editor_service.parse_actions_raw(request.form.get("follower_actions_raw", ""))
+            # Parse actions directly from individual form fields (robust against JS/cache issues)
+            leader_actions = element_editor_service.parse_actions_from_form(request.form, counts, "leader")
+            follower_actions = element_editor_service.parse_actions_from_form(request.form, counts, "follower")
             
             if name:
                 new_id, errors, element_data = element_editor_service.add_custom_element(
