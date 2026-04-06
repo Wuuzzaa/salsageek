@@ -1,0 +1,119 @@
+elements:
+- id: custom_my_custom_1775506359
+  name: My Custom
+  description: 'Newly created element: My Custom'
+  counts: 8
+  level: 1
+  tags:
+  - Custom
+  pre:
+    hand_hold:
+    - open
+    position:
+    - open
+    slot:
+    - center
+    connection:
+    - neutral
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold:
+    - open
+    position:
+    - open
+    slot:
+    - center
+    connection:
+    - neutral
+    leader_weight:
+    - L
+    follower_weight:
+    - R
+  leader_actions:
+  - beat: '1'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '1: - pause'
+  - beat: '2'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '2: - pause'
+  - beat: '3'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '3: - pause'
+  - beat: '4'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '4: - pause'
+  - beat: '5'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '5: - pause'
+  - beat: '6'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '6: - pause'
+  - beat: '7'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '7: - pause'
+  - beat: '8'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '8: - pause'
+  follower_actions:
+  - beat: '1'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '1: - pause'
+  - beat: '2'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '2: - pause'
+  - beat: '3'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '3: - pause'
+  - beat: '4'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '4: - pause'
+  - beat: '5'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '5: - pause'
+  - beat: '6'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '6: - pause'
+  - beat: '7'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '7: - pause'
+  - beat: '8'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '8: - pause'
+  signals: []
+  videos: []
+  notes: ''
