@@ -13,11 +13,28 @@ SalsaGeek wurde im Hinblick auf Wartbarkeit und Erweiterbarkeit entwickelt. Vor 
 ### Dokumentation
 Alle Kern-Module verfügen über ausführliche Docstrings und Type Hints, um neuen Entwicklern den Einstieg zu erleichtern.
 
+## Features
+
+- **Element-Editor:** Erstellen und Bearbeiten von Salsa-Elementen mit technischer Validierung der Ein- und Ausgangszustände (Handhaltung, Position, Gewicht).
+- **Figure-Builder:** Interaktives Zusammenstellen von Tanzfiguren aus vorhandenen Elementen mit Echtzeit-Validierung des Flows.
+- **GitHub Integration (Auto-PR):** Neue Elemente und Figuren werden automatisch als Pull Request in das Repository gesendet, um Datenverlust in ephemeren Umgebungen (wie Render) zu vermeiden.
+- **Flow-Visualisierung:** Automatische Generierung von Mermaid.js-Diagrammen zur Visualisierung der Figurenabläufe.
+- **Profil-Management:** Lokale Profile zur Verwaltung des eigenen Repertoires und personalisierte Lern-Empfehlungen.
+- **Video-Integration:** Nahtlose Einbettung von YouTube-Videos für Elemente und Figuren.
+
 ## Lokale Ausführung
-```bash
-python app.py
-```
-Öffne: [http://127.0.0.1:5000](http://127.0.0.1:5000)
+
+1. Abhängigkeiten installieren:
+   ```bash
+   pip install -r requirements.txt
+   ```
+2. (Optional) GitHub-Integration konfigurieren:
+   Erstelle eine `.env` Datei basierend auf `.env.example` und trage deinen `GITHUB_TOKEN` und `GITHUB_REPO` ein.
+3. Anwendung starten:
+   ```bash
+   python app.py
+   ```
+   Öffne: [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
 ## Automatisierte Tests
 Die Anwendung verfügt über umfangreiche automatisierte Tests, die sowohl die technische Korrektheit der Tanz-Daten als auch die Erreichbarkeit der Webseiten sicherstellen.
@@ -27,7 +44,8 @@ Die Anwendung verfügt über umfangreiche automatisierte Tests, die sowohl die t
 - **Vollständige Seiten-Abdeckung:** Es wird für jedes Element und jede Figur automatisch geprüft, ob die Detailseite fehlerfrei lädt.
 - **Visualisierungs-Check:** Die Flow-Visualisierung (Mermaid.js) wird für alle validen Figuren generiert und validiert.
 - **Routenzugriff:** Alle Hauptseiten (Builder, Repertoire, etc.) werden auf Erreichbarkeit geprüft.
-- **Logik-Tests:** Die Kernlogik für die Video-Integration (YouTube-Link-Konvertierung) und die Editor-Funktionen (Bearbeiten/Aktualisieren von Elementen) wird separat verifiziert.
+- **Logik-Tests:** Kernlogik für Video-Integration, Editor-Funktionen und GitHub-Synchronisierung.
+- **Speicher-Logik:** Verifizierung des neuen Einzeldatei-Speichersystems für Elemente und Figuren.
 
 ### Tests ausführen
 Um die Tests in der PowerShell zu starten, führe folgende Befehle aus:
@@ -39,3 +57,4 @@ pytest -v
 
 ## Deployment
 Die Anwendung läuft auf Render: [https://salsageek.onrender.com/](https://salsageek.onrender.com/)
+Datenänderungen werden via Auto-PR permanent gesichert.

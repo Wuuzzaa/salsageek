@@ -329,7 +329,16 @@ def builder():
         custom_figs.append(new_fig_raw)
         profile_service.save_profile(active_profile, set(profile_data.get("known_elements", [])), custom_figs)
         
-        # Reload salsa service to include the new figure globally if needed
+        # In data/custom_figures/ speichern für dauerhafte lokale Verfügbarkeit (falls PR aktiv)
+        fig_path = DATA_DIR / "custom_figures" / f"{fig_id}.yaml"
+        fig_path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            with open(fig_path, "w", encoding="utf-8") as f:
+                yaml.dump({"figures": [new_fig_raw]}, f, allow_unicode=True, sort_keys=False)
+        except Exception as e:
+            print(f"Fehler beim lokalen Speichern der Figur: {e}")
+        
+        # Reload salsa service to include the new figure globally
         salsa_service.reload_figures()
         
         # Automatischer Pull Request

@@ -27,8 +27,8 @@ def test_youtube_embed_filter():
     assert youtube_embed_filter("https://example.com") == "https://example.com"
 
 def test_element_editor_service_video_storage(tmp_path):
-    custom_yaml = tmp_path / "custom_elements.yaml"
-    service = ElementEditorService(custom_yaml)
+    # tmp_path as a directory for individual YAML files
+    service = ElementEditorService(tmp_path)
     
     # Mock schema for validation (minimal)
     service.schema = {
@@ -48,7 +48,7 @@ def test_element_editor_service_video_storage(tmp_path):
     pre = {"hand_hold": ["open"], "position": ["open"], "slot": ["center"], "leader_weight": ["R"], "follower_weight": ["L"]}
     post = {"hand_hold": ["open"], "position": ["open"], "slot": ["center"], "leader_weight": ["L"], "follower_weight": ["R"]}
     
-    elem_id, errors = service.add_custom_element(
+    elem_id, errors, data = service.add_custom_element(
         name="Video Test Element",
         level=1,
         counts=8,
@@ -60,20 +60,22 @@ def test_element_editor_service_video_storage(tmp_path):
     assert not errors
     assert elem_id.startswith("custom_video_test_element")
     
-    # Verify content in YAML
-    with open(custom_yaml, "r", encoding="utf-8") as f:
+    # Verify content in the individual YAML file
+    custom_file = tmp_path / f"{elem_id}.yaml"
+    assert custom_file.exists()
+    with open(custom_file, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f)
         element = data["elements"][0]
         assert element["videos"] == videos
         assert element["videos"][0]["url"] == "https://youtu.be/test1"
 
 def test_element_editor_post_with_videos(client, tmp_path, monkeypatch):
-    # Setup a temporary custom_elements.yaml for the app's service
-    custom_yaml = tmp_path / "custom_elements_test.yaml"
+    # Setup a temporary directory for individual YAML files
+    custom_dir = tmp_path
     
     # Point both the service AND the salsa_service to temporary locations
     from app import element_editor_service, salsa_service
-    monkeypatch.setattr(element_editor_service, "path", custom_yaml)
+    monkeypatch.setattr(element_editor_service, "dir", custom_dir)
     
     # We also need to ensure validation passes.
     # The app's service uses salsa_service.schema which might be empty in tests.
@@ -114,25 +116,20 @@ def test_element_editor_post_with_videos(client, tmp_path, monkeypatch):
     response = client.post("/element-editor", data=form_data, follow_redirects=True)
     
     # Debug print if failed
-    if response.status_code != 200 or not custom_yaml.exists():
+    if response.status_code != 200:
         print(f"Response: {response.status_code}")
-        # print(response.data.decode()) # Can be very large
-        from app import salsa_service
-        # Check why it might have failed (validation)
-        # element_editor_service.add_custom_element will return errors if validation fails
-        # but here we are through the client.post
-        # We can check the response data for "Validierungsfehler"
         if b"Validierungsfehler" in response.data:
             print("Validation error detected in response!")
-            # Print the part around Validierungsfehler
             idx = response.data.find(b"Validierungsfehler")
             print(f"Error context: {response.data[idx:idx+200].decode()}")
 
     assert response.status_code == 200
     
     # Check if file was created and contains videos
-    assert custom_yaml.exists()
-    with open(custom_yaml, "r", encoding="utf-8") as f:
+    created_files = list(custom_dir.glob("*.yaml"))
+    assert len(created_files) > 0
+    
+    with open(created_files[0], "r", encoding="utf-8") as f:
         data = yaml.safe_load(f)
         element = next(e for e in data["elements"] if e["name"] == "Web Video Element")
         assert len(element["videos"]) == 2
