@@ -1,0 +1,16 @@
+figures:
+- id: custom_1775497899
+  name: Custom Figure pr lokal test
+  description: ''
+  level: 2
+  sequence:
+  - follower_right_turn
+  - leader_right_turn
+  - open_to_closed
+  - basic_closed
+  - cbl_basic
+  total_counts: 40
+  tags:
+  - Builder
+  - Custom
+  notes: ''
