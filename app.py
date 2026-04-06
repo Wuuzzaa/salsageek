@@ -5,14 +5,20 @@ Flask-based web application for Salsa learning aid.
 from __future__ import annotations
 
 from pathlib import Path
+import yaml
+from dotenv import load_dotenv
 
-from flask import Flask, abort, redirect, render_template, request, url_for, session
+# Load environment variables from .env file for local development
+load_dotenv()
+
+from flask import Flask, abort, redirect, render_template, request, url_for, session, send_file
 
 from src.salsa_notation import (
     get_executable_figures,
 )
 from src.services.builder_service import BuilderService
 from src.services.element_editor_service import ElementEditorService
+from src.services.github_service import GithubService
 from src.services.salsa_service import SalsaService
 from src.utils import youtube_embed_url
 
@@ -25,7 +31,8 @@ app.secret_key = "salsa-geek-secret-key" # Change in production
 salsa_service = SalsaService(DATA_DIR)
 profile_service = salsa_service.profile_service
 builder_service = BuilderService(salsa_service.elements)
-element_editor_service = ElementEditorService(DATA_DIR / "custom_elements.yaml", schema=salsa_service.schema)
+element_editor_service = ElementEditorService(DATA_DIR / "custom_elements", schema=salsa_service.schema)
+github_service = GithubService()
 
 def get_active_profile() -> str:
     return session.get("profile_name", "default")
@@ -52,6 +59,7 @@ def inject_globals():
         "active_profile": get_active_profile(),
         "available_profiles": profile_service.list_profiles(),
         "schema": salsa_service.schema,
+        "github_configured": github_service.is_configured(),
     }
 
 @app.template_filter("youtube_embed")
@@ -430,7 +438,7 @@ def element_editor(element_id: str = None):
             follower_actions = element_editor_service.parse_actions_raw(request.form.get("follower_actions_raw", ""))
             
             if name:
-                new_id, errors = element_editor_service.add_custom_element(
+                new_id, errors, element_data = element_editor_service.add_custom_element(
                     name=name, level=level, counts=counts, 
                     pre=pre, post=post, description=desc, 
                     tags=tags, signals=signals, videos=videos, notes=notes,
@@ -444,7 +452,12 @@ def element_editor(element_id: str = None):
                     salsa_service.reload_elements()
                     builder_service.elements = salsa_service.elements
                     
-                    return redirect(url_for("element_editor", last_added=new_id))
+                    # Automatischer Pull Request
+                    pr_url = None
+                    if github_service.is_configured():
+                        pr_url = github_service.create_pull_request_for_element(new_id, element_data)
+                    
+                    return redirect(url_for("element_editor", last_added=new_id, pr_url=pr_url))
                 else:
                     return render_template(
                         "element_editor.html",
@@ -460,6 +473,7 @@ def element_editor(element_id: str = None):
         recent_custom=recent_custom,
         all_elements=all_elements_sorted,
         last_added_id=request.args.get("last_added"),
+        pr_url=request.args.get("pr_url"),
         copy_from_id=copy_from_id,
         element=element_to_edit
     )
@@ -492,6 +506,53 @@ def visualize():
         title=title,
         back_url=back_url
     )
+
+
+@app.route("/export/elements")
+def export_elements():
+    """
+    Exports all custom elements into a single YAML file.
+    This makes it easy to download and check into Git.
+    """
+    custom_dir = DATA_DIR / "custom_elements"
+    combined_data = {"elements": []}
+    
+    # 1. Load legacy custom_elements.yaml if it exists
+    legacy_path = DATA_DIR / "custom_elements.yaml"
+    if legacy_path.exists():
+        with open(legacy_path, "r", encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+            if data and "elements" in data:
+                combined_data["elements"].extend(data["elements"])
+    
+    # 2. Load all individual YAML files
+    if custom_dir.exists() and custom_dir.is_dir():
+        for yaml_file in custom_dir.glob("*.yaml"):
+            with open(yaml_file, "r", encoding="utf-8") as f:
+                data = yaml.safe_load(f)
+                if data and "elements" in data:
+                    combined_data["elements"].extend(data["elements"])
+    
+    if not combined_data["elements"]:
+        abort(404)
+        
+    # Create a temporary combined file
+    import tempfile
+    
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".yaml", mode="w", encoding="utf-8")
+    yaml.dump(combined_data, temp_file, allow_unicode=True, sort_keys=False)
+    temp_file.close()
+    
+    return send_file(temp_file.name, as_attachment=True, download_name="custom_elements.yaml")
+
+
+@app.route("/export/profile/<name>")
+def export_profile(name):
+    # Security: check if profile exists and path is inside profiles dir
+    path = (BASE_DIR / "profiles" / f"{name}.yaml").resolve()
+    if path.exists() and str(path).startswith(str(BASE_DIR / "profiles")):
+        return send_file(path, as_attachment=True)
+    abort(404)
 
 
 if __name__ == "__main__":

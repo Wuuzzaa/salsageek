@@ -34,7 +34,7 @@
                             {% if not loop.last %}
                                 {% set next_eid = sequence[loop.index] %}
                                 {% set next_elem = elements[next_eid] %}
-                                E{{ loop.index }} -- "<span>{{ next_elem.pre.hand_hold|join(', ') if next_elem else '?' }}<br/>{{ next_elem.pre.position }}</span>" --> E{{ loop.index + 1 }}
+                                E{{ loop.index }} -- "<span>{{ next_elem.pre.hand_hold|join(', ') if next_elem else '?' }}<br/>{{ next_elem.pre.position|join(', ') if next_elem else '' }}</span>" --> E{{ loop.index + 1 }}
                             {% else %}
                                 E{{ loop.index }} --> End((End))
                             {% endif %}
@@ -188,6 +188,11 @@
             padding: 40
         },
         securityLevel: 'loose'
+    });
+    
+    // Explicitly run mermaid to ensure it processes the content
+    document.addEventListener('DOMContentLoaded', function() {
+        mermaid.run();
     });
 
     function openVideoModal(name, videos) {

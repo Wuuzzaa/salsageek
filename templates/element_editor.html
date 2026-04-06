@@ -29,8 +29,38 @@
 
 {% if last_added_id %}
 <div class="alert alert-success shadow-sm border-0 mb-4">
-    <i class="bi bi-check-circle-fill me-2"></i> Element gespeichert! 
-    <a href="{{ url_for('element_detail', element_id=last_added_id) }}" class="alert-link">Ansehen</a>
+    <div class="d-flex align-items-center mb-2">
+        <i class="bi bi-check-circle-fill me-2 fs-5 text-success"></i>
+        <strong>Element erfolgreich gespeichert!</strong>
+    </div>
+    
+    {% if pr_url %}
+    <div class="mb-3 small">
+        Ein Pull Request wurde automatisch erstellt, um dieses Element dauerhaft im Repository zu speichern.
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('element_detail', element_id=last_added_id) }}" class="btn btn-sm btn-success">
+            <i class="bi bi-eye"></i> Ansehen
+        </a>
+        <a href="{{ pr_url }}" target="_blank" class="btn btn-sm btn-primary">
+            <i class="bi bi-git"></i> Pull Request ansehen
+        </a>
+    </div>
+    {% else %}
+    <div class="mb-3 small">
+        Die Daten liegen jetzt lokal auf dem Server. 
+        <span class="text-danger fw-bold">Warnung:</span> Da GitHub nicht konfiguriert ist oder ein Fehler auftrat, 
+        musst du die Datei manuell exportieren und einchecken, um Datenverlust bei einem Neustart zu vermeiden.
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('element_detail', element_id=last_added_id) }}" class="btn btn-sm btn-success">
+            <i class="bi bi-eye"></i> Ansehen
+        </a>
+        <a href="{{ url_for('export_elements') }}" class="btn btn-sm btn-outline-success">
+            <i class="bi bi-download"></i> Alle Custom-Elemente exportieren (.yaml)
+        </a>
+    </div>
+    {% endif %}
 </div>
 {% endif %}
 

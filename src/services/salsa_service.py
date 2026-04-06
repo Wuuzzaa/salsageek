@@ -27,11 +27,20 @@ class SalsaService:
         }
 
     def _load_all_elements(self) -> Dict[str, Element]:
+        # Load main elements file
         all_elems = load_elements(self.data_dir / "elements.yaml")
-        custom_path = self.data_dir / "custom_elements.yaml"
-        if custom_path.exists():
-            custom_elems = load_elements(custom_path)
-            all_elems.update(custom_elems)
+        
+        # Load custom_elements.yaml (backward compatibility)
+        custom_legacy = self.data_dir / "custom_elements.yaml"
+        if custom_legacy.exists():
+            all_elems.update(load_elements(custom_legacy))
+            
+        # Load new individual YAML files from custom_elements/ directory
+        custom_dir = self.data_dir / "custom_elements"
+        if custom_dir.exists() and custom_dir.is_dir():
+            for yaml_file in custom_dir.glob("*.yaml"):
+                all_elems.update(load_elements(yaml_file))
+                
         return all_elems
 
     def _load_all_figures(self) -> Dict[str, Figure]:

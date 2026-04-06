@@ -8,8 +8,9 @@ class ElementEditorService:
     """
     Service for creating, updating and validating custom salsa elements.
     """
-    def __init__(self, custom_elements_path: Path, schema: Optional[Dict] = None):
-        self.path = custom_elements_path
+    def __init__(self, custom_elements_dir: Path, schema: Optional[Dict] = None):
+        self.dir = custom_elements_dir
+        self.dir.mkdir(parents=True, exist_ok=True)
         self.schema = schema or {}
 
     def to_dict(self, obj: Any) -> Any:
@@ -200,7 +201,7 @@ class ElementEditorService:
                            description: str = "", tags: List[str] = None, 
                            leader_actions: List[Dict] = None, follower_actions: List[Dict] = None,
                            signals: List[Dict] = None, videos: List[Dict[str, str]] = None,
-                           notes: str = "", custom_id: str = None) -> Tuple[Optional[str], List[str]]:
+                           notes: str = "", custom_id: str = None) -> Tuple[Optional[str], List[str], Optional[Dict]]:
         """
         Adds or updates a custom element in the YAML storage.
         
@@ -220,7 +221,7 @@ class ElementEditorService:
             custom_id: If provided, the element with this ID will be updated.
             
         Returns:
-            Tuple of (element_id, list_of_errors).
+            Tuple of (element_id, list_of_errors, element_data).
         """
         # Generate ID if not provided
         if not custom_id:
@@ -247,24 +248,15 @@ class ElementEditorService:
         # Validation
         is_valid, errors = self.validate_element(new_element)
         if not is_valid:
-            return None, errors
+            return None, errors, None
 
-        # Load existing custom elements
-        data = {"elements": []}
-        if self.path.exists():
-            with open(self.path, "r", encoding="utf-8") as f:
-                existing = yaml.safe_load(f)
-                if existing and "elements" in existing:
-                    data = existing
+        # Load existing custom elements from its own file
+        self.dir.mkdir(parents=True, exist_ok=True)
+        file_path = self.dir / f"{elem_id}.yaml"
         
-        # If updating, remove the old version
-        if custom_id:
-            data["elements"] = [e for e in data["elements"] if e["id"] != custom_id]
-            
-        data["elements"].append(new_element)
-
-        # Save back to YAML
-        with open(self.path, "w", encoding="utf-8") as f:
+        # Save to its own YAML file
+        data = {"elements": [new_element]}
+        with open(file_path, "w", encoding="utf-8") as f:
             yaml.dump(data, f, allow_unicode=True, sort_keys=False)
             
-        return elem_id, []
+        return elem_id, [], new_element
