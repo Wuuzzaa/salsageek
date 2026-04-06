@@ -23,6 +23,8 @@
                             <form method="post" class="h-100">
                                 <input type="hidden" name="sequence" value="{{ raw }}">
                                 <input type="hidden" name="element_id" value="{{ elem.id }}">
+                                <input type="hidden" name="figure_name" value="{{ figure_name }}">
+                                <input type="hidden" name="figure_description" value="{{ figure_description }}">
                                 <button type="submit" name="action" value="add" class="btn btn-outline-light text-dark border w-100 h-100 text-start d-flex justify-content-between align-items-center">
                                     <span>
                                         <span class="fw-semibold d-block">{{ elem.name }}</span>
@@ -66,18 +68,24 @@
                                             <form method="post">
                                                 <input type="hidden" name="sequence" value="{{ raw }}">
                                                 <input type="hidden" name="index" value="{{ loop.index0 }}">
+                                                <input type="hidden" name="figure_name" value="{{ figure_name }}">
+                                                <input type="hidden" name="figure_description" value="{{ figure_description }}">
                                                 <button type="submit" name="action" value="move" data-direction="-1" class="btn btn-sm btn-light border py-0 px-2" title="Move Up">↑</button>
                                                 <input type="hidden" name="direction" value="-1">
                                             </form>
                                             <form method="post">
                                                 <input type="hidden" name="sequence" value="{{ raw }}">
                                                 <input type="hidden" name="index" value="{{ loop.index0 }}">
+                                                <input type="hidden" name="figure_name" value="{{ figure_name }}">
+                                                <input type="hidden" name="figure_description" value="{{ figure_description }}">
                                                 <button type="submit" name="action" value="move" data-direction="1" class="btn btn-sm btn-light border py-0 px-2" title="Move Down">↓</button>
                                                 <input type="hidden" name="direction" value="1">
                                             </form>
                                             <form method="post">
                                                 <input type="hidden" name="sequence" value="{{ raw }}">
                                                 <input type="hidden" name="index" value="{{ loop.index0 }}">
+                                                <input type="hidden" name="figure_name" value="{{ figure_name }}">
+                                                <input type="hidden" name="figure_description" value="{{ figure_description }}">
                                                 <button type="submit" name="action" value="remove" class="btn btn-sm btn-outline-danger py-0 px-2" title="Remove">&times;</button>
                                             </form>
                                         </div>
@@ -96,6 +104,8 @@
                                 <form method="post">
                                     <input type="hidden" name="sequence" value="{{ raw }}">
                                     <input type="hidden" name="element_id" value="{{ rec.id }}">
+                                    <input type="hidden" name="figure_name" value="{{ figure_name }}">
+                                    <input type="hidden" name="figure_description" value="{{ figure_description }}">
                                     <button type="submit" name="action" value="add" class="btn btn-xs btn-outline-info py-0 px-2 smaller">{{ rec.name }}</button>
                                 </form>
                                 {% endfor %}
@@ -172,11 +182,11 @@
                     <input type="hidden" name="sequence" value="{{ raw }}">
                     <div class="col-md-6">
                         <label class="small text-muted mb-1">Figure Name</label>
-                        <input type="text" name="figure_name" class="form-control" placeholder="Custom Figure" value="Custom Figure">
+                        <input type="text" name="figure_name" class="form-control" placeholder="Custom Figure" value="{{ figure_name or 'Custom Figure' }}">
                     </div>
                     <div class="col-md-6">
                         <label class="small text-muted mb-1">Description (optional)</label>
-                        <input type="text" name="figure_description" class="form-control" placeholder="Created in Builder">
+                        <input type="text" name="figure_description" class="form-control" placeholder="Created in Builder" value="{{ figure_description or '' }}">
                     </div>
                     <div class="col-12">
                         <button type="submit" name="action" value="save" class="btn btn-primary">

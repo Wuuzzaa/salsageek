@@ -82,5 +82,62 @@ class GithubService:
             return pr.html_url
             
         except Exception as e:
-            print(f"GithubService Error: {e}")
+            print(f"GithubService Error (Element): {e}")
+            return None
+
+    def create_pull_request_for_figure(self, figure_id: str, figure_data: Dict[str, Any]) -> Optional[str]:
+        """
+        Creates a new branch, commits the figure YAML, and opens a PR.
+        Returns the PR URL if successful, else None.
+        """
+        if not self.is_configured():
+            print("GithubService: Not configured (GITHUB_TOKEN or GITHUB_REPO missing).")
+            return None
+
+        try:
+            repo = self.gh.get_repo(self.repo_name)
+            main_branch = repo.get_branch(repo.default_branch)
+            
+            # Create a unique branch name
+            timestamp = int(time.time())
+            branch_name = f"add-figure-{figure_id}-{timestamp}"
+            
+            # Create branch from main
+            repo.create_git_ref(ref=f"refs/heads/{branch_name}", sha=main_branch.commit.sha)
+            
+            # Prepare file path and content
+            file_path = f"data/custom_figures/{figure_id}.yaml"
+            yaml_content = yaml.dump({"figures": [figure_data]}, allow_unicode=True, sort_keys=False)
+            
+            # Create/Update file in the new branch
+            commit_message = f"Add new salsa figure: {figure_data.get('name', figure_id)}"
+            
+            # Check if file exists to get SHA for update
+            sha = None
+            try:
+                contents = repo.get_contents(file_path, ref=branch_name)
+                sha = contents.sha
+            except GithubException:
+                pass # File doesn't exist yet
+
+            if sha:
+                repo.update_file(file_path, commit_message, yaml_content, sha, branch=branch_name)
+            else:
+                repo.create_file(file_path, commit_message, yaml_content, branch=branch_name)
+                
+            # Create Pull Request
+            pr_title = f"New Salsa Figure: {figure_data.get('name', figure_id)}"
+            pr_body = f"Automatic PR created for a new salsa figure added via the builder.\n\nFigure ID: {figure_id}"
+            
+            pr = repo.create_pull(
+                title=pr_title,
+                body=pr_body,
+                head=branch_name,
+                base=repo.default_branch
+            )
+            
+            return pr.html_url
+            
+        except Exception as e:
+            print(f"GithubService Error (Figure): {e}")
             return None

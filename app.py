@@ -210,6 +210,7 @@ def figuren_view():
 
 @app.route("/figuren/<figure_id>")
 def figure_detail(figure_id: str):
+    pr_url = request.args.get("pr_url")
     profile_name = get_active_profile()
     all_figs = salsa_service.get_all_figures_with_custom(profile_name)
     if figure_id not in all_figs:
@@ -226,6 +227,7 @@ def figure_detail(figure_id: str):
         figure=fig,
         is_executable=is_executable,
         known_ids=known_ids,
+        pr_url=pr_url
     )
 
 
@@ -256,6 +258,10 @@ def builder():
     error = None
     raw = request.args.get("sequence", "").strip() or request.form.get("sequence", "").strip()
     
+    # Preserve metadata during the build process
+    figure_name = request.args.get("figure_name", "").strip() or request.form.get("figure_name", "").strip()
+    figure_description = request.args.get("figure_description", "").strip() or request.form.get("figure_description", "").strip()
+    
     sequence = builder_service.sequence_from_raw(raw)
     
     if request.method == "POST":
@@ -263,6 +269,8 @@ def builder():
         
         if action == "reset":
             sequence = []
+            figure_name = ""
+            figure_description = ""
         elif action == "add":
             new_id = request.form.get("element_id")
             if new_id:
@@ -279,7 +287,7 @@ def builder():
         
         # Redirect after modification to avoid POST repetition
         if action in ["reset", "add", "remove", "move"]:
-             return redirect(url_for("builder", sequence=raw))
+             return redirect(url_for("builder", sequence=raw, figure_name=figure_name, figure_description=figure_description))
 
     # Perform validation
     validation = builder_service.validate_sequence(sequence)
@@ -321,7 +329,16 @@ def builder():
         custom_figs.append(new_fig_raw)
         profile_service.save_profile(active_profile, set(profile_data.get("known_elements", [])), custom_figs)
         
-        return redirect(url_for("figure_detail", figure_id=fig_id))
+        # Reload salsa service to include the new figure globally if needed
+        salsa_service.reload_figures()
+        
+        # Automatischer Pull Request
+        pr_url = None
+        if github_service.is_configured():
+            pr_url = github_service.create_pull_request_for_figure(fig_id, new_fig_raw)
+            return redirect(url_for("figure_detail", figure_id=fig_id, pr_url=pr_url))
+        
+        return redirect(url_for("figure_detail", figure_id=fig_id, saved=True))
 
     recommendations = builder_service.get_recommendations(sequence)
 
@@ -334,7 +351,9 @@ def builder():
         recommendations=recommendations,
         all_elements=sorted(salsa_service.elements.values(), key=lambda e: (e.level, e.name)),
         figure=custom_figure,
-        known_ids=salsa_service.get_known_elements(get_active_profile())
+        known_ids=salsa_service.get_known_elements(get_active_profile()),
+        figure_name=figure_name,
+        figure_description=figure_description
     )
 
 

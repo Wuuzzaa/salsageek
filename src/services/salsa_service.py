@@ -44,7 +44,19 @@ class SalsaService:
         return all_elems
 
     def _load_all_figures(self) -> Dict[str, Figure]:
-        return load_figures(self.data_dir / "figures.yaml", self.elements)
+        # Load main figures file
+        all_figs = load_figures(self.data_dir / "figures.yaml", self.elements)
+        
+        # Load new individual YAML files from custom_figures/ directory
+        custom_dir = self.data_dir / "custom_figures"
+        if custom_dir.exists() and custom_dir.is_dir():
+            for yaml_file in custom_dir.glob("*.yaml"):
+                try:
+                    all_figs.update(load_figures(yaml_file, self.elements))
+                except Exception as e:
+                    print(f"Error loading figure from {yaml_file}: {e}")
+                    
+        return all_figs
 
     def _load_schema(self) -> Dict:
         schema_path = self.data_dir / "schema.yaml"
@@ -55,6 +67,10 @@ class SalsaService:
 
     def reload_elements(self):
         self.elements = self._load_all_elements()
+        self.figures = self._load_all_figures() # Also reload figures as they depend on elements
+
+    def reload_figures(self):
+        self.figures = self._load_all_figures()
 
     def get_element(self, element_id: str) -> Optional[Element]:
         return self.elements.get(element_id)

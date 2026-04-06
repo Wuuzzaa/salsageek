@@ -12,6 +12,34 @@
     </a>
 </div>
 
+{% if pr_url %}
+<div class="alert alert-success shadow-sm border-0 mb-4">
+    <div class="d-flex align-items-center mb-2">
+        <i class="bi bi-check-circle-fill me-2 fs-5 text-success"></i>
+        <strong>Figur erfolgreich gespeichert!</strong>
+    </div>
+    
+    <div class="mb-3 small">
+        Ein Pull Request wurde automatisch erstellt, um diese Figur dauerhaft im Repository zu speichern.
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ pr_url }}" target="_blank" class="btn btn-sm btn-primary">
+            <i class="bi bi-git"></i> Pull Request ansehen
+        </a>
+    </div>
+</div>
+{% elif request.args.get('saved') %}
+<div class="alert alert-success shadow-sm border-0 mb-4">
+    <div class="d-flex align-items-center mb-2">
+        <i class="bi bi-check-circle-fill me-2 fs-5 text-success"></i>
+        <strong>Figur erfolgreich gespeichert!</strong>
+    </div>
+    <div class="small">
+        Die Figur wurde in deinem Profil gespeichert.
+    </div>
+</div>
+{% endif %}
+
 <div class="card shadow-sm border-0 mb-4">
     <div class="card-body p-4 p-lg-5">
         <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3">
@@ -25,8 +53,11 @@
 
             <div class="text-end">
                 <div class="mb-2">
-                    <a href="{{ url_for('visualize', sequence=figure.sequence|join(','), title=figure.name, back=url_for('figure_detail', figure_id=figure.id)) }}" class="btn btn-sm btn-outline-primary mb-2 shadow-sm rounded-pill px-3">
+                    <a href="{{ url_for('visualize', sequence=figure.sequence|join(','), title=figure.name, back=url_for('figure_detail', figure_id=figure.id)) }}" class="btn btn-sm btn-outline-primary mb-1 shadow-sm rounded-pill px-3">
                         <i class="bi bi-diagram-3 me-1"></i> Visualize Flow
+                    </a>
+                    <a href="{{ url_for('builder', sequence=figure.sequence|join(','), figure_name=figure.name, figure_description=figure.description) }}" class="btn btn-sm btn-outline-secondary mb-1 shadow-sm rounded-pill px-3">
+                        <i class="bi bi-tools me-1"></i> Edit in Builder
                     </a>
                 </div>
                 <div class="mb-2">
