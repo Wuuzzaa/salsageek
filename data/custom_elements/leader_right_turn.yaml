@@ -1,0 +1,133 @@
+elements:
+- id: leader_right_turn
+  name: Leader Right Turn
+  description: "Rechtsdrehung für den Leader auf 1-2-3.\r\n1 und 2 jeweils 1/4 Drehung\
+    \ nach rechts. 3 halbe Drehung nach rechts.\r\n5-6-7 sind Basic steps."
+  counts: 8
+  level: 1
+  tags:
+  - leader_turn
+  - right
+  - turn
+  - Custom
+  pre:
+    hand_hold:
+    - R_L
+    - L_R
+    - R_R
+    - L_L
+    - two_hand
+    - two_hand_crossed_l_up
+    - two_hand_crossed_r_up
+    - free
+    - shadow
+    - cuddle
+    - hammerlock
+    position:
+    - open
+    slot:
+    - center
+    connection:
+    - neutral
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold:
+    - same
+    position:
+    - open
+    slot:
+    - center
+    connection:
+    - neutral
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  leader_actions:
+  - beat: '1'
+    foot: L
+    direction: forward
+    turn_type: ''
+    description: '1: L forward'
+  - beat: '2'
+    foot: R
+    direction: in_place
+    turn_type: ''
+    description: '2: R in_place'
+  - beat: '3'
+    foot: L
+    direction: back
+    turn_type: ''
+    description: '3: L back'
+  - beat: '4'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '4: - pause'
+  - beat: '5'
+    foot: R
+    direction: back
+    turn_type: ''
+    description: '5: R back'
+  - beat: '6'
+    foot: L
+    direction: in_place
+    turn_type: ''
+    description: '6: L in_place'
+  - beat: '7'
+    foot: R
+    direction: forward
+    turn_type: ''
+    description: '7: R forward'
+  - beat: '8'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '8: - pause'
+  follower_actions:
+  - beat: '1'
+    foot: R
+    direction: back
+    turn_type: ''
+    description: '1: R back'
+  - beat: '2'
+    foot: L
+    direction: in_place
+    turn_type: ''
+    description: '2: L in_place'
+  - beat: '3'
+    foot: R
+    direction: forward
+    turn_type: ''
+    description: '3: R forward'
+  - beat: '4'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '4: - pause'
+  - beat: '5'
+    foot: L
+    direction: forward
+    turn_type: ''
+    description: '5: L forward'
+  - beat: '6'
+    foot: R
+    direction: in_place
+    turn_type: ''
+    description: '6: R in_place'
+  - beat: '7'
+    foot: L
+    direction: back
+    turn_type: ''
+    description: '7: L back'
+  - beat: '8'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '8: - pause'
+  signals: []
+  videos: []
+  notes: ''
