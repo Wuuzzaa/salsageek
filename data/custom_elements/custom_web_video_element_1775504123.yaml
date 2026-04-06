@@ -1,0 +1,45 @@
+elements:
+- id: custom_web_video_element_1775504123
+  name: Web Video Element
+  description: A test element with videos
+  counts: 8
+  level: 2
+  tags:
+  - Custom
+  pre:
+    hand_hold:
+    - open
+    position:
+    - open
+    slot:
+    - center
+    connection:
+    - neutral
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold:
+    - open
+    position:
+    - open
+    slot:
+    - center
+    connection:
+    - neutral
+    leader_weight:
+    - L
+    follower_weight:
+    - R
+  leader_actions: []
+  follower_actions: []
+  signals: []
+  videos:
+  - url: https://youtu.be/web1
+    title: Web 1
+    type: Full
+  - url: https://youtu.be/web2
+    title: Web 2
+    type: Leader
+  notes: ''
