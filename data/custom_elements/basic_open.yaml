@@ -1,0 +1,133 @@
+elements:
+- id: basic_open
+  name: Basic Step (Open)
+  description: Der klassische Grundschritt in offener Haltung (R_L). Leader bricht
+    auf 1 vor, Follower auf 1 zurück.
+  counts: 8
+  level: 1
+  tags:
+  - basic
+  - on1
+  - open
+  - Custom
+  pre:
+    hand_hold:
+    - R_L
+    - L_R
+    - R_R
+    - L_L
+    - two_hand
+    - two_hand_crossed_l_up
+    - two_hand_crossed_r_up
+    - free
+    - shadow
+    - cuddle
+    - hammerlock
+    position:
+    - open
+    slot:
+    - center
+    connection:
+    - neutral
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold:
+    - same
+    position:
+    - open
+    slot:
+    - center
+    connection:
+    - neutral
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  leader_actions:
+  - beat: '1'
+    foot: L
+    direction: pause
+    turn_type: ''
+    description: '1: L pause'
+  - beat: '2'
+    foot: R
+    direction: pause
+    turn_type: ''
+    description: '2: R pause'
+  - beat: '3'
+    foot: L
+    direction: pause
+    turn_type: ''
+    description: '3: L pause'
+  - beat: '4'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '4: - pause'
+  - beat: '5'
+    foot: R
+    direction: pause
+    turn_type: ''
+    description: '5: R pause'
+  - beat: '6'
+    foot: L
+    direction: pause
+    turn_type: ''
+    description: '6: L pause'
+  - beat: '7'
+    foot: R
+    direction: pause
+    turn_type: ''
+    description: '7: R pause'
+  - beat: '8'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '8: - pause'
+  follower_actions:
+  - beat: '1'
+    foot: R
+    direction: pause
+    turn_type: ''
+    description: '1: R pause'
+  - beat: '2'
+    foot: L
+    direction: pause
+    turn_type: ''
+    description: '2: L pause'
+  - beat: '3'
+    foot: R
+    direction: pause
+    turn_type: ''
+    description: '3: R pause'
+  - beat: '4'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '4: - pause'
+  - beat: '5'
+    foot: L
+    direction: pause
+    turn_type: ''
+    description: '5: L pause'
+  - beat: '6'
+    foot: R
+    direction: pause
+    turn_type: ''
+    description: '6: R pause'
+  - beat: '7'
+    foot: L
+    direction: pause
+    turn_type: ''
+    description: '7: L pause'
+  - beat: '8'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '8: - pause'
+  signals: []
+  videos: []
+  notes: ''

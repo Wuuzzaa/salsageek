@@ -1,9 +1,0 @@
-known_elements:
-- basic_open
-- basic_closed
-- side_basic
-- follower_right_turn
-- leader_right_turn
-- cbl_basic
-- hand_change_front
-custom_figures: []
