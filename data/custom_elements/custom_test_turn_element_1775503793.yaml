@@ -1,0 +1,119 @@
+elements:
+- id: custom_test_turn_element_1775503793
+  name: Test Turn Element
+  description: 'Newly created element: Test Turn Element'
+  counts: 8
+  level: 1
+  tags:
+  - test
+  - turn
+  - Custom
+  pre:
+    hand_hold:
+    - R_L
+    position:
+    - open
+    slot:
+    - center
+    connection: []
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold:
+    - same
+    position:
+    - same
+    slot:
+    - same
+    connection: []
+    leader_weight:
+    - same
+    follower_weight:
+    - same
+  leader_actions:
+  - beat: '1'
+    foot: L
+    direction: forward
+    turn_type: spot
+    description: '1: L forward spot'
+  - beat: '2'
+    foot: R
+    direction: in_place
+    turn_type: ''
+    description: '2: R in_place'
+  - beat: '3'
+    foot: L
+    direction: back
+    turn_type: ''
+    description: '3: L back'
+  - beat: '4'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '4: - pause'
+  - beat: '5'
+    foot: R
+    direction: back
+    turn_type: ''
+    description: '5: R back'
+  - beat: '6'
+    foot: L
+    direction: in_place
+    turn_type: ''
+    description: '6: L in_place'
+  - beat: '7'
+    foot: R
+    direction: forward
+    turn_type: ''
+    description: '7: R forward'
+  - beat: '8'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '8: - pause'
+  follower_actions:
+  - beat: '1'
+    foot: R
+    direction: back
+    turn_type: ''
+    description: '1: R back'
+  - beat: '2'
+    foot: L
+    direction: in_place
+    turn_type: ''
+    description: '2: L in_place'
+  - beat: '3'
+    foot: R
+    direction: forward
+    turn_type: ''
+    description: '3: R forward'
+  - beat: '4'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '4: - pause'
+  - beat: '5'
+    foot: L
+    direction: forward
+    turn_type: ''
+    description: '5: L forward'
+  - beat: '6'
+    foot: R
+    direction: in_place
+    turn_type: ''
+    description: '6: R in_place'
+  - beat: '7'
+    foot: L
+    direction: back
+    turn_type: ''
+    description: '7: L back'
+  - beat: '8'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '8: - pause'
+  signals: []
+  videos: []
+  notes: ''
