@@ -1,0 +1,125 @@
+elements:
+- id: basic_closed
+  name: Basic Step (Closed) test pr2
+  description: Grundschritt in geschlossener Tanzhaltung.  Der Leader hat die rechte
+    Hand am Schulterblatt des Followers.
+  counts: 8
+  level: 1
+  tags:
+  - Custom
+  - basic
+  - closed
+  - on1
+  pre:
+    hand_hold: []
+    position:
+    - closed
+    slot:
+    - center
+    connection:
+    - neutral
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold: []
+    position:
+    - closed
+    slot:
+    - center
+    connection:
+    - neutral
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  leader_actions:
+  - beat: '1'
+    foot: L
+    direction: pause
+    turn_type: ''
+    description: '1: L pause'
+  - beat: '2'
+    foot: R
+    direction: pause
+    turn_type: ''
+    description: '2: R pause'
+  - beat: '3'
+    foot: L
+    direction: pause
+    turn_type: ''
+    description: '3: L pause'
+  - beat: '4'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '4: - pause'
+  - beat: '5'
+    foot: R
+    direction: pause
+    turn_type: ''
+    description: '5: R pause'
+  - beat: '6'
+    foot: L
+    direction: pause
+    turn_type: ''
+    description: '6: L pause'
+  - beat: '7'
+    foot: R
+    direction: pause
+    turn_type: ''
+    description: '7: R pause'
+  - beat: '8'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '8: - pause'
+  follower_actions:
+  - beat: '1'
+    foot: R
+    direction: pause
+    turn_type: ''
+    description: '1: R pause'
+  - beat: '2'
+    foot: L
+    direction: pause
+    turn_type: ''
+    description: '2: L pause'
+  - beat: '3'
+    foot: R
+    direction: pause
+    turn_type: ''
+    description: '3: R pause'
+  - beat: '4'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '4: - pause'
+  - beat: '5'
+    foot: L
+    direction: pause
+    turn_type: ''
+    description: '5: L pause'
+  - beat: '6'
+    foot: R
+    direction: pause
+    turn_type: ''
+    description: '6: R pause'
+  - beat: '7'
+    foot: L
+    direction: pause
+    turn_type: ''
+    description: '7: L pause'
+  - beat: '8'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    description: '8: - pause'
+  signals: []
+  videos:
+  - url: https://www.youtube.com/watch?v=wV8cDpJa2f4&t=3s
+    title: Salsa Beginners 1 - Salsa Basic Step for the Absolute Beginner - Detailed
+      explanation
+    type: Full
+  notes: ''
