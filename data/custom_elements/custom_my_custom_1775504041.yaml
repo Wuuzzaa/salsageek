@@ -1,0 +1,39 @@
+elements:
+- id: custom_my_custom_1775504041
+  name: My Custom
+  description: 'Newly created element: My Custom'
+  counts: 8
+  level: 1
+  tags:
+  - Custom
+  pre:
+    hand_hold:
+    - open
+    position:
+    - open
+    slot:
+    - center
+    connection:
+    - neutral
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold:
+    - open
+    position:
+    - open
+    slot:
+    - center
+    connection:
+    - neutral
+    leader_weight:
+    - L
+    follower_weight:
+    - R
+  leader_actions: []
+  follower_actions: []
+  signals: []
+  videos: []
+  notes: ''
