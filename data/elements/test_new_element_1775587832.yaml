@@ -1,0 +1,150 @@
+elements:
+- id: test_new_element_1775587832
+  name: Test New Element
+  description: 'Newly created element: Test New Element'
+  counts: 8
+  level: 1
+  tags: []
+  pre:
+    hand_hold:
+    - closed
+    position:
+    - closed
+    slot:
+    - center
+    connection:
+    - neutral
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold:
+    - closed
+    position:
+    - closed
+    slot:
+    - center
+    connection:
+    - neutral
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  leader_actions:
+  - beat: '1'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '1: - pause'
+  - beat: '2'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '2: - pause'
+  - beat: '3'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '3: - pause'
+  - beat: '4'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '4: - pause'
+  - beat: '5'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '5: - pause'
+  - beat: '6'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '6: - pause'
+  - beat: '7'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '7: - pause'
+  - beat: '8'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '8: - pause'
+  follower_actions:
+  - beat: '1'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '1: - pause'
+  - beat: '2'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '2: - pause'
+  - beat: '3'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '3: - pause'
+  - beat: '4'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '4: - pause'
+  - beat: '5'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '5: - pause'
+  - beat: '6'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '6: - pause'
+  - beat: '7'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '7: - pause'
+  - beat: '8'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '8: - pause'
+  signals: []
+  videos: []
+  notes: ''
