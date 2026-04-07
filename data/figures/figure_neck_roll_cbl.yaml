@@ -1,0 +1,14 @@
+figures:
+- id: figure_neck_roll_cbl
+  name: Neck Roll CBL
+  description: CBL kombiniert mit einem Neck Roll für ein flüssiges Finish.
+  level: 3
+  sequence:
+  - basic_open
+  - hand_change_front
+  - cbl_basic
+  - neck_roll
+  tags:
+  - special
+  - wrap
+  - intermediate

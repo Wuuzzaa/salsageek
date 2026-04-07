@@ -1,0 +1,12 @@
+figures:
+- id: figure_two_hand_right_turn
+  name: Two-Hand Hold Right Turn
+  description: Rechtsdrehung aus dem Two-Hand Hold.
+  level: 2
+  sequence:
+  - two_hand_hold_entry
+  - follower_right_turn
+  tags:
+  - two_hand
+  - turn
+  - social

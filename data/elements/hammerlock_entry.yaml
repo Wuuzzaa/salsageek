@@ -1,0 +1,75 @@
+elements:
+- id: hammerlock_entry
+  name: Hammerlock Entry
+  description: Follower in eine Rechtsdrehung führen, dabei die untere Hand (L_R)
+    halten, sodass der Arm hinter dem Rücken landet.
+  counts: 8
+  level: 3
+  tags:
+  - turn
+  - hammerlock
+  - hand_change
+  pre:
+    hand_hold:
+    - two_hand
+    position:
+    - open
+    slot:
+    - center
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold: hammerlock
+    position: open
+    slot: center
+    leader_weight: R
+    follower_weight: L
+  leader_actions:
+  - beat: '1'
+    foot: L
+    direction: forward
+  - beat: '2'
+    foot: R
+    direction: in_place
+  - beat: '3'
+    foot: L
+    direction: center
+  - beat: '5'
+    foot: R
+    direction: back
+    hand: L
+    action: raise
+    description: Obere Hand heben für Rechtsdrehung
+  - beat: '6'
+    foot: L
+    direction: in_place
+    hand: R
+    action: keep_low
+    description: Untere Hand tief halten und hinter den Rücken des Followers führen
+  - beat: '7'
+    foot: R
+    direction: forward
+  follower_actions:
+  - beat: '1'
+    foot: R
+    direction: back
+  - beat: '2'
+    foot: L
+    direction: in_place
+  - beat: '3'
+    foot: R
+    direction: forward
+  - beat: '5'
+    foot: L
+    direction: forward
+    action: turn_cw
+    description: Rechtsdrehung in den Hammerlock
+  - beat: '6'
+    foot: R
+    direction: forward
+    action: turn_cw
+  - beat: '7'
+    foot: L
+    direction: back

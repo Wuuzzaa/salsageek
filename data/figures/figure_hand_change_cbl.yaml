@@ -1,0 +1,12 @@
+figures:
+- id: figure_hand_change_cbl
+  name: Hand Change + CBL
+  description: Handwechsel vor dem Körper und danach Platzwechsel.
+  level: 2
+  sequence:
+  - hand_change_front
+  - cbl_basic
+  tags:
+  - hand_change
+  - cbl
+  - social

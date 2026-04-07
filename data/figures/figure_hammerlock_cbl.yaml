@@ -1,0 +1,13 @@
+figures:
+- id: figure_hammerlock_cbl
+  name: Hammerlock to CBL
+  description: In den Hammerlock eindrehen und über einen CBL wieder rausführen.
+  level: 3
+  sequence:
+  - two_hand_hold_entry
+  - hammerlock_entry
+  - cbl_basic
+  tags:
+  - hammerlock
+  - cbl
+  - intermediate

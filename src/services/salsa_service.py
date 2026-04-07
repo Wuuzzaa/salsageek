@@ -27,35 +27,22 @@ class SalsaService:
         }
 
     def _load_all_elements(self) -> Dict[str, Element]:
-        # Load main elements file
-        all_elems = load_elements(self.data_dir / "elements.yaml")
-        
-        # Load custom_elements.yaml (backward compatibility)
-        custom_legacy = self.data_dir / "custom_elements.yaml"
-        if custom_legacy.exists():
-            all_elems.update(load_elements(custom_legacy))
-            
-        # Load new individual YAML files from custom_elements/ directory
-        custom_dir = self.data_dir / "custom_elements"
-        if custom_dir.exists() and custom_dir.is_dir():
-            for yaml_file in custom_dir.glob("*.yaml"):
+        all_elems = {}
+        elem_dir = self.data_dir / "elements"
+        if elem_dir.exists() and elem_dir.is_dir():
+            for yaml_file in elem_dir.glob("*.yaml"):
                 all_elems.update(load_elements(yaml_file))
-                
         return all_elems
 
     def _load_all_figures(self) -> Dict[str, Figure]:
-        # Load main figures file
-        all_figs = load_figures(self.data_dir / "figures.yaml", self.elements)
-        
-        # Load new individual YAML files from custom_figures/ directory
-        custom_dir = self.data_dir / "custom_figures"
-        if custom_dir.exists() and custom_dir.is_dir():
-            for yaml_file in custom_dir.glob("*.yaml"):
+        all_figs = {}
+        fig_dir = self.data_dir / "figures"
+        if fig_dir.exists() and fig_dir.is_dir():
+            for yaml_file in fig_dir.glob("*.yaml"):
                 try:
                     all_figs.update(load_figures(yaml_file, self.elements))
                 except Exception as e:
                     print(f"Error loading figure from {yaml_file}: {e}")
-                    
         return all_figs
 
     def _load_schema(self) -> Dict:
@@ -75,29 +62,8 @@ class SalsaService:
     def get_element(self, element_id: str) -> Optional[Element]:
         return self.elements.get(element_id)
 
-    def get_all_figures_with_custom(self, profile_name: str) -> Dict[str, Figure]:
-        all_figs = self.figures.copy()
-        profile_data = self.profile_service.load_profile(profile_name)
-        custom_figs_raw = profile_data.get("custom_figures", [])
-        
-        for raw in custom_figs_raw:
-            fig = Figure(
-                id=raw["id"],
-                name=raw["name"],
-                description=raw.get("description", "").strip(),
-                level=int(raw.get("level", 1)),
-                sequence=raw.get("sequence", []),
-                total_counts=int(raw.get("total_counts", 0)),
-                tags=raw.get("tags", []),
-                notes=raw.get("notes", "").strip(),
-            )
-            elem_list = [self.elements[eid] for eid in fig.sequence if eid in self.elements]
-            fig.elements = elem_list
-            if fig.total_counts == 0 and elem_list:
-                fig.total_counts = sum(e.counts for e in elem_list)
-            all_figs[fig.id] = fig
-            
-        return all_figs
+    def get_all_figures(self) -> Dict[str, Figure]:
+        return self.figures
 
     def get_known_elements(self, profile_name: str) -> Set[str]:
         profile_data = self.profile_service.load_profile(profile_name)

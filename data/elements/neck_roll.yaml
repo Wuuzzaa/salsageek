@@ -1,0 +1,42 @@
+elements:
+- id: neck_roll
+  name: Neck Roll
+  description: Die Hand des Followers über den Nacken des Leaders rollen lassen.
+  counts: 8
+  level: 3
+  tags:
+  - special
+  - wrap
+  pre:
+    hand_hold:
+    - R_L
+    - L_R
+    position:
+    - open
+    slot:
+    - center
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold: same
+    position: open
+    slot: center
+    leader_weight: R
+    follower_weight: L
+  leader_actions:
+  - beat: 1-3
+    description: Vorbereitung
+  - beat: '5'
+    action: raise_to_neck
+    description: Hand zum eigenen Nacken führen
+  - beat: '6'
+    action: roll_over_neck
+    description: Hand über den Nacken gleiten lassen
+  - beat: '7'
+    action: catch_hand
+    description: Hand auf der anderen Seite wieder aufnehmen
+  follower_actions:
+  - beat: 1-8
+    description: Normaler Grundschritt, folgt der Handführung

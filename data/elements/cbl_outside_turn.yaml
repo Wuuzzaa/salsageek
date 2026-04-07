@@ -1,0 +1,55 @@
+elements:
+- id: cbl_outside_turn
+  name: CBL Outside Turn
+  description: Cross Body Lead mit einer Rechtsdrehung des Followers auf 5-6-7.
+  counts: 8
+  level: 3
+  tags:
+  - cbl
+  - turn
+  - follower_turn
+  - outside_turn
+  pre:
+    hand_hold:
+    - R_L
+    - two_hand
+    position:
+    - open
+    slot:
+    - center
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold: R_L
+    position: open
+    slot: center
+    leader_weight: R
+    follower_weight: L
+  leader_actions:
+  - beat: 1-3
+    description: Normale CBL-Vorbereitung
+  - beat: '5'
+    hand: L
+    action: raise_and_guide_cw
+    description: Hand heben und Follower zur Rechtsdrehung führen
+  - beat: '6'
+    hand: L
+    action: guide_cw
+  - beat: '7'
+    hand: L
+    action: lower
+  follower_actions:
+  - beat: '5'
+    foot: L
+    direction: forward
+    action: turn_cw
+  - beat: '6'
+    foot: R
+    direction: forward
+    action: turn_cw
+  - beat: '7'
+    foot: L
+    direction: back
+    action: complete_turn

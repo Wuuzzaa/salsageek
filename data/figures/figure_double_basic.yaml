@@ -1,0 +1,11 @@
+figures:
+- id: figure_double_basic
+  name: Double Basic
+  description: Zwei Grundschritte hintereinander zur Stabilisierung.
+  level: 1
+  sequence:
+  - basic_open
+  - basic_open
+  tags:
+  - basic
+  - beginner

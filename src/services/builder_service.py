@@ -1,9 +1,12 @@
-from typing import List, Dict, Optional, Tuple, Set
+import yaml
+from pathlib import Path
+from typing import List, Dict, Optional, Tuple, Set, Any
 from src.salsa_notation import Element, Figure
 
 class BuilderService:
-    def __init__(self, elements: Dict[str, Element]):
+    def __init__(self, elements: Dict[str, Element], data_dir: Optional[Path] = None):
         self.elements = elements
+        self.data_dir = data_dir
 
     def get_element(self, element_id: str) -> Optional[Element]:
         return self.elements.get(element_id)
@@ -100,7 +103,7 @@ class BuilderService:
     def _explain_compatibility_error(self, first: Element, second: Element) -> str:
         return second.explain_compatibility_error(first)
 
-    def create_custom_figure(self, validation_result: Dict) -> Optional[Figure]:
+    def create_figure(self, validation_result: Dict) -> Optional[Figure]:
         if not validation_result.get("valid") or validation_result.get("empty"):
             return None
 
@@ -112,14 +115,50 @@ class BuilderService:
         max_level = max(e.level for e in elem_list) if elem_list else 1
 
         return Figure(
-            id="custom_builder_figure",
-            name="Custom Figure",
+            id="builder_figure_draft",
+            name="Figure Draft",
             description="Sequence assembled in the builder.",
             level=max_level,
             sequence=[e.id for e in elem_list],
             total_counts=validation_result.get("total_counts", 0),
-            tags=["Builder", "Custom"],
+            tags=["Builder"],
             notes="",
             elements=elem_list,
             valid=True
         )
+
+    def save_figure(self, name: str, description: str, builder_figure: Figure) -> Tuple[Optional[str], Optional[Dict]]:
+        """
+        Saves a figure to the data directory.
+        
+        Returns:
+            Tuple of (figure_id, figure_data) if successful, (None, None) otherwise.
+        """
+        if not self.data_dir:
+            return None, None
+
+        import time
+        fig_id = f"figure_{int(time.time())}"
+        
+        figure_data = {
+            "id": fig_id,
+            "name": name.strip() or "New Figure",
+            "description": description.strip(),
+            "level": builder_figure.level,
+            "sequence": builder_figure.sequence,
+            "total_counts": builder_figure.total_counts,
+            "tags": ["Builder"],
+            "notes": ""
+        }
+        
+        fig_path = self.data_dir / "figures" / f"{fig_id}.yaml"
+        fig_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        try:
+            with open(fig_path, "w", encoding="utf-8") as f:
+                yaml.dump({"figures": [figure_data]}, f, allow_unicode=True, sort_keys=False)
+            return fig_id, figure_data
+        except Exception as e:
+            # In a real app we would use a logger here
+            print(f"Error saving figure: {e}")
+            return None, None

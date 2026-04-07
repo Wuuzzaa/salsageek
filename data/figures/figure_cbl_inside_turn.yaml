@@ -1,0 +1,13 @@
+figures:
+- id: figure_cbl_inside_turn
+  name: CBL Inside Turn
+  description: Platzwechsel mit integrierter Linksdrehung.
+  level: 3
+  sequence:
+  - basic_open
+  - cbl_inside_turn
+  tags:
+  - cbl
+  - turn
+  - inside
+  - intermediate

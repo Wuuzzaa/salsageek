@@ -1,0 +1,14 @@
+figures:
+- id: figure_titanic_exit
+  name: Titanic Exit Figure
+  description: In die Titanic Pose und wieder zurück.
+  level: 3
+  sequence:
+  - basic_open
+  - two_hand_hold_entry
+  - titanic_entry
+  - titanic_exit
+  tags:
+  - special
+  - pose
+  - intermediate

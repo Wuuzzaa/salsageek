@@ -1,0 +1,54 @@
+elements:
+- id: follower_double_left_turn
+  name: Follower Double Left Turn
+  description: Doppelte Linksdrehung des Followers auf 5-6-7.
+  counts: 8
+  level: 4
+  tags:
+  - turn
+  - double
+  - follower_turn
+  pre:
+    hand_hold:
+    - L_R
+    - two_hand
+    position:
+    - open
+    slot:
+    - center
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold: same
+    position: open
+    slot: center
+    leader_weight: R
+    follower_weight: L
+  leader_actions:
+  - beat: 1-3
+    description: Prep-Signal (J-Loop gegen den Uhrzeigersinn)
+  - beat: '5'
+    hand: L
+    action: double_prep_ccw
+    description: Starker Impuls für Linksdrehung
+  - beat: '6'
+    hand: L
+    action: guide_ccw_fast
+  - beat: '7'
+    hand: L
+    action: lower
+  follower_actions:
+  - beat: 1-3
+    description: Vorbereitung
+  - beat: 5-6
+    action: double_turn_ccw
+  - beat: '7'
+    foot: L
+    direction: back
+  signals:
+  - beat: '3'
+    type: prep
+    description: Hand auf 3 leicht nach rechts führen, um auf 5 linksrum Schwung zu
+      geben

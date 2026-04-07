@@ -1,0 +1,14 @@
+figures:
+- id: figure_neck_wrap_combo
+  name: Neck Wrap Combo
+  description: In den Neck Wrap und mit einem flüssigen Exit wieder raus.
+  level: 3
+  sequence:
+  - basic_open
+  - neck_wrap_entry
+  - neck_wrap_exit
+  - basic_open
+  tags:
+  - special
+  - wrap
+  - intermediate

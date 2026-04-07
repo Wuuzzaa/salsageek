@@ -1,0 +1,14 @@
+figures:
+- id: figure_hand_toss_variation
+  name: Hand Toss Variation
+  description: Ein CBL mit einem riskanten aber coolen Hand Toss.
+  level: 3
+  sequence:
+  - basic_open
+  - cbl_with_hand_toss
+  - basic_open
+  tags:
+  - cbl
+  - special
+  - social
+  - intermediate

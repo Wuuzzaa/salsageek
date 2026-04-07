@@ -1,0 +1,70 @@
+elements:
+- id: hand_change_behind_back_leader
+  name: Hand Change Behind Back (Leader)
+  description: Handwechsel hinter dem Rücken des Leaders während eines Basics.
+  counts: 8
+  level: 2
+  tags:
+  - hand_change
+  - transition
+  - behind_back
+  pre:
+    hand_hold:
+    - R_L
+    position:
+    - open
+    slot:
+    - center
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold: L_R
+    position: open
+    slot: center
+    leader_weight: R
+    follower_weight: L
+  leader_actions:
+  - beat: '1'
+    foot: L
+    direction: forward
+    action: lead_to_side
+  - beat: '2'
+    foot: R
+    direction: in_place
+    action: hand_behind_back
+    description: Rechte Hand hinter den Rücken führen
+  - beat: '3'
+    foot: L
+    direction: center
+    action: take_with_left
+    description: Mit der linken Hand hinter dem Rücken übernehmen
+  - beat: '5'
+    foot: R
+    direction: back
+  - beat: '6'
+    foot: L
+    direction: in_place
+  - beat: '7'
+    foot: R
+    direction: forward
+  follower_actions:
+  - beat: '1'
+    foot: R
+    direction: back
+  - beat: '2'
+    foot: L
+    direction: in_place
+  - beat: '3'
+    foot: R
+    direction: forward
+  - beat: '5'
+    foot: L
+    direction: forward
+  - beat: '6'
+    foot: R
+    direction: in_place
+  - beat: '7'
+    foot: L
+    direction: back

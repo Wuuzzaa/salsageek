@@ -1,0 +1,69 @@
+elements:
+- id: two_hand_hold_entry
+  name: Two Hand Hold Entry
+  description: Die zweite Hand aufnehmen.
+  counts: 8
+  level: 2
+  tags:
+  - hand_change
+  - two_hand
+  pre:
+    hand_hold:
+    - R_L
+    - L_R
+    position:
+    - open
+    slot:
+    - center
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold: two_hand
+    position: open
+    slot: center
+    leader_weight: R
+    follower_weight: L
+  leader_actions:
+  - beat: '1'
+    foot: L
+    direction: forward
+  - beat: '2'
+    foot: R
+    direction: in_place
+  - beat: '3'
+    foot: L
+    direction: center
+  - beat: '5'
+    foot: R
+    direction: back
+    action: offer_hand
+    description: Die freie Hand anbieten
+  - beat: '6'
+    foot: L
+    direction: in_place
+  - beat: '7'
+    foot: R
+    direction: forward
+  follower_actions:
+  - beat: '1'
+    foot: R
+    direction: back
+  - beat: '2'
+    foot: L
+    direction: in_place
+  - beat: '3'
+    foot: R
+    direction: forward
+  - beat: '5'
+    foot: L
+    direction: forward
+  - beat: '6'
+    foot: R
+    direction: in_place
+    action: take_hand
+    description: Die angebotene Hand annehmen
+  - beat: '7'
+    foot: L
+    direction: back

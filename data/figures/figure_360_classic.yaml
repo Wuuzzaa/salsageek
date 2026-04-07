@@ -1,0 +1,14 @@
+figures:
+- id: figure_360_classic
+  name: Classic 360
+  description: CBL mit 360-Drehung des Leaders.
+  level: 3
+  sequence:
+  - basic_open
+  - cbl_360
+  - basic_open
+  tags:
+  - cbl
+  - turn
+  - leader
+  - intermediate

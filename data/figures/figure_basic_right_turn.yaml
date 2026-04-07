@@ -1,0 +1,12 @@
+figures:
+- id: figure_basic_right_turn
+  name: Basic + Right Turn
+  description: Grundschritt gefolgt von einer Rechtsdrehung des Followers.
+  level: 1
+  sequence:
+  - basic_open
+  - follower_right_turn
+  tags:
+  - basic
+  - turn
+  - beginner

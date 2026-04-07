@@ -1,0 +1,13 @@
+figures:
+- id: figure_advanced_hand_change
+  name: Behind Back CBL
+  description: CBL mit Handwechsel hinter dem Rücken des Followers.
+  level: 3
+  sequence:
+  - basic_open
+  - hand_change_behind_back_follower
+  - cbl_basic
+  tags:
+  - hand_change
+  - cbl
+  - intermediate

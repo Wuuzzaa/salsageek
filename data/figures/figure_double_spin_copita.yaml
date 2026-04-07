@@ -1,0 +1,15 @@
+figures:
+- id: figure_double_spin_copita
+  name: The Double Spin Copita
+  description: Eine Copita mit einem spektakulären Doppel-Spin am Ende.
+  level: 4
+  sequence:
+  - basic_open
+  - two_hand_hold_entry
+  - copita_double_spin
+  - basic_open
+  tags:
+  - special
+  - double
+  - turn
+  - intermediate

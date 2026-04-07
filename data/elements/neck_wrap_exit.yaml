@@ -1,0 +1,38 @@
+elements:
+- id: neck_wrap_exit
+  name: Neck Wrap Exit
+  description: Aus dem Neck Wrap zurück in die offene Haltung.
+  counts: 8
+  level: 3
+  tags:
+  - special
+  - wrap
+  pre:
+    hand_hold:
+    - R_L
+    - two_hand
+    position:
+    - shadow
+    slot:
+    - center
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold: same
+    position: open
+    slot: center
+    leader_weight: R
+    follower_weight: L
+  leader_actions:
+  - beat: 1-3
+    description: Hand vom Nacken lösen und Follower nach vorne führen
+  - beat: 5-7
+    description: Wieder zur Frontseite ausrichten
+  follower_actions:
+  - beat: 1-3
+    foot: R
+    direction: forward
+  - beat: 5-7
+    action: pivot_180

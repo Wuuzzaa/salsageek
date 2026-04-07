@@ -26,34 +26,26 @@ class ProfileService:
         return sorted(profiles)
 
     def load_profile(self, profile_name: str) -> Dict:
-        """Loads profile data (known elements and custom figures)."""
+        """Loads profile data (known elements)."""
         path = self.get_profile_path(profile_name)
         if not path.exists():
-            return {"known_elements": [], "custom_figures": []}
+            return {"known_elements": []}
         
         try:
             with open(path, "r", encoding="utf-8") as f:
                 data = yaml.safe_load(f) or {}
                 if "known_elements" not in data:
                     data["known_elements"] = []
-                if "custom_figures" not in data:
-                    data["custom_figures"] = []
                 return data
         except Exception:
-            return {"known_elements": [], "custom_figures": []}
+            return {"known_elements": []}
 
-    def save_profile(self, profile_name: str, known_ids: Set[str], custom_figures: List[Dict] = None):
+    def save_profile(self, profile_name: str, known_ids: Set[str]):
         """Saves profile data."""
         path = self.get_profile_path(profile_name)
         
-        # If only updating known_ids, load the rest
-        if custom_figures is None:
-            existing = self.load_profile(profile_name)
-            custom_figures = existing.get("custom_figures", [])
-
         data = {
-            "known_elements": sorted(list(known_ids)),
-            "custom_figures": custom_figures
+            "known_elements": sorted(list(known_ids))
         }
         with open(path, "w", encoding="utf-8") as f:
             yaml.dump(data, f, allow_unicode=True, sort_keys=False)

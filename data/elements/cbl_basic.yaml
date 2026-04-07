@@ -1,0 +1,80 @@
+elements:
+- id: cbl_basic
+  name: Cross Body Lead (CBL)
+  description: Das fundamentale Element des LA Style. Platzwechsel auf der Linie.
+  counts: 8
+  level: 2
+  tags:
+  - cbl
+  - traveling
+  - core
+  pre:
+    hand_hold:
+    - R_L
+    - L_R
+    - two_hand
+    - closed
+    - hammerlock
+    position:
+    - open
+    - closed
+    slot:
+    - center
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold: same
+    position: open
+    slot: center
+    leader_weight: R
+    follower_weight: L
+  leader_actions:
+  - beat: '1'
+    foot: L
+    direction: forward
+    description: Schritt vor, leicht aus dem Slot öffnen
+  - beat: '2'
+    foot: R
+    direction: side_right
+    description: Slot komplett freigeben (90 Grad Drehung)
+  - beat: '3'
+    foot: L
+    direction: in_place
+    description: Position halten, Follower Platz machen
+  - beat: '5'
+    foot: R
+    direction: back
+    description: Follower durch den Slot führen
+  - beat: '6'
+    foot: L
+    direction: in_place
+    description: Eindrehen zum Follower
+  - beat: '7'
+    foot: R
+    direction: forward
+    description: Schritt vor zur Mitte
+  follower_actions:
+  - beat: '1'
+    foot: R
+    direction: back
+  - beat: '2'
+    foot: L
+    direction: in_place
+  - beat: '3'
+    foot: R
+    direction: forward
+    description: Vorbereitung zum Durchlaufen
+  - beat: '5'
+    foot: L
+    direction: forward
+    description: Durch den Slot laufen
+  - beat: '6'
+    foot: R
+    direction: forward
+  - beat: '7'
+    foot: L
+    direction: back
+    action: pivot_180
+    description: Um 180 Grad drehen zum Leader

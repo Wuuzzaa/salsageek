@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 # Load environment variables from .env file for local development
 load_dotenv()
 
+import os
 from flask import Flask, abort, redirect, render_template, request, url_for, session, send_file
 
 from src.salsa_notation import (
@@ -26,12 +27,12 @@ BASE_DIR = Path(__file__).parent
 DATA_DIR = BASE_DIR / "data"
 
 app = Flask(__name__)
-app.secret_key = "salsa-geek-secret-key" # Change in production
+app.secret_key = os.environ.get("SECRET_KEY", "salsa-geek-dev-key")
 
 salsa_service = SalsaService(DATA_DIR)
 profile_service = salsa_service.profile_service
-builder_service = BuilderService(salsa_service.elements)
-element_editor_service = ElementEditorService(DATA_DIR / "custom_elements", schema=salsa_service.schema)
+builder_service = BuilderService(salsa_service.elements, DATA_DIR)
+element_editor_service = ElementEditorService(DATA_DIR / "elements", schema=salsa_service.schema)
 github_service = GithubService()
 
 def get_active_profile() -> str:
@@ -72,7 +73,7 @@ def youtube_embed_filter(url: str) -> str:
 def index():
     profile_name = get_active_profile()
     known_ids = salsa_service.get_known_elements(profile_name)
-    all_figs = salsa_service.get_all_figures_with_custom(profile_name)
+    all_figs = salsa_service.get_all_figures()
     executable = get_executable_figures(known_ids, all_figs)
     almost_executable = salsa_service.get_almost_executable_figures(known_ids, all_figs)
     invalid = [fig for fig in all_figs.values() if not fig.valid]
@@ -124,7 +125,7 @@ def element_detail(element_id: str):
 
     profile_name = get_active_profile()
     known_ids = salsa_service.get_known_elements(profile_name)
-    all_figs = salsa_service.get_all_figures_with_custom(profile_name)
+    all_figs = salsa_service.get_all_figures()
     used_in_figures = salsa_service.find_figures_using_element(element_id, all_figs)
 
     # Convert element and states to dict for template consistency
@@ -196,7 +197,7 @@ def delete_profile(name: str):
 def figuren_view():
     profile_name = get_active_profile()
     known_ids = salsa_service.get_known_elements(profile_name)
-    all_figs = salsa_service.get_all_figures_with_custom(profile_name)
+    all_figs = salsa_service.get_all_figures()
     executable = get_executable_figures(known_ids, all_figs)
     almost_executable = salsa_service.get_almost_executable_figures(known_ids, all_figs)
 
@@ -212,7 +213,7 @@ def figuren_view():
 def figure_detail(figure_id: str):
     pr_url = request.args.get("pr_url")
     profile_name = get_active_profile()
-    all_figs = salsa_service.get_all_figures_with_custom(profile_name)
+    all_figs = salsa_service.get_all_figures()
     if figure_id not in all_figs:
         abort(404)
 
@@ -235,7 +236,7 @@ def figure_detail(figure_id: str):
 def empfehlungen():
     profile_name = get_active_profile()
     known_ids = salsa_service.get_known_elements(profile_name)
-    all_figs = salsa_service.get_all_figures_with_custom(profile_name)
+    all_figs = salsa_service.get_all_figures()
     current_level = salsa_service.get_current_level(known_ids)
 
     recs = salsa_service.get_recommendations(
@@ -291,7 +292,7 @@ def builder():
 
     # Perform validation
     validation = builder_service.validate_sequence(sequence)
-    custom_figure = None
+    builder_figure = None
     if not validation.get("valid"):
         if validation.get("error"):
             error = validation.get("error")
@@ -300,54 +301,28 @@ def builder():
     else:
         if not validation.get("empty"):
             result = validation
-            custom_figure = builder_service.create_custom_figure(validation)
+            builder_figure = builder_service.create_figure(validation)
 
     # Save logic
-    if request.method == "POST" and request.form.get("action") == "save" and custom_figure:
-        name = request.form.get("figure_name", "Custom Figure").strip() or "Custom Figure"
+    if request.method == "POST" and request.form.get("action") == "save" and builder_figure:
+        name = request.form.get("figure_name", "New Figure").strip()
         description = request.form.get("figure_description", "").strip()
         
-        active_profile = get_active_profile()
-        profile_data = profile_service.load_profile(active_profile)
-        custom_figs = profile_data.get("custom_figures", [])
+        fig_id, new_fig_raw = builder_service.save_figure(name, description, builder_figure)
         
-        # Generate new ID
-        import time
-        fig_id = f"custom_{int(time.time())}"
-        
-        new_fig_raw = {
-            "id": fig_id,
-            "name": name,
-            "description": description,
-            "level": custom_figure.level,
-            "sequence": custom_figure.sequence,
-            "total_counts": custom_figure.total_counts,
-            "tags": ["Builder", "Custom"],
-            "notes": ""
-        }
-        
-        custom_figs.append(new_fig_raw)
-        profile_service.save_profile(active_profile, set(profile_data.get("known_elements", [])), custom_figs)
-        
-        # In data/custom_figures/ speichern für dauerhafte lokale Verfügbarkeit (falls PR aktiv)
-        fig_path = DATA_DIR / "custom_figures" / f"{fig_id}.yaml"
-        fig_path.parent.mkdir(parents=True, exist_ok=True)
-        try:
-            with open(fig_path, "w", encoding="utf-8") as f:
-                yaml.dump({"figures": [new_fig_raw]}, f, allow_unicode=True, sort_keys=False)
-        except Exception as e:
-            print(f"Fehler beim lokalen Speichern der Figur: {e}")
-        
-        # Reload salsa service to include the new figure globally
-        salsa_service.reload_figures()
-        
-        # Automatischer Pull Request
-        pr_url = None
-        if github_service.is_configured():
-            pr_url = github_service.create_pull_request_for_figure(fig_id, new_fig_raw)
-            return redirect(url_for("figure_detail", figure_id=fig_id, pr_url=pr_url))
-        
-        return redirect(url_for("figure_detail", figure_id=fig_id, saved=True))
+        if fig_id:
+            # Reload salsa service to include the new figure globally
+            salsa_service.reload_figures()
+            
+            # Automatic Pull Request if configured
+            pr_url = None
+            if github_service.is_configured():
+                pr_url = github_service.create_pull_request_for_figure(fig_id, new_fig_raw)
+                return redirect(url_for("figure_detail", figure_id=fig_id, pr_url=pr_url))
+            
+            return redirect(url_for("figure_detail", figure_id=fig_id, saved=True))
+        else:
+            error = "Fehler beim Speichern der Figur."
 
     recommendations = builder_service.get_recommendations(sequence)
 
@@ -359,7 +334,7 @@ def builder():
         error=error,
         recommendations=recommendations,
         all_elements=sorted(salsa_service.elements.values(), key=lambda e: (e.level, e.name)),
-        figure=custom_figure,
+        figure=builder_figure,
         known_ids=salsa_service.get_known_elements(get_active_profile()),
         figure_name=figure_name,
         figure_description=figure_description
@@ -369,17 +344,11 @@ def builder():
 @app.route("/element-editor", methods=["GET", "POST"])
 @app.route("/element-editor/<element_id>", methods=["GET", "POST"])
 def element_editor(element_id: str = None):
-    # Last 10 created custom_elements for quick access & template selection
+    # Sort all elements for template selection
     all_elements_sorted = sorted(
         salsa_service.elements.values(),
         key=lambda e: (e.level, e.name)
     )
-    
-    recent_custom = sorted(
-        [e for e in salsa_service.elements.values() if "Custom" in e.tags],
-        key=lambda e: e.id,
-        reverse=True
-    )[:5]
     
     # Check if we should copy from an existing element
     copy_from_id = request.args.get("copy_from")
@@ -438,7 +407,6 @@ def element_editor(element_id: str = None):
             # Process tags
             raw_tags = request.form.get("tags", "")
             tags = [t.strip() for t in raw_tags.split(",") if t.strip()]
-            if "Custom" not in tags: tags.append("Custom")
             
             # Signals (simple implementation)
             signal_type = request.form.get("signal_type", "none")
@@ -466,13 +434,13 @@ def element_editor(element_id: str = None):
             follower_actions = element_editor_service.parse_actions_from_form(request.form, counts, "follower")
             
             if name:
-                new_id, errors, element_data = element_editor_service.add_custom_element(
+                new_id, errors, element_data = element_editor_service.add_element(
                     name=name, level=level, counts=counts, 
                     pre=pre, post=post, description=desc, 
                     tags=tags, signals=signals, videos=videos, notes=notes,
                     leader_actions=leader_actions,
                     follower_actions=follower_actions,
-                    custom_id=element_id
+                    element_id=element_id
                 )
                 
                 if new_id:
@@ -489,7 +457,6 @@ def element_editor(element_id: str = None):
                 else:
                     return render_template(
                         "element_editor.html",
-                        recent_custom=recent_custom,
                         all_elements=all_elements_sorted,
                         copy_from_id=copy_from_id,
                         error=f"Validierungsfehler: {', '.join(errors)}",
@@ -498,7 +465,6 @@ def element_editor(element_id: str = None):
     
     return render_template(
         "element_editor.html",
-        recent_custom=recent_custom,
         all_elements=all_elements_sorted,
         last_added_id=request.args.get("last_added"),
         pr_url=request.args.get("pr_url"),
@@ -539,41 +505,21 @@ def visualize():
 @app.route("/export/elements")
 def export_elements():
     """
-    Exports all custom elements into a single YAML file.
-    This makes it easy to download and check into Git.
+    Exports all elements into a single YAML file for download.
     """
-    custom_dir = DATA_DIR / "custom_elements"
-    combined_data = {"elements": []}
+    import io
+    all_elements = [element_editor_service.to_dict(e) for e in salsa_service.elements.values()]
+    combined_data = {"elements": all_elements}
     
-    # 1. Load legacy custom_elements.yaml if it exists
-    legacy_path = DATA_DIR / "custom_elements.yaml"
-    if legacy_path.exists():
-        with open(legacy_path, "r", encoding="utf-8") as f:
-            data = yaml.safe_load(f)
-            if data and "elements" in data:
-                combined_data["elements"].extend(data["elements"])
+    output = io.StringIO()
+    yaml.dump(combined_data, output, allow_unicode=True, sort_keys=False)
     
-    # 2. Load all individual YAML files
-    if custom_dir.exists() and custom_dir.is_dir():
-        for yaml_file in custom_dir.glob("*.yaml"):
-            with open(yaml_file, "r", encoding="utf-8") as f:
-                data = yaml.safe_load(f)
-                if data and "elements" in data:
-                    combined_data["elements"].extend(data["elements"])
-    
-    # If no custom elements are found, we still return a valid empty structure instead of 404
-    # This avoids 404 errors in automated route testing when no custom data is present yet
-    # if not combined_data["elements"]:
-    #     abort(404)
-        
-    # Create a temporary combined file
-    import tempfile
-    
-    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".yaml", mode="w", encoding="utf-8")
-    yaml.dump(combined_data, temp_file, allow_unicode=True, sort_keys=False)
-    temp_file.close()
-    
-    return send_file(temp_file.name, as_attachment=True, download_name="custom_elements.yaml")
+    return send_file(
+        io.BytesIO(output.getvalue().encode("utf-8")),
+        mimetype="text/yaml",
+        as_attachment=True,
+        download_name="elements_export.yaml"
+    )
 
 
 @app.route("/export/profile/<name>")

@@ -1,0 +1,38 @@
+elements:
+- id: sombrero_exit
+  name: Sombrero Exit
+  description: Hände von den Schultern lösen und zurück in die offene Haltung.
+  counts: 8
+  level: 4
+  tags:
+  - special
+  - wrap
+  - two_hand
+  pre:
+    hand_hold:
+    - two_hand
+    position:
+    - shadow
+    slot:
+    - center
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold: two_hand
+    position: open
+    slot: center
+    leader_weight: R
+    follower_weight: L
+  leader_actions:
+  - beat: 1-3
+    description: Hände lösen und Follower nach vorne rausführen
+  - beat: 5-7
+    description: Wieder zur Frontseite ausrichten
+  follower_actions:
+  - beat: 1-3
+    foot: R
+    direction: forward
+  - beat: 5-7
+    action: pivot_180

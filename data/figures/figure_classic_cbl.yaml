@@ -1,0 +1,12 @@
+figures:
+- id: figure_classic_cbl
+  name: Classic Cross Body Lead
+  description: Der Standard-Platzwechsel auf der Linie.
+  level: 2
+  sequence:
+  - basic_open
+  - cbl_basic
+  tags:
+  - cbl
+  - core
+  - social

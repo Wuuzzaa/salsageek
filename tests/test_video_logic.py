@@ -48,7 +48,7 @@ def test_element_editor_service_video_storage(tmp_path):
     pre = {"hand_hold": ["open"], "position": ["open"], "slot": ["center"], "leader_weight": ["R"], "follower_weight": ["L"]}
     post = {"hand_hold": ["open"], "position": ["open"], "slot": ["center"], "leader_weight": ["L"], "follower_weight": ["R"]}
     
-    elem_id, errors, data = service.add_custom_element(
+    elem_id, errors, data = service.add_element(
         name="Video Test Element",
         level=1,
         counts=8,
@@ -58,7 +58,7 @@ def test_element_editor_service_video_storage(tmp_path):
     )
     
     assert not errors
-    assert elem_id.startswith("custom_video_test_element")
+    assert elem_id.startswith("video_test_element")
     
     # Verify content in the individual YAML file
     custom_file = tmp_path / f"{elem_id}.yaml"
@@ -116,13 +116,10 @@ def test_element_editor_post_with_videos(client, tmp_path, monkeypatch):
     response = client.post("/element-editor", data=form_data, follow_redirects=True)
     
     # Debug print if failed
-    if response.status_code != 200:
-        print(f"Response: {response.status_code}")
-        if b"Validierungsfehler" in response.data:
-            print("Validation error detected in response!")
-            idx = response.data.find(b"Validierungsfehler")
-            print(f"Error context: {response.data[idx:idx+200].decode()}")
-
+    if len(list(custom_dir.glob("*.yaml"))) == 0:
+        print(f"Response status: {response.status_code}")
+        print(f"Response data: {response.data.decode()[:500]}")
+    
     assert response.status_code == 200
     
     # Check if file was created and contains videos

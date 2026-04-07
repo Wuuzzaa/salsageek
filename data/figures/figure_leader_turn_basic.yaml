@@ -1,0 +1,12 @@
+figures:
+- id: figure_leader_turn_basic
+  name: Leader Right Turn + Basic
+  description: Rechtsdrehung des Leaders auf 1-2-3.
+  level: 1
+  sequence:
+  - leader_right_turn
+  - basic_open
+  tags:
+  - turn
+  - leader
+  - beginner

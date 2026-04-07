@@ -1,0 +1,74 @@
+elements:
+- id: copita
+  name: Copita
+  description: Follower wird auf 1-2-3 in eine Linksdrehung geführt (aber bleibt auf
+    der Seite des Leaders) und auf 5-6-7 wieder rausgeschickt.
+  counts: 8
+  level: 3
+  tags:
+  - cbl
+  - turn
+  - special
+  pre:
+    hand_hold:
+    - two_hand
+    position:
+    - open
+    slot:
+    - center
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold: two_hand
+    position: open
+    slot: center
+    leader_weight: R
+    follower_weight: L
+  leader_actions:
+  - beat: '1'
+    foot: L
+    direction: forward
+    description: Führung zur Linksdrehung (Inside)
+  - beat: '2'
+    foot: R
+    direction: back
+    description: Follower 'auffangen' (Compression)
+  - beat: '3'
+    foot: L
+    direction: center
+    description: Follower steht links neben dem Leader
+  - beat: '5'
+    foot: R
+    direction: back
+    description: Follower nach rechts rausdrehen (Outside)
+  - beat: '6'
+    foot: L
+    direction: in_place
+  - beat: '7'
+    foot: R
+    direction: forward
+  follower_actions:
+  - beat: '1'
+    foot: R
+    direction: back
+  - beat: '2'
+    foot: L
+    direction: turn_ccw
+    description: Eindrehen (halbe Linksdrehung)
+  - beat: '3'
+    foot: R
+    direction: in_place
+    description: Steht links vom Leader
+  - beat: '5'
+    foot: L
+    direction: forward
+    action: turn_cw
+    description: Rausdrehen (Rechtsdrehung)
+  - beat: '6'
+    foot: R
+    direction: turn_cw
+  - beat: '7'
+    foot: L
+    direction: back

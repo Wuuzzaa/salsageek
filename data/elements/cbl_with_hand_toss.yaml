@@ -1,0 +1,49 @@
+elements:
+- id: cbl_with_hand_toss
+  name: CBL with Hand Toss
+  description: CBL bei dem der Leader die Hand des Followers kurz loslässt ('wirft')
+    und wieder auffängt.
+  counts: 8
+  level: 3
+  tags:
+  - cbl
+  - special
+  - social
+  pre:
+    hand_hold:
+    - R_L
+    - two_hand
+    position:
+    - open
+    slot:
+    - center
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold: R_L
+    position: open
+    slot: center
+    leader_weight: R
+    follower_weight: L
+  leader_actions:
+  - beat: 1-3
+    description: CBL Prep
+  - beat: '5'
+    action: hand_toss
+    description: Hand des Followers leicht beschleunigen und loslassen
+  - beat: '6'
+    action: wait_for_catch
+  - beat: '7'
+    action: catch_hand
+    description: Hand auf der anderen Seite des Slots wieder auffangen
+  follower_actions:
+  - beat: 1-3
+    description: CBL Weg starten
+  - beat: 5-7
+    description: Weiterlaufen, dabei die Handführung kurzzeitig selbst stabilisieren
+  signals:
+  - beat: '5'
+    type: release
+    description: Impulsartiges Loslassen der Verbindung

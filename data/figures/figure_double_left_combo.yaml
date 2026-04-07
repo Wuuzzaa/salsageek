@@ -1,0 +1,14 @@
+figures:
+- id: figure_double_left_combo
+  name: Double Left Combo
+  description: Handwechsel und dann eine doppelte Linksdrehung.
+  level: 4
+  sequence:
+  - basic_open
+  - hand_change_front
+  - follower_double_left_turn
+  - basic_open
+  tags:
+  - turn
+  - double
+  - intermediate

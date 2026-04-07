@@ -1,0 +1,13 @@
+figures:
+- id: figure_double_turn_combo
+  name: Double Turn Combo
+  description: Basic gefolgt von einer doppelten Rechtsdrehung.
+  level: 3
+  sequence:
+  - basic_open
+  - double_right_turn
+  - basic_open
+  tags:
+  - turn
+  - double
+  - intermediate

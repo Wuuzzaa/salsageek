@@ -1,15 +1,14 @@
 elements:
-- id: basic_open
-  name: Basic Step (Open)
-  description: Der klassische Grundschritt in offener Haltung (R_L). Leader bricht
-    auf 1 vor, Follower auf 1 zurück.
+- id: basic_closed
+  name: Basic Step (Closed)
+  description: Grundschritt in geschlossener Tanzhaltung.  Der Leader hat die rechte
+    Hand am Schulterblatt des Followers.
   counts: 8
   level: 1
   tags:
   - basic
+  - closed
   - on1
-  - open
-  - Custom
   pre:
     hand_hold:
     - R_L
@@ -24,7 +23,7 @@ elements:
     - cuddle
     - hammerlock
     position:
-    - open
+    - closed
     slot:
     - center
     connection:
@@ -37,7 +36,7 @@ elements:
     hand_hold:
     - same
     position:
-    - open
+    - closed
     slot:
     - center
     connection:

@@ -1,0 +1,15 @@
+figures:
+- id: figure_advanced_hammerlock_flow
+  name: Advanced Hammerlock Flow
+  description: Inside Turn in den Hammerlock und CBL wieder raus.
+  level: 3
+  sequence:
+  - basic_open
+  - two_hand_hold_entry
+  - inside_turn_to_hammerlock
+  - cbl_basic
+  tags:
+  - hammerlock
+  - cbl
+  - flow
+  - intermediate

@@ -1,0 +1,12 @@
+figures:
+- id: figure_cbl_right_turn
+  name: CBL + Follower Right Turn
+  description: Platzwechsel mit anschließender Rechtsdrehung.
+  level: 2
+  sequence:
+  - cbl_basic
+  - follower_right_turn
+  tags:
+  - cbl
+  - turn
+  - social

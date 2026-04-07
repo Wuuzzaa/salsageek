@@ -1,0 +1,15 @@
+figures:
+- id: figure_sombrero_social
+  name: Sombrero Social
+  description: Der Sombrero-Klassiker im LA-Style.
+  level: 4
+  sequence:
+  - basic_open
+  - two_hand_hold_entry
+  - sombrero_la_style
+  - sombrero_exit
+  - basic_open
+  tags:
+  - special
+  - wrap
+  - intermediate

@@ -65,9 +65,6 @@
                                             <div class="text-muted">Tags</div>
                                             <div class="fw-semibold">
                                                 {{ fig.tags|join(", ") }}
-                                                {% if fig.id.startswith('custom_') %}
-                                                    <span class="badge text-bg-primary smaller ms-1">Custom Figure</span>
-                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>

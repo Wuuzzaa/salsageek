@@ -1,0 +1,13 @@
+figures:
+- id: figure_cbl_outside_turn
+  name: CBL Outside Turn
+  description: Platzwechsel mit integrierter Rechtsdrehung.
+  level: 3
+  sequence:
+  - basic_open
+  - cbl_outside_turn
+  tags:
+  - cbl
+  - turn
+  - outside
+  - intermediate

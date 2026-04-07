@@ -1,0 +1,12 @@
+figures:
+- id: figure_copita_basic
+  name: Classic Copita
+  description: Die klassische Copita aus dem Two-Hand Hold.
+  level: 3
+  sequence:
+  - two_hand_hold_entry
+  - copita
+  tags:
+  - special
+  - turn
+  - intermediate

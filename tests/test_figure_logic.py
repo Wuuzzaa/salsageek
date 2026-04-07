@@ -9,20 +9,16 @@ def temp_data_dir(tmp_path):
     data_dir = tmp_path / "data"
     data_dir.mkdir()
     
-    # Create empty elements.yaml
-    with open(data_dir / "elements.yaml", "w", encoding="utf-8") as f:
-        yaml.dump({"elements": []}, f)
-        
-    # Create empty figures.yaml
-    with open(data_dir / "figures.yaml", "w", encoding="utf-8") as f:
-        yaml.dump({"figures": []}, f)
-        
+    # Create empty folders
+    (data_dir / "elements").mkdir(exist_ok=True)
+    (data_dir / "figures").mkdir(exist_ok=True)
+    
     return data_dir
 
-def test_load_figures_from_custom_dir(temp_data_dir):
-    # 1. Create a custom figure file
-    custom_fig_dir = temp_data_dir / "custom_figures"
-    custom_fig_dir.mkdir()
+def test_load_figures_from_data_dir(temp_data_dir):
+    # 1. Create a figure file
+    fig_dir = temp_data_dir / "figures"
+    # fig_dir already created in fixture
     
     fig_data = {
         "figures": [
@@ -37,7 +33,7 @@ def test_load_figures_from_custom_dir(temp_data_dir):
         ]
     }
     
-    with open(custom_fig_dir / "test_fig_1.yaml", "w", encoding="utf-8") as f:
+    with open(fig_dir / "test_fig_1.yaml", "w", encoding="utf-8") as f:
         yaml.dump(fig_data, f)
         
     # 2. Initialize SalsaService
@@ -53,11 +49,11 @@ def test_reload_figures(temp_data_dir):
     assert "new_fig" not in service.figures
     
     # Create new figure file
-    custom_fig_dir = temp_data_dir / "custom_figures"
-    custom_fig_dir.mkdir(exist_ok=True)
+    fig_dir = temp_data_dir / "figures"
+    fig_dir.mkdir(exist_ok=True)
     
     fig_data = {"figures": [{"id": "new_fig", "name": "New Figure", "level": 1, "sequence": []}]}
-    with open(custom_fig_dir / "new_fig.yaml", "w", encoding="utf-8") as f:
+    with open(fig_dir / "new_fig.yaml", "w", encoding="utf-8") as f:
         yaml.dump(fig_data, f)
         
     # Reload

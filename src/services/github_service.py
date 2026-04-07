@@ -45,7 +45,7 @@ class GithubService:
         Creates a new branch, commits the element YAML, and opens a PR.
         Returns the PR URL if successful, else None.
         """
-        file_path = f"data/custom_elements/{element_id}.yaml"
+        file_path = f"data/elements/{element_id}.yaml"
         yaml_content = yaml.dump({"elements": [element_data]}, allow_unicode=True, sort_keys=False)
         commit_message = f"Add new salsa element: {element_data.get('name', element_id)}"
         pr_title = f"New Salsa Element: {element_data.get('name', element_id)}"
@@ -65,7 +65,7 @@ class GithubService:
         Creates a new branch, commits the figure YAML, and opens a PR.
         Returns the PR URL if successful, else None.
         """
-        file_path = f"data/custom_figures/{figure_id}.yaml"
+        file_path = f"data/figures/{figure_id}.yaml"
         yaml_content = yaml.dump({"figures": [figure_data]}, allow_unicode=True, sort_keys=False)
         commit_message = f"Add new salsa figure: {figure_data.get('name', figure_id)}"
         pr_title = f"New Salsa Figure: {figure_data.get('name', figure_id)}"

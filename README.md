@@ -17,7 +17,7 @@ Alle Kern-Module verfügen über ausführliche Docstrings und Type Hints, um neu
 
 - **Element-Editor:** Erstellen und Bearbeiten von Salsa-Elementen mit technischer Validierung der Ein- und Ausgangszustände (Handhaltung, Position, Gewicht).
 - **Figure-Builder:** Interaktives Zusammenstellen von Tanzfiguren aus vorhandenen Elementen mit Echtzeit-Validierung des Flows.
-- **GitHub Integration (Auto-PR):** Neue Elemente und Figuren werden automatisch als Pull Request in das Repository gesendet, um Datenverlust in ephemeren Umgebungen (wie Render) zu vermeiden.
+- **GitHub Integration (Auto-PR):** Neue Elemente und Figuren werden automatisch als Einzeldateien (`data/elements/` und `data/figures/`) als Pull Request in das Repository gesendet, um Datenverlust in ephemeren Umgebungen (wie Render) zu vermeiden.
 - **Flow-Visualisierung:** Automatische Generierung von Mermaid.js-Diagrammen zur Visualisierung der Figurenabläufe.
 - **Profil-Management:** Lokale Profile zur Verwaltung des eigenen Repertoires und personalisierte Lern-Empfehlungen.
 - **Video-Integration:** Nahtlose Einbettung von YouTube-Videos für Elemente und Figuren.
@@ -48,12 +48,11 @@ Die Anwendung verfügt über umfangreiche automatisierte Tests, die sowohl die t
 - **Speicher-Logik:** Verifizierung des neuen Einzeldatei-Speichersystems für Elemente und Figuren.
 
 ### Tests ausführen
-Um die Tests in der PowerShell zu starten, führe folgende Befehle aus:
+Führe die Tests einfach mit folgendem Befehl aus:
 ```powershell
-# PYTHONPATH setzen, damit die App gefunden wird
-$env:PYTHONPATH = "."
 pytest -v
 ```
+Der `PYTHONPATH` wird nun automatisch über die `pytest.ini` konfiguriert.
 
 ## Deployment
 Die Anwendung läuft auf Render: [https://salsageek.onrender.com/](https://salsageek.onrender.com/)

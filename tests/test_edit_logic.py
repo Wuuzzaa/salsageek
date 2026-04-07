@@ -8,10 +8,10 @@ def client():
     with app.test_client() as client:
         yield client
 
-def test_edit_overwrites_existing_standard_element(client, tmp_path, monkeypatch):
-    """Test that editing a standard element saves it to custom_elements/ with same ID."""
-    custom_dir = tmp_path / "custom_elements_edit"
-    monkeypatch.setattr(element_editor_service, "dir", custom_dir)
+def test_edit_overwrites_existing_element(client, tmp_path, monkeypatch):
+    """Test that editing an element saves it to elements/ with same ID."""
+    elem_dir = tmp_path / "elements_edit"
+    monkeypatch.setattr(element_editor_service, "dir", elem_dir)
     
     # Mock schema
     salsa_service.schema = {
@@ -49,7 +49,7 @@ def test_edit_overwrites_existing_standard_element(client, tmp_path, monkeypatch
     response = client.post("/element-editor/basic_closed", data=form_data, follow_redirects=True)
     assert response.status_code == 200
     
-    elem_file = custom_dir / "basic_closed.yaml"
+    elem_file = elem_dir / "basic_closed.yaml"
     assert elem_file.exists()
     with open(elem_file, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f)
@@ -57,10 +57,10 @@ def test_edit_overwrites_existing_standard_element(client, tmp_path, monkeypatch
         assert data["elements"][0]["id"] == "basic_closed"
         assert data["elements"][0]["name"] == "Modified Basic Closed"
 
-def test_update_custom_element_no_duplicates(client, tmp_path, monkeypatch):
-    """Test that updating an existing custom element doesn't create a duplicate."""
-    custom_dir = tmp_path / "custom_elements_dup"
-    monkeypatch.setattr(element_editor_service, "dir", custom_dir)
+def test_update_element_no_duplicates(client, tmp_path, monkeypatch):
+    """Test that updating an existing element doesn't create a duplicate."""
+    elem_dir = tmp_path / "elements_dup"
+    monkeypatch.setattr(element_editor_service, "dir", elem_dir)
     
     # Mock schema
     salsa_service.schema = {
@@ -74,7 +74,7 @@ def test_update_custom_element_no_duplicates(client, tmp_path, monkeypatch):
     }
     element_editor_service.schema = salsa_service.schema
     
-    # 1. Create a custom element
+    # 1. Create an element
     form_data = {
         "action": "add_element",
         "name": "My Custom",
@@ -88,7 +88,7 @@ def test_update_custom_element_no_duplicates(client, tmp_path, monkeypatch):
     assert response.status_code == 200
     
     # Find the created file
-    yaml_files = list(custom_dir.glob("*.yaml"))
+    yaml_files = list(elem_dir.glob("*.yaml"))
     assert len(yaml_files) == 1
     yaml_file = yaml_files[0]
     
@@ -113,7 +113,7 @@ def test_update_custom_element_no_duplicates(client, tmp_path, monkeypatch):
     assert response.status_code == 200
     
     # Still only one file (it should overwrite the same file because it has the same ID)
-    yaml_files = list(custom_dir.glob("*.yaml"))
+    yaml_files = list(elem_dir.glob("*.yaml"))
     assert len(yaml_files) == 1
     
     with open(yaml_file, "r", encoding="utf-8") as f:

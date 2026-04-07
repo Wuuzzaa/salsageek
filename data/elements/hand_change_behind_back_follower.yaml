@@ -1,0 +1,42 @@
+elements:
+- id: hand_change_behind_back_follower
+  name: Hand Change Behind Back (Follower)
+  description: Handwechsel hinter dem Rücken des Followers während eines CBL.
+  counts: 8
+  level: 2
+  tags:
+  - hand_change
+  - cbl
+  pre:
+    hand_hold:
+    - R_L
+    position:
+    - open
+    slot:
+    - center
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold: L_R
+    position: open
+    slot: center
+    leader_weight: R
+    follower_weight: L
+  leader_actions:
+  - beat: 1-3
+    description: CBL Vorbereitung (Slot öffnen)
+  - beat: '5'
+    action: guide_behind_follower
+    description: Hand hinter den Rücken des Followers führen
+  - beat: '6'
+    action: take_with_right
+    description: Mit der anderen Hand hinter dem Rücken übernehmen
+  - beat: '7'
+    description: CBL beenden
+  follower_actions:
+  - beat: 1-3
+    description: CBL Vorbereitung
+  - beat: 5-7
+    description: Normaler CBL Weg

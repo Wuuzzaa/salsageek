@@ -1,0 +1,53 @@
+elements:
+- id: cbl_360
+  name: CBL 360 (Leader Turn)
+  description: CBL bei dem der Leader eine 360-Grad Drehung macht, während der Follower
+    die Seite wechselt.
+  counts: 8
+  level: 3
+  tags:
+  - cbl
+  - turn
+  - leader_turn
+  pre:
+    hand_hold:
+    - R_L
+    - two_hand
+    position:
+    - open
+    slot:
+    - center
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold: same
+    position: open
+    slot: center
+    leader_weight: R
+    follower_weight: L
+  leader_actions:
+  - beat: '1'
+    foot: L
+    direction: forward
+  - beat: '2'
+    foot: R
+    action: turn_cw_90
+  - beat: '3'
+    foot: L
+    action: turn_cw_90
+  - beat: '5'
+    foot: R
+    action: turn_cw_90
+  - beat: '6'
+    foot: L
+    action: turn_cw_90
+  - beat: '7'
+    foot: R
+    direction: forward
+  follower_actions:
+  - beat: 1-3
+    description: Vorbereitung
+  - beat: 5-7
+    description: Läuft normal am Leader vorbei (CBL)

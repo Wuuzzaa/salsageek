@@ -1,0 +1,77 @@
+elements:
+- id: follower_left_turn_l_r
+  name: Follower Left Turn (L_R)
+  description: Linksdrehung des Followers, geführt mit der linken Leaderhand an der
+    rechten Followerhand.
+  counts: 8
+  level: 2
+  tags:
+  - turn
+  - follower_turn
+  - left
+  pre:
+    hand_hold:
+    - L_R
+    - two_hand
+    position:
+    - open
+    slot:
+    - center
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold: L_R
+    position: open
+    slot: center
+    leader_weight: R
+    follower_weight: L
+  leader_actions:
+  - beat: '1'
+    foot: L
+    direction: forward
+  - beat: '2'
+    foot: R
+    direction: in_place
+  - beat: '3'
+    foot: L
+    direction: center
+  - beat: '5'
+    foot: R
+    direction: back
+    hand: L
+    action: raise
+  - beat: '6'
+    foot: L
+    direction: in_place
+    hand: L
+    action: guide_ccw
+    description: Führung gegen den Uhrzeigersinn
+  - beat: '7'
+    foot: R
+    direction: forward
+    hand: L
+    action: lower
+  follower_actions:
+  - beat: '1'
+    foot: R
+    direction: back
+  - beat: '2'
+    foot: L
+    direction: in_place
+  - beat: '3'
+    foot: R
+    direction: forward
+  - beat: '5'
+    foot: L
+    direction: forward
+    action: turn_ccw
+  - beat: '6'
+    foot: R
+    direction: forward
+    action: turn_ccw
+  - beat: '7'
+    foot: L
+    direction: back
+    action: complete_turn

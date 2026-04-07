@@ -6,10 +6,10 @@ import time
 
 class ElementEditorService:
     """
-    Service for creating, updating and validating custom salsa elements.
+    Service for creating, updating and validating salsa elements.
     """
-    def __init__(self, custom_elements_dir: Path, schema: Optional[Dict] = None):
-        self.dir = custom_elements_dir
+    def __init__(self, elements_dir: Path, schema: Optional[Dict] = None):
+        self.dir = elements_dir
         self.dir.mkdir(parents=True, exist_ok=True)
         self.schema = schema or {}
 
@@ -222,6 +222,9 @@ class ElementEditorService:
     def _validate_actions(self, actions: List[Dict], person: str, errors: List[str]):
         """Internal helper to validate actions against schema."""
         valid_dirs = {d["id"] for d in self.schema.get("directions", [])}
+        valid_dirs.add("pause") # Pause is always valid
+        valid_dirs.add("")      # Empty direction also valid
+        
         valid_turns = {t["id"] for t in self.schema.get("turn_types", [])}
         valid_turns.add("") # Allow empty turn
         
@@ -241,13 +244,13 @@ class ElementEditorService:
         text = re.sub(r"[^a-z0-9_\-]", "_", text)
         return text if text else "element"
 
-    def add_custom_element(self, name: str, level: int, counts: int, pre: Dict, post: Dict, 
-                           description: str = "", tags: List[str] = None, 
-                           leader_actions: List[Dict] = None, follower_actions: List[Dict] = None,
-                           signals: List[Dict] = None, videos: List[Dict[str, str]] = None,
-                           notes: str = "", custom_id: str = None) -> Tuple[Optional[str], List[str], Optional[Dict]]:
+    def add_element(self, name: str, level: int, counts: int, pre: Dict, post: Dict,
+                    description: str = "", tags: List[str] = None,
+                    leader_actions: List[Dict] = None, follower_actions: List[Dict] = None,
+                    signals: List[Dict] = None, videos: List[Dict[str, str]] = None,
+                    notes: str = "", element_id: str = None) -> Tuple[Optional[str], List[str], Optional[Dict]]:
         """
-        Adds or updates a custom element in the YAML storage.
+        Adds or updates an element in the YAML storage.
         
         Args:
             name: Human-readable name.
@@ -262,16 +265,16 @@ class ElementEditorService:
             signals: List of hand signals.
             videos: List of associated video dicts (url, title, type).
             notes: Additional notes.
-            custom_id: If provided, the element with this ID will be updated.
+            element_id: If provided, the element with this ID will be updated.
             
         Returns:
             Tuple of (element_id, list_of_errors, element_data).
         """
         # Generate ID if not provided
-        if not custom_id:
-            elem_id = f"custom_{self._slugify(name)}_{int(time.time())}"
+        if not element_id:
+            elem_id = f"{self._slugify(name)}_{int(time.time())}"
         else:
-            elem_id = custom_id
+            elem_id = element_id
         
         new_element = {
             "id": elem_id,
@@ -279,7 +282,7 @@ class ElementEditorService:
             "description": description or f"Newly created element: {name}",
             "counts": counts,
             "level": int(level),
-            "tags": tags or ["Custom"],
+            "tags": tags or [],
             "pre": pre,
             "post": post,
             "leader_actions": leader_actions or [],
@@ -294,7 +297,7 @@ class ElementEditorService:
         if not is_valid:
             return None, errors, None
 
-        # Load existing custom elements from its own file
+        # Load existing elements from its own file
         self.dir.mkdir(parents=True, exist_ok=True)
         file_path = self.dir / f"{elem_id}.yaml"
         

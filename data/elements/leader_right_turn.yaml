@@ -1,12 +1,12 @@
 elements:
-- id: follower_right_turn
-  name: Follower Right Turn
-  description: Standard Rechtsdrehung für den Follower auf 5-6-7.
+- id: leader_right_turn
+  name: Leader Right Turn
+  description: "Rechtsdrehung für den Leader auf 1-2-3.\r\n1 und 2 jeweils 1/4 Drehung\
+    \ nach rechts. 3 halbe Drehung nach rechts.\r\n5-6-7 sind Basic steps."
   counts: 8
   level: 1
   tags:
-  - Custom
-  - follower_turn
+  - leader_turn
   - right
   - turn
   pre:
@@ -16,7 +16,12 @@ elements:
     - R_R
     - L_L
     - two_hand
+    - two_hand_crossed_l_up
+    - two_hand_crossed_r_up
     - free
+    - shadow
+    - cuddle
+    - hammerlock
     position:
     - open
     slot:
@@ -34,7 +39,12 @@ elements:
     - R_R
     - L_L
     - two_hand
+    - two_hand_crossed_l_up
+    - two_hand_crossed_r_up
     - free
+    - shadow
+    - cuddle
+    - hammerlock
     position:
     - open
     slot:
@@ -50,82 +60,114 @@ elements:
     foot: L
     direction: forward
     turn_type: ''
+    action: turn_cw
+    hand: null
     description: '1: L forward'
   - beat: '2'
     foot: R
     direction: in_place
     turn_type: ''
+    action: turn_cw
+    hand: null
     description: '2: R in_place'
   - beat: '3'
     foot: L
     direction: back
     turn_type: ''
+    action: turn_cw
+    hand: null
     description: '3: L back'
   - beat: '4'
     foot: ''
     direction: pause
     turn_type: ''
+    action: null
+    hand: null
     description: '4: - pause'
   - beat: '5'
     foot: R
     direction: back
     turn_type: ''
+    action: null
+    hand: null
     description: '5: R back'
   - beat: '6'
     foot: L
     direction: in_place
     turn_type: ''
+    action: null
+    hand: null
     description: '6: L in_place'
   - beat: '7'
     foot: R
     direction: forward
     turn_type: ''
+    action: null
+    hand: null
     description: '7: R forward'
   - beat: '8'
     foot: ''
     direction: pause
     turn_type: ''
+    action: null
+    hand: null
     description: '8: - pause'
   follower_actions:
   - beat: '1'
     foot: R
-    direction: pause
+    direction: back
     turn_type: ''
-    description: '1: R pause'
+    action: null
+    hand: null
+    description: '1: R back'
   - beat: '2'
     foot: L
-    direction: pause
+    direction: in_place
     turn_type: ''
-    description: '2: L pause'
+    action: null
+    hand: null
+    description: '2: L in_place'
   - beat: '3'
     foot: R
-    direction: pause
+    direction: forward
     turn_type: ''
-    description: '3: R pause'
+    action: null
+    hand: null
+    description: '3: R forward'
   - beat: '4'
     foot: ''
     direction: pause
     turn_type: ''
+    action: null
+    hand: null
     description: '4: - pause'
   - beat: '5'
     foot: L
-    direction: pause
+    direction: forward
     turn_type: ''
-    description: '5: L pause'
+    action: null
+    hand: null
+    description: '5: L forward'
   - beat: '6'
     foot: R
-    direction: pause
+    direction: in_place
     turn_type: ''
-    description: '6: R pause'
+    action: null
+    hand: null
+    description: '6: R in_place'
   - beat: '7'
     foot: L
-    direction: pause
+    direction: back
     turn_type: ''
-    description: '7: L pause'
+    action: null
+    hand: null
+    description: '7: L back'
   - beat: '8'
     foot: ''
     direction: pause
     turn_type: ''
+    action: null
+    hand: null
     description: '8: - pause'
   signals: []
   videos: []
