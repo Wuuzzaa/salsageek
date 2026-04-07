@@ -1,0 +1,11 @@
+figures:
+- id: figure_1775587841
+  name: Test New Figure
+  description: A test figure
+  level: 1
+  sequence:
+  - test_elem
+  total_counts: 8
+  tags:
+  - Builder
+  notes: ''
