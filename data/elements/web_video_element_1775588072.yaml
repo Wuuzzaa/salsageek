@@ -1,0 +1,156 @@
+elements:
+- id: web_video_element_1775588072
+  name: Web Video Element
+  description: A test element with videos
+  counts: 8
+  level: 2
+  tags: []
+  pre:
+    hand_hold:
+    - open
+    position:
+    - open
+    slot:
+    - center
+    connection:
+    - neutral
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold:
+    - open
+    position:
+    - open
+    slot:
+    - center
+    connection:
+    - neutral
+    leader_weight:
+    - L
+    follower_weight:
+    - R
+  leader_actions:
+  - beat: '1'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '1: - pause'
+  - beat: '2'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '2: - pause'
+  - beat: '3'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '3: - pause'
+  - beat: '4'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '4: - pause'
+  - beat: '5'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '5: - pause'
+  - beat: '6'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '6: - pause'
+  - beat: '7'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '7: - pause'
+  - beat: '8'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '8: - pause'
+  follower_actions:
+  - beat: '1'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '1: - pause'
+  - beat: '2'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '2: - pause'
+  - beat: '3'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '3: - pause'
+  - beat: '4'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '4: - pause'
+  - beat: '5'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '5: - pause'
+  - beat: '6'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '6: - pause'
+  - beat: '7'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '7: - pause'
+  - beat: '8'
+    foot: ''
+    direction: pause
+    turn_type: ''
+    action: null
+    hand: null
+    description: '8: - pause'
+  signals: []
+  videos:
+  - url: https://youtu.be/web1
+    title: Web 1
+    type: Full
+  - url: https://youtu.be/web2
+    title: Web 2
+    type: Leader
+  notes: ''
