@@ -1,0 +1,39 @@
+elements:
+- id: basic_closed
+  name: Modified Basic Closed
+  description: 'Newly created element: Modified Basic Closed'
+  counts: 8
+  level: 1
+  tags:
+  - Custom
+  pre:
+    hand_hold:
+    - closed
+    position:
+    - closed
+    slot:
+    - center
+    connection:
+    - neutral
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  post:
+    hand_hold:
+    - closed
+    position:
+    - closed
+    slot:
+    - center
+    connection:
+    - neutral
+    leader_weight:
+    - R
+    follower_weight:
+    - L
+  leader_actions: []
+  follower_actions: []
+  signals: []
+  videos: []
+  notes: ''
